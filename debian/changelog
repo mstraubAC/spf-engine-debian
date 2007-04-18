@@ -1,0 +1,6 @@
+pypolicyd-spf (0.3-1) unstable; urgency=low
+
+  * Initial Debian package for Python SPF policy server for Postfix 
+    (Closes: #419887)
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 18 Apr 2007 10:11:36 -0400
