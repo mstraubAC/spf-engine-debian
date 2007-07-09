@@ -1,0 +1,24 @@
+See man 1 policyd-spf for additional documentation.
+
+Installing
+----------
+This package must be integrated with Postfix to be effective:
+
+ 1. Add the following to /etc/postfix/master.cf:
+
+        policy-spf  unix  -       n       n       -       0       spawn
+            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf /etc/pypolicyd-spf/policyd-spf.conf
+
+ 2. Configure the Postfix policy service in /etc/postfix/main.cf:
+
+        smtpd_recipient_restrictions =
+            ...
+            reject_unauth_destination
+            check_policy_service unix:private/policyd-spf
+            ...
+
+    NOTE:  Specify check_policy_service AFTER reject_unauth_destination or
+    else your system can become an open relay.
+
+ 3. Restart Postfix.
+

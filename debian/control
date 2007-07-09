@@ -1,5 +1,5 @@
 Source: pypolicyd-spf
-Section: mail 
+Section: mail
 Priority: extra
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.1), python-all-dev, python-support (>= 0.5.3)
@@ -10,8 +10,11 @@ Package: python-policyd-spf
 Architecture: all
 Depends: ${python:Depends}, python-spf (>= 2.0)
 Recommends: postfix (>= 2.1)
+Provides: ${python:Provides}
 XB-Python-Version: ${python:Versions}
-Description: pure-Python Postfix policy server for SPF checking
- python-policyd-spf is a Postfix SMTPd policy server for SPF checking.
+Description: pure-Python Postfix policy daemon for SPF checking
+ python-policyd-spf is a Postfix SMTPd policy engine for SPF checking.
  It is implemented in pure Python and uses the python-spf module.  The SPF
- web site is http://www.openspf.org/.
+ web site is http://www.openspf.org/.  The Postfix configuration must be
+ changed to check SPF.  See INSTALL.Debian or man 1 policyd-spf for 
+ details.

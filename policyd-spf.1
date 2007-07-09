@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2007-02-19
+.TH policy-spf 1 "2007-07-09"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.3
+0\.4
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -176,18 +176,32 @@ SPF Received header prepended.  Note: Spamasassisn 3.2 and follow will use this
 header for spam scoring so there is no need to configure a separate SPF check in
 these Spamassassin versions.  See Spamassassin documentation for details.
 
+.SH "USAGE"
+.IX Header "USAGE"
+
+NOTE: Depending on the packaging and distribution, the exact path to the
+executable may vary. The executable should be included in the Python path.
+
+$ policyd-spf [Start with package defaults]
+$ policyd-spf -h [Display usage message]
+$ policyd-spf /etc/policyd-spf/policyd-spf.conf [Config file name to use]
+
+Configuration options are described in the sample configuration file provided
+with the package.  The provided setup.py installs this configuration file in
+/usr/local/policyd-spf/.
+
+Additionally, whitelisting certain IP addresses from SPF checks is supported.
+The sample configuration file shows the format to use.
+
 .SH "LOGGING"
 .IX Header "LOGGING"
 
 Policyd-spf will log messages to syslog about it's activities.  The "debugLevel"
-value in "policyd-spf.conf" can be increased to get    additional information to
+value in "policyd-spf.conf" can be increased to get additional information to
 be logged.  When set to a value of "0", only    test results (SPF hits/misses) 
 are logged.  Results will be returned to Postfix and logged as a warning by 
 Postfix also.  For logging by this policy server, look for "policyd-spf" in your
 mail log files.
-
-TODO Warning - Currently config files are not processed.  Logging can be 
-changed in the default values in policydspfsupp.py.
 
 .SH "TESTING THE POLICY DAEMON"
 .IX Header "TESTING THE POLICY DAEMON"
@@ -195,7 +209,7 @@ Testing the policy daemon
 
 To test the policy daemon by hand, execute:
 
-    % perl /usr/bin/policyd-spf
+    % policyd-spf
 
 Each query is a bunch of attributes.  Order does not matter, and the daemon
 uses only a few of all the attributes shown below:
@@ -223,7 +237,7 @@ followed by a empty line:
 
  1. Add the following to /etc/postfix/master.cf:
 
-        policy-spf  unix  -       n       n       -       -       spawn
+        policy-spf  unix  -       n       n       -       0       spawn
             user=nobody argv=/usr/bin/python /usr/bin/policy-spf
 
  2. Configure the Postfix policy service in /etc/postfix/main.cf:
@@ -243,7 +257,7 @@ followed by a empty line:
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-python-spf, <http://www.openspf.org>
+man 5 policyd-spf, python-spf, <http://www.openspf.org>
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"

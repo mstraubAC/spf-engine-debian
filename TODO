@@ -1,44 +1,5 @@
-Make Config files work
-Whitelisting
 Local Policy
 Better Documentation
-Make CIDR match work for IPv6
+Object cache
+Make the code support operations as a true Dameon
 
-Add back to README and update after config files work:
-
-
-CONFIGURATION
-
-   NOTE: After changing "policy-spf.conf", you should run
-   "policy-spf-configtest" to ensure that it's correct.  This only applies
-   to changes made to the "policy-spf.conf" master configuration file.
-
-   Configurations are processed from the top down, in the order specified
-   by "OTHERCONFIGS".  So, settings in a top-level __default__ file will be
-   overridden if set in a configuration below that top level.
-
-   There is the __default__ file at the top level that is used as a
-   default for all decisions. If you wish to disable SPF for a specific 
-   IP/subnet/sender/recipient, you simply make a __default__ file in a 
-   subdirectory under config matching the entity you wish to match, with SPF or 
-   other checks disabled.
-
-   For example, if you want to disable SPF queries for hosts in 192.168.10.0/24:
-
-      mkdir /var/spool/policy-spf/config/client_address/192/168/10/
-      edit /var/spool/policy-spf/config/client_address/192/168/10/__default__
-
-   The __default__ file should contain:
-
-      SPFSEEDONLY=0
-      CHECKERS=
-      OTHERCONFIGS=
-
-   Note that for a specific IP address, the last component is a file,
-   having the same structure as the __default__.  For example, to block the
-   address "10.1.2.3", you would create a file named "3" under the
-   directory ".../config/client_address/10/1/2".
-
-   The above sets CHECKERS and OTHERCONFIGS to nothing, so for that subnet
-   no checks are done.  All other IP address blocks are still using the top
-   level __default__

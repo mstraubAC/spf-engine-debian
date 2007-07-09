@@ -22,7 +22,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.3: February 23, 2007"
+__version__ = "0.4: July 9, 2007"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
 sys.path.append('/usr/local/lib/policy-spf')
@@ -73,182 +73,233 @@ def parse_cidr(cidr_ip):
     return a[0], cidr6
 
 #############################################
-def spfcheck(data, configData, configGlobal):  #{{{1
-	debugLevel = configGlobal.get('debugLevel', 0)
-	ip = data.get('client_address')
-	if ip == None:
-		if debugLevel: syslog.syslog('spfcheck: No client address, exiting')
-		return(( None, None ))
-	# Do not check SPF for localhost addresses - add to skip addresses to 
-	# skip SPF for internal networks if desired.
-	skip_addresses = ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',]
-	for cidr in skip_addresses:
-		parsed_address = parse_cidr(cidr)
-		good_ip = [parsed_address[0],]
-		if cidrmatch(ip, good_ip, int(parsed_address[1])):
-			return (( None, 'SPF check N/A for local connections' ))
+def spfcheck(data, instance_dict, configData):  #{{{1
+    debugLevel = configData.get('debugLevel', 0)
+    ip = data.get('client_address')
+    if ip == None:
+        if debugLevel: syslog.syslog('spfcheck: No client address, exiting')
+        return(( None, None, instance_dict ))
+    # Do not check SPF for localhost addresses - add to skip addresses to 
+    # skip SPF for internal networks if desired.
+    skip_addresses = ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',]
+    for cidr in skip_addresses:
+        parsed_address = parse_cidr(cidr)
+        good_ip = [parsed_address[0],]
+        if cidrmatch(ip, good_ip, int(parsed_address[1])):
+            Header = ('X-Comment: SPF check N/A for local connections - '+ 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                % ( data.get('client_address', '<UNKNOWN>'),
+                    data.get('helo_name', '<UNKNOWN>'),
+                    data.get('sender', '<UNKNOWN>'),
+                    data.get('recipient', '<UNKNOWN>'),
+                    ))
+            if debugLevel: syslog.syslog(Header)
+            return (('prepend', Header, instance_dict ))
+    # Whitelist designated IP addresses from SPF checks (e.g. secondary MX or 
+    # known forwarders.
+    if configData.get('Whitelist'):
+        Whitelist = (str(configData.get('Whitelist')))
+        Whitelist_list = Whitelist.split(',')
+        for cidr in Whitelist_list:
+            parsed_address = parse_cidr(cidr)
+            good_ip = [parsed_address[0],]
+            if cidrmatch(ip, good_ip, int(parsed_address[1])):
+                Header = ('X-Comment: SPF skipped for whitelisted relay - '+ 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                    % ( data.get('client_address', '<UNKNOWN>'),
+                        data.get('helo_name', '<UNKNOWN>'),
+                        data.get('sender', '<UNKNOWN>'),
+                        data.get('recipient', '<UNKNOWN>'),
+                        ))
+                if debugLevel: syslog.syslog(Header)
+                return (('prepend', Header, instance_dict ))
 
-	sender = data.get('sender')
-	helo = data.get('helo_name')
-	if not sender and not helo:
-		if debugLevel: syslog.syslog('spfcheck: No sender or helo, exiting')
-		return(( None, None ))
+    #recipient = data.get('recipient')
+    receiver=socket.gethostname()
+    sender = data.get('sender')
+    helo = data.get('helo_name')
+    if not sender and not helo:
+        if debugLevel: syslog.syslog('spfcheck: No sender or helo, exiting')
+        return(( None, None, instance_dict ))
 
-	#  if no helo name sent, use domain from sender
-	if not helo:
-		foo = string.split(sender, '@', 1)
-		if len(foo) <  2: helo = 'unknown'
-		else: helo = foo[1]
+    #  start query
+    spfResult = None
+    spfReason = None
+    instance = data.get('instance')
+    # The following if is only needed for testing.  Postfix 
+    # will always provide instance.
+    if not instance:
+        import random
+        instance = str(int(random.random()*100000))
+    # This is to prevent multiple headers being prepended
+    # for multi-recipient mail.
+    found_instance = instance_dict.has_key(instance)
+    '''Data structure for results is a list of:
+        [0] SPF result 
+        [1] SPF reason
+        [2] Identity (HELO/Mail From)
+        [3] Action based on local policy'''
+    if not found_instance:
+        # First do HELO check
+        #  if no helo name sent, use domain from sender for later use.
+        if not helo:
+            foo = string.split(sender, '@', 1)
+            if len(foo) <  2: helo = 'unknown'
+            else: helo = foo[1]
+        else:
+            if configData.get('HELO_reject') != 'No_Check':
+                helo_fake_sender = 'postmaster@' + helo
+                res = spf.check2(ip, helo_fake_sender, helo)
+                helo_result = [res[0], res[1]]
+                helo_result.append('HELO') 
+                if debugLevel:
+                    syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
+                helo_result[0] = helo_result[0].lower()
+                helo_result[0] = helo_result[0].capitalize()
+                if configData.get('HELO_reject') == 'Null' and sender:
+                    helo_result.append('dunno')
+                elif helo_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
+                    helo_result.append('defer')
+                elif helo_result[0] == 'Permerror' and configData.get('PermError_Defer') == 'True':
+                    helo_result.append('reject')
+                elif helo_result[0] == 'Permerror' and configData.get('PermError_Defer') == 'False':
+                    helo_result('prepend')
+                elif configData.get('HELO_reject') == 'Fail' and helo_result[0] == 'Fail':
+                    helo_result.append('reject')
+                elif configData.get('HELO_reject') == 'SPF_Not_Pass' and (helo_result[0] == 'Fail' or helo_result[0] == 'Softfail' or helo_result[0] == 'Neutral'):
+                    helo_result.append('reject')
+                    helo_result[1] = 'HELO result rejected due to local policy (Not Pass/None)'
+                else: helo_result.append('prepend')
+                instance_dict[instance] = helo_result
 
-	#  start query
-	spfResult = None
-	spfReason = None
+                spfDetail = (helo_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                    % ( data.get('client_address', '<UNKNOWN>'),
+                        data.get('helo_name', '<UNKNOWN>'),
+                        data.get('sender', '<UNKNOWN>'),
+                        data.get('recipient', '<UNKNOWN>'),
+                         ))
+                syslogData = helo_result[1] + ":" + spfDetail
+                syslogData = str(syslogData)
+                syslog.syslog(syslogData)
+                header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[1] +') ' + spfDetail
+                # Only act on the HELO result if it is authoritative.
+                if helo_result[3] == 'reject':
+                    return(( 'reject', header, instance_dict ))
+                if helo_result[3] == 'defer':
+                    return(( 'defer', header, instance_dict ))
+        # Second do Mail From Check
+        if sender == '':
+            if configData.get('HELO_reject') != 'No_Check':
+                return(( helo_result[3], header, instance_dict ))
+        else:
+            if configData.get('Mail_From_reject') != 'No_Check':
+                res = spf.check2(ip, sender, helo)
+                mfrom_result = [res[0], res[1]]
+                mfrom_result.append('Mail From')
+                if debugLevel:
+                    syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
+                mfrom_result[0] = mfrom_result[0].lower()
+                mfrom_result[0] = mfrom_result[0].capitalize()
+                mfrom_result.append('dunno')
+                if mfrom_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
+                    mfrom_result[3] = 'defer'
+                elif mfrom_result[0] == 'Permerror' and configData.get('PermError_Defer') == 'True':
+                    mfrom_result[3] = 'reject'
+                elif mfrom_result[0] == 'Permerror' and configData.get('PermError_Defer') == 'False':
+                    mfrom_result[3] = 'prepend'
+                elif configData.get('Mail_From_reject') == 'Fail' and mfrom_result[0] == 'Fail':
+                    mfrom_result[3] = 'reject'
+                else: mfrom_result[3] = 'prepend'
+                if mfrom_result[0] != 'None':
+                    instance_dict[instance] = mfrom_result
 
-	#  try to use pyspf
-	try:
-		ret = spf.check2(i = ip, s = sender, h = helo)
-		spfResult = string.strip(ret[0])
-		spfReason = string.strip(ret[1])
-		if debugLevel:
-			syslog.syslog('spfcheck: pyspf result: "%s"' % str(ret))
-	except ImportError:
-		pass
-
-	#  try spfquery - Add back in later
-	'''if not spfResult:
-		#  check for spfquery
-		spfqueryPath = configGlobal['spfqueryPath']
-		if not os.path.exists(spfqueryPath):
-			if debugLevel:
-				syslog.syslog('spfcheck: No spfquery at "%s", exiting'
-						% spfqueryPath)
-			return(( None, None ))
-
-		#  open connection to spfquery
-		fpIn, fpOut = popen2.popen2('%s -file -' % spfqueryPath)
-		fpOut.write('%s %s %s\n' % ( ip, sender, helo ))
-		fpOut.close()
-		spfData = fpIn.readlines()
-		fpIn.close()
-		if debugLevel:
-			syslog.syslog('spfcheck: spfquery result: "%s"' % str(spfData))
-		spfResult = string.strip(spfData[0])
-		spfReason = string.strip(spfData[1])'''
-
-	#  read result
-	if sender:
-		identity = 'identity=mailfrom; '
-	else:
-		identity = 'identity=helo; '
-	spfDetail = (identity + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
-			% ( data.get('client_address', '<UNKNOWN>'),
-				data.get('helo_name', '<UNKNOWN>'),
-				data.get('sender', '<UNKNOWN>'),
-				data.get('recipient', '<UNKNOWN>'),
-				 ))
-	queue = ('QUEUEID=%s; '% ( data.get('queue_id', '<UNKNOWN>')))
-	syslogData = spfReason + ":" + queue + spfDetail
-	syslogData = str(syslogData)
-	syslog.syslog(syslogData)
-	
-	if spfResult == 'fail':
-		return(( 'reject', 'QUEUE_ID:%s SPF Reports: %s' 
-			% ( data.get('queue_id', '<UNKNOWN>'), str(spfReason) )))
-
-	if spfResult == 'permerror':
-		return(( 'reject', 'QUEUE_ID:%s SPF Reports: %s' 
-			% ( data.get('queue_id', '<UNKNOWN>'), str(spfReason) )))
-	
-	if spfResult == 'temperror':
-		return(( 'defer', 'QUEUE_ID:%s SPF Reports: %s' 
-			% ( data.get('queue_id', '<UNKNOWN>'), str(spfReason) )))
-	header = 'Received-SPF: '+ spfResult + ' (' + spfReason +') ' + spfDetail
-	
-	return(( 'prepend', header ))
+                    spfDetail = (mfrom_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                        % ( data.get('client_address', '<UNKNOWN>'),
+                            data.get('helo_name', '<UNKNOWN>'),
+                            data.get('sender', '<UNKNOWN>'),
+                            data.get('recipient', '<UNKNOWN>'),
+                             ))
+                    syslogData = mfrom_result[1] + ":" + spfDetail
+                    syslogData = str(syslogData)
+                    syslog.syslog(syslogData)
+                    header = 'Received-SPF: '+ mfrom_result[0] + ' (' + mfrom_result[1] +') ' + spfDetail
+                # Only act on the HELO result if it is authoritative.
+                if mfrom_result[3] == 'reject':
+                    return(( 'reject', header, instance_dict ))
+                if mfrom_result[3] == 'defer':
+                    return(( 'defer', header, instance_dict ))
+                if mfrom_result[3] != 'dunno' or helo_result[3] =='dunno':
+                    return(( 'prepend', header, instance_dict ))
+    return(( 'None', 'None', instance_dict ))
 
 ###################################################
 #  load config file  {{{1
-configFile = policydspfsupp.defaultConfigFilename
+configFile = None
 if len(sys.argv) > 1:
-	if sys.argv[1] in ( '-?', '--help', '-h' ):
-		print 'usage: policy-spf [<configfilename>]'
-		sys.exit(1)
-	configFile = sys.argv[1]
+    if sys.argv[1] in ( '-?', '--help', '-h' ):
+        print 'usage: policyd-spf [<configfilename>]'
+        sys.exit(1)
+    configFile = sys.argv[1]
 
 configGlobal = policydspfsupp.processConfigFile(filename = configFile)
+
 #  loop reading data  {{{1
 debugLevel = configGlobal.get('debugLevel', 0)
 if debugLevel >= 2: syslog.syslog('Starting')
-instance_list = []
+instance_dict = {'0':'init',}
+instance_dict.clear()
 data = {}
 lineRx = re.compile(r'^\s*([^=\s]+)\s*=(.*)$')
 while 1:
-	line = sys.stdin.readline()
-	if not line: break
-	line = string.rstrip(line)
-	if debugLevel >= 4: syslog.syslog('Read line: "%s"' % line)
+    line = sys.stdin.readline()
+    if not line: break
+    line = string.rstrip(line)
+    if debugLevel >= 4: syslog.syslog('Read line: "%s"' % line)
 
-	#  end of entry  {{{2
-	if not line:
-		if debugLevel >= 4: syslog.syslog('Found the end of entry')
-		#TO DO Make Config file work 
-		configData = configGlobal
-		#configData = policydspfsupp.lookupConfig(configGlobal.get('configPath'),
-		#		data, configGlobal)
-		if debugLevel >= 2: syslog.syslog('Config: %s' % str(configData))
+    #  end of entry  {{{2
+    if not line:
+        if debugLevel >= 4: syslog.syslog('Found the end of entry')
+        configData = configGlobal
+        if debugLevel >= 2: syslog.syslog('Config: %s' % str(configData))
 
-		#  run the checkers  {{{3
-		checkerValue = None
-		checkerReason = None
-		checkerValue, checkerReason = spfcheck(data, configData,
-						configGlobal)
-		if configData.get('SPFSEEDONLY', 0):
-			checkerValue = None
-			checkerReason = None
+        #  run the checkers  {{{3
+        checkerValue = None
+        checkerReason = None
+        checkerValue, checkerReason, instance_dict = spfcheck(data, 
+                    instance_dict, configData)
+        if configData.get('SPFSEEDONLY', 0):
+            checkerValue = None
+            checkerReason = None
 
-		#  handle results  {{{3
+        #  handle results  {{{3
 
-		if checkerValue == 'reject':
-			sys.stdout.write('action=550 %s\n\n' % checkerReason)
-			
-		elif checkerValue == 'prepend':
-			instance = data.get('instance')
-			# The following if is only needed for testing.  Postfix 
-			# will always provide instance.
-			if not instance:
-				import random
-				instance = str(int(random.random()*100000))
-			# This is to prevent multiple headers being prepended
-			# for multi-recipient mail.
-			found_instance = instance_list.count(instance)
-			if found_instance == 0:
-				sys.stdout.write('action=prepend %s\n\n' % checkerReason)
-				instance_list.append(instance)
-			else:
-				sys.stdout.write('action=dunno\n\n')
-		elif checkerValue == 'defer':
-			sys.stdout.write('action=defer_if_permit %s\n\n' % checkerReason)
+        if checkerValue == 'reject':
+            sys.stdout.write('action=550 %s\n\n' % checkerReason)
 
-		elif checkerValue == 'warn':
-			sys.stdout.write('action=warn %s\n\n' % checkerReason)
-			
-		else:
-			sys.stdout.write('action=dunno\n\n')
+        elif checkerValue == 'prepend':
+            sys.stdout.write('action=prepend %s\n\n' % checkerReason)
 
-		#  end of record  {{{3
-		sys.stdout.flush()
-		data = {}
-		continue
+        elif checkerValue == 'defer':
+            sys.stdout.write('action=defer_if_permit %s\n\n' % checkerReason)
 
-	#  parse line  {{{2
-	m = lineRx.match(line)
-	if not m: 
-		syslog.syslog('ERROR: Could not match line "%s"' % line)
-		continue
+        elif checkerValue == 'warn':
+            sys.stdout.write('action=warn %s\n\n' % checkerReason)
 
-	#  save the string  {{{2
-	key = m.group(1)
-	value = m.group(2)
-	if key not in [ 'protocol_state', 'protocol_name', 'queue_id' ]:
-		value = string.lower(value)
-	data[key] = value
+        else:
+            sys.stdout.write('action=dunno\n\n')
+
+        #  end of record  {{{3
+        sys.stdout.flush()
+        data = {}
+        continue
+
+    #  parse line  {{{2
+    m = lineRx.match(line)
+    if not m: 
+        syslog.syslog('ERROR: Could not match line "%s"' % line)
+        continue
+
+    #  save the string  {{{2
+    key = m.group(1)
+    value = m.group(2)
+    if key not in [ 'protocol_state', 'protocol_name', 'queue_id' ]:
+        value = string.lower(value)
+    data[key] = value
