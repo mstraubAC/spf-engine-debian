@@ -1,3 +1,9 @@
+pypolicyd-spf (0.4-2) unstable; urgency=low
+
+  * Merge debian/changelog entries from 0.3-1 and 0.4-1
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jul 2007 23:17:09 -0400
+
 pypolicyd-spf (0.4-1) unstable; urgency=low
 
   * New upstream release
@@ -11,25 +17,10 @@ pypolicyd-spf (0.4-1) unstable; urgency=low
 
  -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jul 2007 17:37:13 -0400
 
-pypolicyd-spf (0.3-0ubuntu1) feisty; urgency=low
+pypolicyd-spf (0.3-1) unstable; urgency=low
 
-  * New upstream release
-    - Skipping SPF for localhost works for IPv6
-    - SPF Received header implemented
-  * Install upstream man page instead of Debian specific now that it's provided.
+  * Initial Debian package for Python SPF policy server for Postfix
+    (Closes: #419887)
 
- -- Scott Kitterman <scott@kitterman.com>  Fri, 23 Feb 2007 23:00:54 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 18 Apr 2007 10:11:36 -0400
 
-pypolicyd-spf (0.2-0ubuntu1) feisty; urgency=low
-
-  * New upstream release
-    - Safer IP address matching for local connections
-    - Complete results logging to syslog
-
- -- Scott Kitterman <scott@kitterman.com>  Wed, 07 Feb 2007 16:51:00 -0500
-
-pypolicyd-spf (0.1-0ubuntu1) feisty; urgency=low
-
-  * Initial upstream release
-
- -- Scott Kitterman <scott@kitterman.com>  Wed, 17 Jan 2007 19:31:36 -0500
