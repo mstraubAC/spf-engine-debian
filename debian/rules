@@ -9,6 +9,6 @@ include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
 install/python-policyd-spf::
 	dh_installman policyd-spf.1
-	dh_installdirs /etc/python-policyd-spf
-	mv policyd-spf.conf /tmp/buildd/pypolicyd-spf-0.4/debian/python-policyd-spf/etc/python-policyd-spf
+	dh_installdirs etc/python-policyd-spf
+	install -m 644 policyd-spf.conf $(DEB_DESTDIR)/etc/python-policyd-spf/
 

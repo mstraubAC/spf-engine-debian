@@ -1,3 +1,11 @@
+pypolicyd-spf (0.4-3) unstable; urgency=low
+
+  * Correct debian/rules to fix FTBFS (Closes: #434017)
+    - Change config file mv to install in debian/rules with correct path.
+    - Change dh_installdirs path to relative rather than absolute.
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 21 Jul 2007 11:32:58 -0400
+
 pypolicyd-spf (0.4-2) unstable; urgency=low
 
   * Merge debian/changelog entries from 0.3-1 and 0.4-1
