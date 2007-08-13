@@ -1,3 +1,11 @@
+pypolicyd-spf (0.4.1-1) unstable; urgency=low
+
+  * Correct multi-recipient reject processing (Closes: #437361)
+  * Correct typos in README.Debian (Closes: #434623)
+  * Add debian/watch
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 13 Aug 2007 11:03:09 -0400
+
 pypolicyd-spf (0.4-3) unstable; urgency=low
 
   * Correct debian/rules to fix FTBFS (Closes: #434017)
