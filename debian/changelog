@@ -10,8 +10,10 @@ pypolicyd-spf (0.5-1) unstable; urgency=low
   * Add XS-Vcs-Svn: and XS-Vcs-Browser: fields to debian/control
   * Add debian/pyversions and remove XS/XB-Python-Version from debian/control
   * Add debian/rules to install new upstream man page
+  * Add man-page-fixup.patch to quiet lintian
+  * Simplify debian/rules
 
- -- Scott Kitterman <scott@kitterman.com>  Wed, 03 Oct 2007 14:49:12 -0400
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 03 Oct 2007 16:48:12 -0400
 
 pypolicyd-spf (0.4.1-1) unstable; urgency=low
 
