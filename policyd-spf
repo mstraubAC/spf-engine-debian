@@ -22,7 +22,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.4.1: August 12, 2007"
+__version__ = "0.5: October 3, 2007"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
 sys.path.append('/usr/local/lib/policy-spf')
@@ -71,7 +71,51 @@ def parse_cidr(cidr_ip):
     if len(b) < 2:
         return cidr_ip, cidr
     return a[0], cidr6
-
+#############################################
+def spfbypass(data, check_type, configData):
+    if configData.get(check_type):
+        ip = data.get('client_address')
+        bypass_list = (str(configData.get(check_type)))
+        bypass_list_list = bypass_list.split(',')
+        if check_type == 'skip_addresses' or check_type == 'Whitelist':
+            for cidr in bypass_list_list:
+                parsed_address = parse_cidr(cidr)
+                good_ip = [parsed_address[0],]
+                cidr_range = parsed_address[1]
+                if not parsed_address[1]:
+                    cidr_range = 32
+                if cidrmatch(ip, good_ip, int(cidr_range)):
+                    if check_type == 'skip_addresses':
+                        comment = 'SPF check N/A for local connections - '
+                    else:
+                        comment = 'SPF skipped for whitelisted relay - '
+                    Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                        % ( data.get('client_address', '<UNKNOWN>'),
+                            data.get('helo_name', '<UNKNOWN>'),
+                            data.get('sender', '<UNKNOWN>'),
+                            data.get('recipient', '<UNKNOWN>'),
+                            ))
+                    if debugLevel >= 2: syslog.syslog(Header)
+                    return (True, Header)
+                else:
+                    return (False, 'None')
+        elif check_type == 'Domain_Whitelist':
+            for domain in bypass_list_list:
+                res = spf.check2(ip, domain, domain)
+                res[0] = res[0].lower()
+                res[0] = res[0].capitalize()
+                if res[0] == 'Pass':
+                    comment = 'SPF skipped for whitelisted relay domain - '
+                    Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                        % ( data.get('client_address', '<UNKNOWN>'),
+                            data.get('helo_name', '<UNKNOWN>'),
+                            data.get('sender', '<UNKNOWN>'),
+                            data.get('recipient', '<UNKNOWN>'),
+                            ))
+                    if debugLevel >= 2: syslog.syslog(Header)
+                    return (True, Header)
+                else:
+                    return (False, 'None')
 #############################################
 def spfcheck(data, instance_dict, configData):  #{{{1
     debugLevel = configData.get('debugLevel', 0)
@@ -79,38 +123,15 @@ def spfcheck(data, instance_dict, configData):  #{{{1
     if ip == None:
         if debugLevel: syslog.syslog('spfcheck: No client address, exiting')
         return(( None, None, instance_dict ))
-    # Do not check SPF for localhost addresses - add to skip addresses to 
-    # skip SPF for internal networks if desired.
-    skip_addresses = ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',]
-    for cidr in skip_addresses:
-        parsed_address = parse_cidr(cidr)
-        good_ip = [parsed_address[0],]
-        if cidrmatch(ip, good_ip, int(parsed_address[1])):
-            Header = ('X-Comment: SPF check N/A for local connections - '+ 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
-                % ( data.get('client_address', '<UNKNOWN>'),
-                    data.get('helo_name', '<UNKNOWN>'),
-                    data.get('sender', '<UNKNOWN>'),
-                    data.get('recipient', '<UNKNOWN>'),
-                    ))
-            if debugLevel: syslog.syslog(Header)
-            return (('prepend', Header, instance_dict ))
+    # Do not check SPF for localhost addresses 
+    skip_check = spfbypass(data, 'skip_addresses', configData)
+    if skip_check[0]:
+        return (('prepend', skip_check[1], instance_dict ))
     # Whitelist designated IP addresses from SPF checks (e.g. secondary MX or 
     # known forwarders.
-    if configData.get('Whitelist'):
-        Whitelist = (str(configData.get('Whitelist')))
-        Whitelist_list = Whitelist.split(',')
-        for cidr in Whitelist_list:
-            parsed_address = parse_cidr(cidr)
-            good_ip = [parsed_address[0],]
-            if cidrmatch(ip, good_ip, int(parsed_address[1])):
-                Header = ('X-Comment: SPF skipped for whitelisted relay - '+ 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
-                    % ( data.get('client_address', '<UNKNOWN>'),
-                        data.get('helo_name', '<UNKNOWN>'),
-                        data.get('sender', '<UNKNOWN>'),
-                        data.get('recipient', '<UNKNOWN>'),
-                        ))
-                if debugLevel: syslog.syslog(Header)
-                return (('prepend', Header, instance_dict ))
+    ip_whitelist = spfbypass(data, 'Whitelist', configData)
+    if ip_whitelist:
+        return (('prepend', ip_whitelist[1], instance_dict ))
 
     #recipient = data.get('recipient')
     receiver=socket.gethostname()
@@ -139,6 +160,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
         [3] Action based on local policy
         [4] Header'''
     if not found_instance:
+        Restriction_class = configData.get('Restriction_class')
         # First do HELO check
         #  if no helo name sent, use domain from sender for later use.
         if not helo:
@@ -151,10 +173,12 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 res = spf.check2(ip, helo_fake_sender, helo)
                 helo_result = [res[0], res[1]]
                 helo_result.append('HELO') 
-                if debugLevel:
-                    syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
                 helo_result[0] = helo_result[0].lower()
                 helo_result[0] = helo_result[0].capitalize()
+                if Restriction_class == 'True':
+                    return('dunno_only', helo_result[0])
+                if debugLevel:
+                    syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
                 if configData.get('HELO_reject') == 'Null' and sender:
                     helo_result.append('dunno')
                 elif helo_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
@@ -167,39 +191,49 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     helo_result.append('reject')
                 elif configData.get('HELO_reject') == 'SPF_Not_Pass' and (helo_result[0] == 'Fail' or helo_result[0] == 'Softfail' or helo_result[0] == 'Neutral'):
                     helo_result.append('reject')
-                    helo_result[1] = 'HELO result rejected due to local policy (Not Pass/None)'
+                    helo_result[1] = 'SPF HELO result: rejected due to local policy (Not Pass/None)'
                 else: helo_result.append('prepend')
 
                 spfDetail = (helo_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
-                    % ( data.get('client_address', '<UNKNOWN>'),
-                        data.get('helo_name', '<UNKNOWN>'),
-                        data.get('sender', '<UNKNOWN>'),
-                        data.get('recipient', '<UNKNOWN>'),
-                         ))
+                    % ( ip, helo, sender, data.get('recipient', '<UNKNOWN>')))
                 syslogData = helo_result[1] + ":" + spfDetail
                 syslogData = str(syslogData)
                 syslog.syslog(syslogData)
                 header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[1] +') ' + spfDetail
                 helo_result.append(header)
                 instance_dict[instance] = helo_result
+                if Restriction_class == 'All':
+                    return('dunno_only', helo_result[3], instance_dict )
+                elif Restriction_class == 'Uncertain':
+                    if helo_result[0] != 'Pass' and helo_result[0] != 'Fail':
+                        print helo_result
+                        return('dunno_only', helo_result[0], instance_dict )
                 # Only act on the HELO result if it is authoritative.
                 if helo_result[3] == 'reject':
+                    header = "Message rejected due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
                     return(( 'reject', header, instance_dict ))
                 if helo_result[3] == 'defer':
+                    header = "Message deferred due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
                     return(( 'defer', header, instance_dict ))
         # Second do Mail From Check
         if sender == '':
             if configData.get('HELO_reject') != 'No_Check':
+                if helo_result[3] == 'reject':
+                    header = "Message rejected due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
+                if helo_result[3] == 'defer':
+                    header = "Message deferred due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
                 return(( helo_result[3], header, instance_dict ))
         else:
             if configData.get('Mail_From_reject') != 'No_Check':
                 res = spf.check2(ip, sender, helo)
                 mfrom_result = [res[0], res[1]]
                 mfrom_result.append('Mail From')
-                if debugLevel:
-                    syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
                 mfrom_result[0] = mfrom_result[0].lower()
                 mfrom_result[0] = mfrom_result[0].capitalize()
+                if configData.get('Restriction_class') == 'True':
+                    return('dunno_only', mfrom_result[0])
+                if debugLevel:
+                    syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
                 mfrom_result.append('dunno')
                 if mfrom_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
                     mfrom_result[3] = 'defer'
@@ -211,22 +245,26 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     mfrom_result[3] = 'reject'
                 else: mfrom_result[3] = 'prepend'
                 if mfrom_result[0] != 'None':
-                    spfDetail = (mfrom_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
-                        % ( data.get('client_address', '<UNKNOWN>'),
-                            data.get('helo_name', '<UNKNOWN>'),
-                            data.get('sender', '<UNKNOWN>'),
-                            data.get('recipient', '<UNKNOWN>'),
-                             ))
+                    spfDetail = \
+                        (mfrom_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+                        % ( ip, helo, sender, data.get('recipient', '<UNKNOWN>')))
                     syslogData = mfrom_result[1] + ":" + spfDetail
                     syslogData = str(syslogData)
                     syslog.syslog(syslogData)
                     header = 'Received-SPF: '+ mfrom_result[0] + ' (' + mfrom_result[1] +') ' + spfDetail
                     mfrom_result.append(header)
                     instance_dict[instance] = mfrom_result
+                if Restriction_class == 'All':
+                    return('dunno_only', mfrom_result[3], instance_dict )
+                elif Restriction_class == 'Uncertain':
+                    if mfrom_result[0] != 'Pass' and mfrom_result[0] != 'Fail':
+                        return('dunno_only', mfrom_result[0], instance_dict )
                 # Act on the Mail From result if it is authoritative.
                 if mfrom_result[3] == 'reject':
+                    header = "Message rejected due to: " + mfrom_result[1] + ". Please see http://www.openspf.org/Why?s=mfrom;id=" + sender + ";ip=" + ip + ";r=" + data.get('recipient')
                     return(( 'reject', header, instance_dict ))
                 if mfrom_result[3] == 'defer':
+                    header = "Message deferred due to: " + mfrom_result[1] + ". Please see http://www.openspf.org/Why?s=mfrom;id=" + sender + ";ip=" + ip + ";r=" + data.get('recipient')
                     return(( 'defer', header, instance_dict ))
                 if mfrom_result[3] != 'dunno' or helo_result[3] =='dunno':
                     return(( 'prepend', header, instance_dict ))
@@ -289,7 +327,9 @@ while 1:
 
         elif checkerValue == 'warn':
             sys.stdout.write('action=warn %s\n\n' % checkerReason)
-
+            
+        elif checkerValue == 'dunno_only':
+            sys.stdout.write('action=dunno %s\n\n' % checkerReason)
         else:
             sys.stdout.write('action=dunno\n\n')
 

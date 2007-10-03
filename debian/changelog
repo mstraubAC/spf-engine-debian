@@ -1,3 +1,20 @@
+pypolicyd-spf (0.5-1) unstable; urgency=low
+
+  * New Upstream release
+  * Remove unnecessary python provides in debian/control
+  * Patch out usr/local PYTHONPATH addition (pythonpath.patch)
+  * Freshen install-conf-fix.patch
+  * Add debian/pycompat
+  * Add Python Applications Packaging Team as Uploaders
+  * Add Homepage: field to debian/control
+  * Add XS-Vcs-Svn: and XS-Vcs-Browser: fields to debian/control
+  * Add debian/pyversions and remove XS/XB-Python-Version from debian/control
+  * Add debian/rules to install new upstream man page
+  * Add man-page-fixup.patch to quiet lintian
+  * Simplify debian/rules
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 03 Oct 2007 16:48:12 -0400
+
 pypolicyd-spf (0.4.1-1) unstable; urgency=low
 
   * Correct multi-recipient reject processing (Closes: #437361)

@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2007-07-09"
+.TH policy-spf 1 "2007-10-03"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.4
+0\.5
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -143,7 +143,10 @@ Usage:
 .SH "OTHER DOCUMENTATION"
 .IX Header "OTHER DOCUMENTATION"
 This documentation assumes you have read Postfix's README_FILES/
-SMTPD_POLICY_README.
+SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
+(SPF).  See RFC 4408 for details.
+
+See policyd-spf.conf(5) for configuration file information.
 
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -169,12 +172,22 @@ SMTP transactions to complete.  As recommended in SMTPD_POLICY_README, this
 should be extended to 3600 seconds.  To do so, set "policy_time_limit = 3600"
 in /etc/postfix/main.cf.
 
-Messages that get a Fail or Permerror SPF result will be rejected.  Messages
-that get a Temperror result will be deferred if otherwise permitted.  Messages
-that get other SPF results (Pass, None, Neutral, Softfail) will have the 
-SPF Received header prepended.  Note: Spamasassisn 3.2 and follow will use this
-header for spam scoring so there is no need to configure a separate SPF check in
-these Spamassassin versions.  See Spamassassin documentation for details.
+Messages that get a Fail SPF result will be rejected.  Messages that get a 
+Permerror are, by default, treated as if they had no SPF record.  Messages
+that get a Temperror result are, by default, treated as if they had no SPF 
+record, but can (and probably should) be deferred if otherwise permitted.  
+Messages that get other SPF results (Pass, None, Neutral, Softfail) will have 
+the SPF Received header prepended.  Note: Spamasassisn 3.2 and follow will use
+this header for spam scoring so there is no need to configure a separate SPF
+check in these Spamassassin versions.  See Spamassassin documentation for 
+details.
+
+Default Mail From rejection/deferal criteria are, by design, conservative.
+Default HELO check actions are to reject mail with other than Pass/None. HELO
+records are much simpler than Mail From records and rejecting based on HELO 
+checking does not present a false positive risk.  These settings are a matter
+of local policy and should be adjusted to meet the requirements of site
+administrators.  See policyd-spf.conf(5) for configuration file details.
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -187,11 +200,13 @@ $ policyd-spf -h [Display usage message]
 $ policyd-spf /etc/policyd-spf/policyd-spf.conf [Config file name to use]
 
 Configuration options are described in the sample configuration file provided
-with the package.  The provided setup.py installs this configuration file in
-/usr/local/policyd-spf/.
+with the package policyd-spf.conf(5).  The provided setup.py installs this 
+configuration file in /usr/local/policyd-spf/.
 
-Additionally, whitelisting certain IP addresses from SPF checks is supported.
-The sample configuration file shows the format to use.
+Additionally, whitelisting certain IP addresses or IP addresses used by listed
+domains from SPF checks is supported.  Skipping SPF checks for local submission
+or trusted relays is also provided.  The sample configuration file and
+policyd-spf.conf(5) shows the format to use.
 
 .SH "LOGGING"
 .IX Header "LOGGING"
@@ -237,8 +252,11 @@ followed by a empty line:
 
  1. Add the following to /etc/postfix/master.cf:
 
-        policy-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python /usr/bin/policy-spf
+        policyd-spf  unix  -       n       n       -       0       spawn
+            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
+
+    NOTE: Check the path to both the installed Python interpreter and
+          policyd-spf.  These vary from system to system.
 
  2. Configure the Postfix policy service in /etc/postfix/main.cf:
 
@@ -250,14 +268,14 @@ followed by a empty line:
         policy_time_limit = 3600
 
     NOTE:  Specify check_policy_service AFTER reject_unauth_destination or
-    else your system can become an open relay.
+           else your system can become an open relay.
 
 
  3. Restart Postfix.
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-man 5 policyd-spf, python-spf, <http://www.openspf.org>
+policyd-spf.conf(5), python-spf, <http://www.openspf.org>, RFC 4408
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"

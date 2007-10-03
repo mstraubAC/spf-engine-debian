@@ -1,6 +1,6 @@
 #%define mod_name    pypolicyd-spf
 %define name    python-policyd-spf
-%define version 0.4.1
+%define version 0.5
 %define release 1
 %define prefix  %{_prefix}
 
@@ -42,9 +42,9 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/cron.d
 
 #  copy over files
 #for file in policyd-spf policyd-spf-clean configtest \
+#for file in policyd-spf configtest \
 
-for file in policyd-spf configtest \
-      setup.py policydspfsupp.py
+for file in policyd-spf setup.py policydspfsupp.py
 do
    cp "$file" "$RPM_BUILD_ROOT"/usr/lib/policyd-spf/
 done
@@ -53,7 +53,7 @@ cp policyd-spf.conf "$RPM_BUILD_ROOT"/var/lib/policyd-spf/config/
 
 #  link external programs to /usr/sbin
 #ln -s /usr/lib/policyd-spf/policyd-spf-configtest "$RPM_BUILD_ROOT"/usr/sbin
-ln -s /usr/lib/policyd-spf/configtest "$RPM_BUILD_ROOT"/usr/sbin
+#ln -s /usr/lib/policyd-spf/configtest "$RPM_BUILD_ROOT"/usr/sbin
 
 #  set up crontab
 echo '0 0 * * * nobody /usr/lib/policyd-spf/policy-spf-clean' \
@@ -95,7 +95,7 @@ echo '0 0 * * * nobody /usr/lib/policyd-spf/policy-spf-clean' \
 %files
 %defattr(755,root,root)
 /usr/lib/policyd-spf
-/usr/sbin/*
+#/usr/sbin/*
 /etc/cron.d/policyd-spf
 %dir /var/lib/policyd-spf
 %dir /var/lib/policyd-spf/config
@@ -104,4 +104,3 @@ echo '0 0 * * * nobody /usr/lib/policyd-spf/policy-spf-clean' \
 %attr(700,nobody,root) /var/lib/policyd-spf/data
 #%doc README CHANGES TODO README-RPM
 %doc README CHANGES TODO
-
