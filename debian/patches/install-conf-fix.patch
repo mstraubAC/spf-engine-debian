@@ -1,14 +1,11 @@
-diff -Nur pypolicyd-spf-0.5/setup.py pypolicyd-spf-0.5.new/setup.py
---- pypolicyd-spf-0.5/setup.py	2007-08-27 22:13:10.000000000 -0400
-+++ pypolicyd-spf-0.5.new/setup.py	2007-08-29 19:44:38.000000000 -0400
-@@ -16,9 +16,7 @@
-       keywords = ['Postfix','spf','email'],
+--- setup.py.orig	2007-10-03 22:12:51.000000000 +0200
++++ setup.py	2007-10-03 22:17:30.000000000 +0200
+@@ -17,7 +17,7 @@
        scripts = ['policyd-spf'],
        data_files=[(os.path.join('share', 'man', 'man1'),
--          ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
+           ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
 -          ['policyd-spf.conf.5']), (os.path.join('share', 'local', 'policyd-spf'),
--          ['policyd-spf.conf'])],
-+          ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'))],
++          ['policyd-spf.conf.5']), ('../etc/python-policyd-spf',
+           ['policyd-spf.conf'])],
        classifiers = [
  	'Development Status :: 5 - Production/Stable',
- 	'Environment :: No Input/Output (Daemon)',
