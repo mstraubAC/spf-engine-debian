@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+
+DEB_PYTHON_SYSTEM=pysupport
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/python-distutils.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+install/python-policyd-spf::
+	dh_installman policyd-spf.1
+	dh_installdirs /etc/python-policyd-spf
+	mv policyd-spf.conf /tmp/buildd/pypolicyd-spf-0.4/debian/python-policyd-spf/etc/python-policyd-spf
+

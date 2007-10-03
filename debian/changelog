@@ -1,0 +1,26 @@
+pypolicyd-spf (0.4-2) unstable; urgency=low
+
+  * Merge debian/changelog entries from 0.3-1 and 0.4-1
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jul 2007 23:17:09 -0400
+
+pypolicyd-spf (0.4-1) unstable; urgency=low
+
+  * New upstream release
+    - Mutliple receiver policy options controlled by config file
+    - SPF Whitelist via config file
+    - Many minor changes
+  * debian/control - Moved from section Python to Mail
+  * debian/rules - Changes to install default config file
+  * debian/pycompat - removed
+  * debain/README.Debian updated to match upstream changes
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jul 2007 17:37:13 -0400
+
+pypolicyd-spf (0.3-1) unstable; urgency=low
+
+  * Initial Debian package for Python SPF policy server for Postfix
+    (Closes: #419887)
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 18 Apr 2007 10:11:36 -0400
+
