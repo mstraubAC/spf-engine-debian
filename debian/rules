@@ -8,7 +8,7 @@ include /usr/share/cdbs/1/class/python-distutils.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
 install/python-policyd-spf::
-	dh_installman policyd-spf.1
+	dh_installman policyd-spf.1 policyd-spf.conf.5
 	dh_installdirs etc/python-policyd-spf
 	install -m 644 policyd-spf.conf $(DEB_DESTDIR)/etc/python-policyd-spf/
 
