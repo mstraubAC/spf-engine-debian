@@ -1,0 +1,11 @@
+--- setup.py.orig	2007-10-03 22:12:51.000000000 +0200
++++ setup.py	2007-10-03 22:17:30.000000000 +0200
+@@ -17,7 +17,7 @@
+       scripts = ['policyd-spf'],
+       data_files=[(os.path.join('share', 'man', 'man1'),
+           ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
+-          ['policyd-spf.conf.5']), (os.path.join('share', 'local', 'policyd-spf'),
++          ['policyd-spf.conf.5']), ('../etc/python-policyd-spf',
+           ['policyd-spf.conf'])],
+       classifiers = [
+ 	'Development Status :: 5 - Production/Stable',
