@@ -20,5 +20,5 @@ This package must be integrated with Postfix to be effective:
     NOTE:  Specify check_policy_service AFTER reject_unauth_destination or
     else your system can become an open relay.
 
- 3. Restart Postfix.
+ 3. Reload Postfix.
 
