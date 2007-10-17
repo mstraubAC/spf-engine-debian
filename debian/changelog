@@ -1,3 +1,19 @@
+pypolicyd-spf (0.5.1-1) unstable; urgency=low
+
+  [ Piotr Ożarowski ]
+  * Rename XS-Vcs-* fields to Vcs-* (dpkg supports them now)
+
+  [ Scott Kitterman ]
+  * New upstream release.
+    - Fix per user restriction class filtering to work.
+    - Fix reject on SPF Permerror to work.
+  * Remove man-page-fixup.patch (incorporated upstream).
+  * Changed postfix restart to reload in README.Debian (Thanks John A. Martin)
+  * Update install-conf-fix.patch to adjust paths for Debian package in man
+    pages.
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 17 Oct 2007 18:36:46 -0400
+
 pypolicyd-spf (0.5-1) unstable; urgency=low
 
   * New Upstream release

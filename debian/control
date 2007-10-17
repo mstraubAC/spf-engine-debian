@@ -6,8 +6,8 @@ Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.deb
 Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.1), python-all-dev, python-support (>= 0.5.3)
 Standards-Version: 3.7.2
 Homepage: http://www.openspf.org/Software
-XS-Vcs-Svn: svn://svn.debian.org/python-apps/packages/pypolicyd-spf/trunk/
-XS-Vcs-Browser: http://svn.debian.org/wsvn/python-apps/packages/pypolicyd-spf/?op=log
+Vcs-Svn: svn://svn.debian.org/python-apps/packages/pypolicyd-spf/trunk/
+Vcs-Browser: http://svn.debian.org/wsvn/python-apps/packages/pypolicyd-spf/?op=log
 
 Package: python-policyd-spf
 Architecture: all

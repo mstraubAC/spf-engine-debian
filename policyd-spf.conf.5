@@ -127,18 +127,18 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "policy-spf 5"
-.TH policy-spf 5 "2007-10-03"
+.IX Title "policy-spf.conf 5"
+.TH policy-spf.conf 5 "2007-10-15"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.5
+0\.5\.1
 
 .SH "USAGE"
 .IX Header "USAGE"
 Usage:
-    \$ policyd-spf /etc/policyd-spf/policyd-spf.conf [Config file name to use]
+  policyd-spf /usr/local/policyd-spf/policyd-spf.conf [Config file name to use]
 
 .SH "OTHER DOCUMENTATION"
 .IX Header "OTHER DOCUMENTATION"
@@ -146,7 +146,7 @@ This documentation assumes you have read Postfix's README_FILES/
 SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
 (SPF).  See RFC 4408 for details.
 
-man 1 python-policyd-spf provides general operation documentation for this
+man 1 policyd-spf provides general operation documentation for this
 package.
 
 .SH "SYNOPSIS"
@@ -247,6 +247,24 @@ Default:
 
 HELO_reject = SPF_Not_Pass
 
+.SH "HELO/EHLO PASS RESTRICTION"
+.IX Header "HELO/EHLO PASS RESTRICTION"
+
+HELO Pass Restriction allows integration with other Postfix access
+contlols by provding a user supplied name of a postfix access
+restriction to be applied to a message when the HELO checking result
+is Pass.  The indicated restriction must be an action as defined for a
+Postfix SMTP server access table access(5) and explained in the
+Postfix RESTRICTION CLASS README.
+
+Example:
+
+HELO_pass_restriction = helo_passed_spf
+
+Default:
+
+None
+
 .SH "Mail From CHECKING"
 .IX Header "Mail From CHECKING"
 
@@ -268,6 +286,24 @@ compliant since the Mail From identity is mandatory.
 Default:
 
 Mail_From_reject = Fail
+
+.SH "Mail From PASS RESTRICTION"
+.IX Header "Mail From PASS RESTRICTION"
+
+Mail From Pass Restriction allows integration with other Postfix access
+contlols by provding a user supplied name of a postfix access
+restriction to be applied to a message when the HELO checking result
+is Pass.  The indicated restriction must be an action as defined for a
+Postfix SMTP server access table access(5) and explained in the
+Postfix RESTRICTION CLASS README.
+
+Example:
+
+mail_from_pass_restriction = helo_passed_spf
+
+Default:
+
+None
 
 .SH "PERMANENT ERROR PROCESSING"
 .IX Header "PERMANENT ERROR PROCESSING"
@@ -304,24 +340,6 @@ to minimize false positive risk.
 Default:
 
 TempError_Defer = False
-
-.SH "RESTRICTION CLASS SUPPORT"
-.IX Header "RESTRICTION CLASS SUPPORT"
-
-Restriction class only mode only returns the SPF result to allow Postfix
-restriction classes to segregate mail for processing based on SPF result. This
-always returns DUNNO and will never reject mail.
-
-All - Return only DUNNO $RESULT
-
-Uncertain - Return only DUNNO $RESULT if SPF result is not definitive (e.g. not
-Pass or Fail).
-
-False - Normal policy actions and results based on other configuration options.
-
-Default:
-
-Restriction_class = False
 
 .SH "LOCAL SPF BYPASS LIST"
 .IX Header "LOCAL SPF BYPASS LIST"

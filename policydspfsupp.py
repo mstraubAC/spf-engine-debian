@@ -29,8 +29,7 @@ defaultConfigData = {
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
         'TempError_Defer'  : 'False',
-        'skip_addresses' : ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',],
-        'Restriction_class' : 'False'
+        'skip_addresses' : ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',]
         }
 
 
@@ -119,7 +118,8 @@ def readConfigFile(path, configData = None, configGlobal = {}):
             'Mail_From_reject' : str,
             'PermError_reject' : str,
             'TempError_Defer' : str,
-            'Restriction_class' : str,
+            'Mail_From_pass_restriction' : str,
+            'HELO_pass_restriction' : str,
             'Whitelist' : str,
             'skip_addresses': str,
             'Domain_Whitelist' : str
