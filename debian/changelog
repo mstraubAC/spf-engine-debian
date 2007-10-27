@@ -1,3 +1,12 @@
+pypolicyd-spf (0.5.2-1) unstable; urgency=low
+
+  * New upstream release
+    - Fixes permerror processing some more
+    - Logging is more consistent
+  * Freshen install-conf-fix.patch and pythonpath.patch
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 27 Oct 2007 12:56:31 -0400
+
 pypolicyd-spf (0.5.1-1) unstable; urgency=low
 
   [ Piotr Ożarowski ]
