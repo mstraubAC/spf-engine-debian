@@ -146,7 +146,11 @@ def readConfigFile(path, configData = None, configGlobal = {}):
         if not line: continue
         data = map(string.strip, string.split(line, '=', 1))
         if len(data) != 2:
-            syslog.syslog('ERROR parsing line "%s" from file "%s"'
+            if len(data) == 1:
+                syslog.syslog('Configuration item "%s" not defined in file "%s"'
+                    % ( line, path ))
+            else:
+                syslog.syslog('ERROR parsing line "%s" from file "%s"'
                     % ( line, path ))
             continue
         name, value = data

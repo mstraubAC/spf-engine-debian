@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2007-10-17"
+.TH policy-spf 1 "2007-10-27"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.5\.1
+0\.5\.2
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -141,11 +141,11 @@ python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 NOTE: Depending on the packaging and distribution, the exact path to the
 executable may vary. The executable should be included in the Python path.
 
-$ policyd-spf [Start with package defaults]
+$ policyd-spf (Start using installed config file)
 
-$ policyd-spf \-h [Display usage message]
+$ policyd-spf \-h (Display usage message)
 
-$ policyd-spf /usr/local/policyd-spf/policyd-spf.conf [Config file name to use]
+$ policyd-spf /usr/local/policyd-spf/policyd-spf.conf (Config file name to use)
 
 Configuration options are described in the sample configuration file provided
 with the package policyd-spf.conf(5).  The provided setup.py installs this 
