@@ -1,6 +1,18 @@
+diff -Nur pypolicyd-spf-0.5.2/policyd-spf pypolicyd-spf-0.5.2.new/policyd-spf
+--- pypolicyd-spf-0.5.2/policyd-spf	2007-10-27 09:48:07.000000000 -0400
++++ pypolicyd-spf-0.5.2.new/policyd-spf	2007-10-30 18:20:30.000000000 -0400
+@@ -280,7 +280,7 @@
+ 
+ ###################################################
+ #  load config file  {{{1
+-configFile = '/usr/share/local/policyd-spf/policyd-spf.conf'
++configFile = '/etc/python-policyd-spf/policyd-spf.conf'
+ if len(sys.argv) > 1:
+     if sys.argv[1] in ( '-?', '--help', '-h' ):
+         print 'usage: policyd-spf [<configfilename>]'
 diff -Nur pypolicyd-spf-0.5.2/policyd-spf.1 pypolicyd-spf-0.5.2.new/policyd-spf.1
 --- pypolicyd-spf-0.5.2/policyd-spf.1	2007-10-27 09:46:52.000000000 -0400
-+++ pypolicyd-spf-0.5.2.new/policyd-spf.1	2007-10-27 13:08:01.000000000 -0400
++++ pypolicyd-spf-0.5.2.new/policyd-spf.1	2007-10-30 18:17:23.000000000 -0400
 @@ -145,11 +145,11 @@
  
  $ policyd-spf \-h (Display usage message)
@@ -18,7 +30,7 @@ diff -Nur pypolicyd-spf-0.5.2/policyd-spf.1 pypolicyd-spf-0.5.2.new/policyd-spf.
  domains from SPF checks is supported.  Skipping SPF checks for local submission
 diff -Nur pypolicyd-spf-0.5.2/policyd-spf.conf.5 pypolicyd-spf-0.5.2.new/policyd-spf.conf.5
 --- pypolicyd-spf-0.5.2/policyd-spf.conf.5	2007-10-27 09:40:24.000000000 -0400
-+++ pypolicyd-spf-0.5.2.new/policyd-spf.conf.5	2007-10-27 13:06:34.000000000 -0400
++++ pypolicyd-spf-0.5.2.new/policyd-spf.conf.5	2007-10-30 18:17:23.000000000 -0400
 @@ -138,7 +138,7 @@
  .SH "USAGE"
  .IX Header "USAGE"
@@ -37,9 +49,10 @@ diff -Nur pypolicyd-spf-0.5.2/policyd-spf.conf.5 pypolicyd-spf-0.5.2.new/policyd
  
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  The this man page and the sample configuration file show the format to use.
+Binary files pypolicyd-spf-0.5.2/policydspfsupp.pyc and pypolicyd-spf-0.5.2.new/policydspfsupp.pyc differ
 diff -Nur pypolicyd-spf-0.5.2/setup.py pypolicyd-spf-0.5.2.new/setup.py
 --- pypolicyd-spf-0.5.2/setup.py	2007-10-25 17:17:21.000000000 -0400
-+++ pypolicyd-spf-0.5.2.new/setup.py	2007-10-27 13:04:51.000000000 -0400
++++ pypolicyd-spf-0.5.2.new/setup.py	2007-10-30 18:17:23.000000000 -0400
 @@ -15,10 +15,9 @@
        py_modules=['policydspfsupp'],
        keywords = ['Postfix','spf','email'],
