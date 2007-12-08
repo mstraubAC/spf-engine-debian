@@ -1,3 +1,9 @@
+pypolicyd-spf (0.5.2-3) UNRELEASED; urgency=low
+
+  * Remove unneeded reference to debian/README.Debian in debian/docs
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 08 Dec 2007 16:10:34 -0500
+
 pypolicyd-spf (0.5.2-2) unstable; urgency=low
 
   * Finish freshening install-conf-fix.patch so that we actually use
