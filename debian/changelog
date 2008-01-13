@@ -1,8 +1,13 @@
-pypolicyd-spf (0.5.2-3) UNRELEASED; urgency=low
+pypolicyd-spf (0.5.2-3) unstable; urgency=low
 
-  * Remove unneeded reference to debian/README.Debian in debian/docs
+  * Remove unneeded reference to debian/README.Debian and README in 
+    debian/docs
+  * Change postfix from recommends to depends
+  * Rename binary postfix-policyd-spf-python for clarity - add provides,
+    conflicts, replaces python-policyd-spf
+  * Bump standards version to 3.7.3 without further change
 
- -- Scott Kitterman <scott@kitterman.com>  Sat, 08 Dec 2007 16:10:34 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 08 Jan 2008 16:59:39 -0500
 
 pypolicyd-spf (0.5.2-2) unstable; urgency=low
 
