@@ -1,0 +1,102 @@
+pypolicyd-spf (0.5.2-3) unstable; urgency=low
+
+  * Remove unneeded reference to debian/README.Debian and README in 
+    debian/docs
+  * Change postfix from recommends to depends
+  * Rename binary postfix-policyd-spf-python for clarity - add provides,
+    conflicts, replaces python-policyd-spf
+  * Bump standards version to 3.7.3 without further change
+
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 08 Jan 2008 16:59:39 -0500
+
+pypolicyd-spf (0.5.2-2) unstable; urgency=low
+
+  * Finish freshening install-conf-fix.patch so that we actually use
+    the installed config file
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 31 Oct 2007 09:13:34 -0400
+
+pypolicyd-spf (0.5.2-1) unstable; urgency=low
+
+  * New upstream release
+    - Fixes permerror processing some more
+    - Logging is more consistent
+  * Freshen install-conf-fix.patch and pythonpath.patch
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 27 Oct 2007 12:56:31 -0400
+
+pypolicyd-spf (0.5.1-1) unstable; urgency=low
+
+  [ Piotr Ożarowski ]
+  * Rename XS-Vcs-* fields to Vcs-* (dpkg supports them now)
+
+  [ Scott Kitterman ]
+  * New upstream release.
+    - Fix per user restriction class filtering to work.
+    - Fix reject on SPF Permerror to work.
+  * Remove man-page-fixup.patch (incorporated upstream).
+  * Changed postfix restart to reload in README.Debian (Thanks John A. Martin)
+  * Update install-conf-fix.patch to adjust paths for Debian package in man
+    pages.
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 17 Oct 2007 18:36:46 -0400
+
+pypolicyd-spf (0.5-1) unstable; urgency=low
+
+  * New Upstream release
+  * Remove unnecessary python provides in debian/control
+  * Patch out usr/local PYTHONPATH addition (pythonpath.patch)
+  * Freshen install-conf-fix.patch
+  * Add debian/pycompat
+  * Add Python Applications Packaging Team as Uploaders
+  * Add Homepage: field to debian/control
+  * Add XS-Vcs-Svn: and XS-Vcs-Browser: fields to debian/control
+  * Add debian/pyversions and remove XS/XB-Python-Version from debian/control
+  * Add debian/rules to install new upstream man page
+  * Add man-page-fixup.patch to quiet lintian
+  * Simplify debian/rules
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 03 Oct 2007 16:48:12 -0400
+
+pypolicyd-spf (0.4.1-1) unstable; urgency=low
+
+  * Correct multi-recipient reject processing (Closes: #437361)
+  * Correct typos in README.Debian (Closes: #434623)
+  * Add debian/watch
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 13 Aug 2007 11:03:09 -0400
+
+pypolicyd-spf (0.4-3) unstable; urgency=low
+
+  * Correct debian/rules to fix FTBFS (Closes: #434017)
+    - Change config file mv to install in debian/rules with correct path.
+    - Change dh_installdirs path to relative rather than absolute.
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 21 Jul 2007 11:32:58 -0400
+
+pypolicyd-spf (0.4-2) unstable; urgency=low
+
+  * Merge debian/changelog entries from 0.3-1 and 0.4-1
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jul 2007 23:17:09 -0400
+
+pypolicyd-spf (0.4-1) unstable; urgency=low
+
+  * New upstream release
+    - Mutliple receiver policy options controlled by config file
+    - SPF Whitelist via config file
+    - Many minor changes
+  * debian/control - Moved from section Python to Mail
+  * debian/rules - Changes to install default config file
+  * debian/pycompat - removed
+  * debain/README.Debian updated to match upstream changes
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jul 2007 17:37:13 -0400
+
+pypolicyd-spf (0.3-1) unstable; urgency=low
+
+  * Initial Debian package for Python SPF policy server for Postfix
+    (Closes: #419887)
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 18 Apr 2007 10:11:36 -0400
+
