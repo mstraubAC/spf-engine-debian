@@ -1,3 +1,16 @@
+pypolicyd-spf (0.6~rc1-0) UNRELEASED; urgency=low
+
+  * New upstream release candidate
+    - Domain whitelisting fixed
+    - IP whitelists with multiple items fixed
+    - IPv6 whitelist CIDR length fixed
+    - Logging and config file improvements
+  * Remove all patches (incorporated upstream)
+    - Remove patch system from debian/rules
+  * Update debian/copyright for 2008
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 18 Feb 2008 22:31:55 -0500
+
 pypolicyd-spf (0.5.2-3) unstable; urgency=low
 
   * Remove unneeded reference to debian/README.Debian and README in 
