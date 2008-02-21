@@ -12,13 +12,13 @@ mv_conffile() {
         fi
         mv -f "$NEWCONFFILE" "$NEWCONFFILE".dpkg-new
         mv -f "$OLDCONFFILE" "$NEWCONFFILE"
-        rm -rf "/etc/python-policyd-spf/"
+        test -d /etc/python-policyd-spf/ && rmdir /etc/python-policyd-spf/
     fi
 }
 
 case "$1" in
 configure)
-    if dpkg --compare-versions "$2" le "$LASTVERSION"; then
+    if dpkg --compare-versions "$2" le "0.5.2-3"; then
         mv_conffile "/etc/python-policyd-spf/policyd-spf.conf" \
           "/etc/postfix-policyd-spf-python/policyd-spf.conf"
     fi
