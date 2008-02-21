@@ -2,22 +2,22 @@
 
 # Prepare to move a conffile without triggering a dpkg question
 prep_mv_conffile() {
-    CONFFILE="$1"
-
+    PKGNAME="$1"
+    CONFFILE="$2"
     if [ -e "$CONFFILE" ]; then
         md5sum="`md5sum \"$CONFFILE\" | sed -e \"s/ .*//\"`"
-        old_md5sum="`sed -n -e \"/^Conffiles:/,/^[^ ]/{\\\\' $CONFFILE'{s/.* //;p}}\" /var/lib/dpkg/status`"
+        old_md5sum="`dpkg-query -W -f='${Conffiles}' $PKGNAME | sed -n -e \"\\\\' $CONFFILE'{s/ obsolete$//;s/.* //p}\"`"
         if [ "$md5sum" = "$old_md5sum" ]; then
-            rm $CONFFILE
+            rm -f "$CONFFILE"
             test -d /etc/python-policyd-spf/ && rmdir /etc/python-policyd-spf/
         fi
     fi
 }
-
 case "$1" in
 install|upgrade)
     if dpkg --compare-versions "$2" le "0.5.2-3"; then
-        prep_mv_conffile "/etc/python-policyd-spf/policyd-spf.conf"
+        prep_mv_conffile mypackage "/etc/pkg_conf.1"
+        prep_mv_conffile mypackage "/etc/pkg_conf.2"
     fi
 
 # dh_installdeb will replace this with shell code automatically
