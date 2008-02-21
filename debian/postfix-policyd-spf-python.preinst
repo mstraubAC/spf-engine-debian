@@ -16,8 +16,7 @@ prep_mv_conffile() {
 case "$1" in
 install|upgrade)
     if dpkg --compare-versions "$2" le "0.5.2-3"; then
-        prep_mv_conffile mypackage "/etc/pkg_conf.1"
-        prep_mv_conffile mypackage "/etc/pkg_conf.2"
+        prep_mv_conffile postfix-policyd-spf-python "/etc/python-policyd-spf/policyd-spf.conf"
     fi
 
 # dh_installdeb will replace this with shell code automatically
