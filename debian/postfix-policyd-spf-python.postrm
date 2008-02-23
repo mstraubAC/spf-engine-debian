@@ -1,0 +1,13 @@
+#! /bin/sh
+
+# conffile renamed in 0.5.2-3 
+if dpkg --compare-versions "$2" lt-nl "0.5.2-3"; then
+    # downgrading to < 0.5.2-3 -- restore old conffile name
+    if [ ! -e /etc/python-policyd-spf/policyd-spf.conf ]; then
+        mv /etc/postfix-policyd-spf-python/policyd-spf.conf /etc/python-policyd-spf/policyd-spf.conf
+	rmdir /etc/postfix-policyd-spf-python/
+    fi
+
+#DEBHELPER#
+
+exit 0
