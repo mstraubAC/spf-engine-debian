@@ -10,10 +10,9 @@ pypolicyd-spf (0.6-1) unstable; urgency=low
   * Update install-conf-fix.patch for new binary package name
   * Rename upstream man pages in debian/rules to match debian binary package
     name
-  * Add preint and postinst to move conffile to correct directory for new
-    package name
+  * Add preint to move conffile to correct directory for new package name
 
- -- Scott Kitterman <scott@kitterman.com>  Wed, 20 Feb 2008 17:35:02 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 23 Feb 2008 00:38:02 -0500
 
 pypolicyd-spf (0.5.2-3) unstable; urgency=low
 

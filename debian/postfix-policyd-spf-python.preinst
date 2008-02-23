@@ -10,6 +10,14 @@ prep_mv_conffile() {
         if [ "$md5sum" = "$old_md5sum" ]; then
             rm -f "$CONFFILE"
             test -d /etc/python-policyd-spf/ && rmdir /etc/python-policyd-spf/
+        else
+            if [ -e "$CONFFILE" ]; then
+                if [ -n "/etc/postfix-policyd-spf-python/" ]; then
+                    mkdir "/etc/postfix-policyd-spf-python/"
+                fi
+                mv -f "$CONFFILE" "/etc/postfix-policyd-spf-python/policyd-spf.conf"
+                test -d /etc/python-policyd-spf/ && rmdir /etc/python-policyd-spf/
+            fi
         fi
     fi
 }
