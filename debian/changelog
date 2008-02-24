@@ -1,6 +1,6 @@
 pypolicyd-spf (0.6-1) unstable; urgency=low
 
-  * New upstream release candidate
+  * New upstream release
     - Domain whitelisting fixed
     - IP whitelists with multiple items fixed
     - IPv6 whitelist CIDR length fixed
