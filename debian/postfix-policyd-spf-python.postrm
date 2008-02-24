@@ -11,6 +11,7 @@ if dpkg --compare-versions "$2" lt-nl "0.6-1"; then
 	mv /etc/postfix-policyd-spf-python/policyd-spf.conf /etc/python-policyd-spf/policyd-spf.conf
 	rmdir /etc/postfix-policyd-spf-python/
     fi
+fi
 
 #DEBHELPER#
 
