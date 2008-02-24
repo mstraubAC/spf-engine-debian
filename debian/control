@@ -14,8 +14,18 @@ Architecture: all
 Depends: ${python:Depends}, python-spf (>= 2.0), postfix (>= 2.1)
 Provides: python-policyd-spf
 Replaces: python-policyd-spf
-Conflicts: python-policyd-spf
+Conflicts: python-policyd-spf (< 0.6)
 Description: pure-Python Postfix policy daemon for SPF checking
  python-policyd-spf is a Postfix SMTPd policy engine for SPF checking.
  It is implemented in pure Python and uses the python-spf module.  The SPF
  web site is http://www.openspf.org/.
+
+Package: python-policyd-spf
+Architecture: all
+Depends: postfix-policyd-spf-python (>= ${source:Version})
+Description: Transition package for pypolicyd-spf binary renaming
+ Dummy package to ease migration from the old python-policyd-spf
+ package to the new postfix-policyd-spf-python package.
+ .
+ This can be safely removed once postfix-policyd-spf-python is installed.
+

@@ -7,9 +7,3 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
-install/postfix-policyd-spf-python::
-	# Rename man pages to match Debian package name
-	mv debian/postfix-policyd-spf-python/usr/share/man/man1/policyd-spf.1 \
-	    debian/postfix-policyd-spf-python/usr/share/man/man1/postfix-policyd-spf-python.1
-	mv debian/postfix-policyd-spf-python/usr/share/man/man5/policyd-spf.conf.5 \
-            debian/postfix-policyd-spf-python/usr/share/man/man5/postfix-policyd-spf-python.conf.5

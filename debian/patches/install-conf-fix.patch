@@ -13,20 +13,6 @@ diff -Nur pypolicyd-spf-0.6/policyd-spf pypolicyd-spf-0.6.new/policyd-spf
 diff -Nur pypolicyd-spf-0.6/policyd-spf.1 pypolicyd-spf-0.6.new/policyd-spf.1
 --- pypolicyd-spf-0.6/policyd-spf.1	2008-02-18 22:06:00.000000000 -0500
 +++ pypolicyd-spf-0.6.new/policyd-spf.1	2008-02-20 18:00:30.000000000 -0500
-@@ -127,10 +127,10 @@
- .rm #[ #] #H #V #F C
- .\" ========================================================================
- .\"
--.IX Title "policy-spf 1"
--.TH policy-spf 1 "2008-02-18"
-+.IX Title "postfix-policy-spf-python 1"
-+.TH postfix-policy-spf-python 1 "2008-02-18"
- .SH "NAME"
--python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
-+postfix-policyd-spf-python \- pure-Python Postfix policy daemon for SPF checking
- .SH "VERSION"
- .IX Header "VERSION"
- 0\.6
 @@ -145,11 +145,12 @@
  
  $ policyd-spf \-h (Display usage message)
@@ -38,44 +24,14 @@ diff -Nur pypolicyd-spf-0.6/policyd-spf.1 pypolicyd-spf-0.6.new/policyd-spf.1
  Configuration options are described in the sample configuration file provided
 -with the package policyd-spf.conf(5).  The provided setup.py installs this 
 -configuration file in /etc/policyd-spf/.
-+with the package postfix-policyd-spf-python.conf(5).  The Debian package
-+installs this configuration file in /etc/postfix-policyd-spf-python/.
++with the package policyd-spf.conf(5).  The provided setup.py installs this
++configuration file in /etc/postfix-policyd-spf-python/.
  
  Additionally, whitelisting certain IP addresses or IP addresses used by listed
  domains from SPF checks is supported.  Skipping SPF checks for local submission
-@@ -162,7 +163,7 @@
- SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
- (SPF).  See RFC 4408 for details.
- 
--See policyd-spf.conf(5) for configuration file information.
-+See postfix-policyd-spf-python.conf(5) for configuration file information.
- 
- .SH "SYNOPSIS"
- .IX Header "SYNOPSIS"
-@@ -274,7 +275,8 @@
- 
- .SH "SEE ALSO"
- .IX Header "SEE ALSO"
--policyd-spf.conf(5), python-spf, <http://www.openspf.org>, RFC 4408
-+postfix-policyd-spf-python.conf(5), python-spf, <http://www.openspf.org>,
-+RFC 4408
- 
- .SH "AUTHORS"
- .IX Header "AUTHORS"
 diff -Nur pypolicyd-spf-0.6/policyd-spf.conf.5 pypolicyd-spf-0.6.new/policyd-spf.conf.5
 --- pypolicyd-spf-0.6/policyd-spf.conf.5	2008-02-18 22:06:00.000000000 -0500
 +++ pypolicyd-spf-0.6.new/policyd-spf.conf.5	2008-02-20 17:59:35.000000000 -0500
-@@ -127,8 +127,8 @@
- .rm #[ #] #H #V #F C
- .\" ========================================================================
- .\"
--.IX Title "policy-spf.conf 5"
--.TH policy-spf.conf 5 "2008-02-18"
-+.IX Title "postfix-policy-spf-python.conf 5"
-+.TH postfix-policy-spf-python.conf 5 "2008-02-18"
- .SH "NAME"
- python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
- .SH "VERSION"
 @@ -138,7 +138,7 @@
  .SH "USAGE"
  .IX Header "USAGE"
@@ -85,17 +41,6 @@ diff -Nur pypolicyd-spf-0.6/policyd-spf.conf.5 pypolicyd-spf-0.6.new/policyd-spf
  
  .SH "OTHER DOCUMENTATION"
  .IX Header "OTHER DOCUMENTATION"
-@@ -146,8 +146,8 @@
- SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
- (SPF).  See RFC 4408 for details.
- 
--man 1 policyd-spf provides general operation documentation for this
--package.
-+man 1 postfix-policyd-spf-python provides general operation documentation for
-+this package.
- 
- .SH "SYNOPSIS"
- .IX Header "SYNOPSIS"
 @@ -162,8 +162,8 @@
  .IX Header "DESCRIPTION"
  
@@ -107,31 +52,6 @@ diff -Nur pypolicyd-spf-0.6/policyd-spf.conf.5 pypolicyd-spf-0.6.new/policyd-spf
  
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  The this man page and the sample configuration file show the format to use.
-@@ -415,7 +415,8 @@
- 
- .SH "SEE ALSO"
- .IX Header "SEE ALSO"
--man 1 policyd-spf, python-spf, <http://www.openspf.org>, RFC 4408
-+man 1 postfix-policyd-spf-python, python-spf, <http://www.openspf.org>,
-+RFC 4408
- 
- .SH "AUTHORS"
- .IX Header "AUTHORS"
-diff -Nur pypolicyd-spf-0.6/README pypolicyd-spf-0.6.new/README
---- pypolicyd-spf-0.6/README	2008-02-18 21:02:06.000000000 -0500
-+++ pypolicyd-spf-0.6.new/README	2008-02-20 17:56:12.000000000 -0500
-@@ -35,8 +35,8 @@
- Nothing is configured by default, so this will not interact with Postfix until
- it has been set up.
- 
--See man 1 policyd-spf for information on setting up and using this policy
--server.
-+See man 1 postfix-policyd-spf-python for information on setting up and using
-+this policy server.
- 
--See man 5 policyd-spf.conf for configuration file information.
-+See man 5 postfix-policyd-spf-python.conf for configuration file information.
- 
 diff -Nur pypolicyd-spf-0.6/setup.py pypolicyd-spf-0.6.new/setup.py
 --- pypolicyd-spf-0.6/setup.py	2008-02-20 17:32:03.000000000 -0500
 +++ pypolicyd-spf-0.6.new/setup.py	2008-02-20 17:55:20.000000000 -0500

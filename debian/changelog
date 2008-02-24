@@ -5,11 +5,10 @@ pypolicyd-spf (0.6-1) unstable; urgency=low
     - IP whitelists with multiple items fixed
     - IPv6 whitelist CIDR length fixed
     - Logging and config file improvements
+  * Add transitional package to ease binary package name transition
   * Remove pythonpath.patch (incorporated upstream)
   * Update debian/copyright for 2008
   * Update install-conf-fix.patch for new binary package name
-  * Rename upstream man pages in debian/rules to match debian binary package
-    name
   * Add preinst and prerm to move conffile to correct directory for new
     package name
 
