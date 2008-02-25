@@ -1,9 +1,10 @@
 pypolicyd-spf (0.6-2) unstable; urgency=low
 
-  * Add missing binary install rules needed for multiple binary packages
-  * Rename debian/docs to debian/postfix-policyd-spf-python.docs
+  * Remove transitional package (rejected by ftp-masters)
+  * Rename debian/docs to debian/postfix-policyd-spf-python.docs for
+    consistency
 
- -- Scott Kitterman <scott@kitterman.com>  Sun, 24 Feb 2008 20:44:09 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 25 Feb 2008 14:30:12 -0500
 
 pypolicyd-spf (0.6-1) unstable; urgency=low
 
