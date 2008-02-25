@@ -6,7 +6,7 @@ pypolicyd-spf (0.6-2) unstable; urgency=low
 
  -- Scott Kitterman <scott@kitterman.com>  Mon, 25 Feb 2008 14:30:12 -0500
 
-pypolicyd-spf (0.6-1) unstable; urgency=low
+pypolicyd-spf (0.6-1) UNRELEASED; urgency=low
 
   * New upstream release
     - Domain whitelisting fixed
