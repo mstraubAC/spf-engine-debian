@@ -4,6 +4,33 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.6 (2008-02-20 16:35 -0500)
+  ! Logging redesign:
+    - Change default loglevel to 1 and readjust loglevel 1 and 2 to 2 and 3
+    - Loglevel 0 changed to no logging
+    - Move all non-error config file related logging to level 5
+    - Don't log SPF result comments
+    - Updated policyd-spf(5) debugLevel description
+    - Don't log errors for known config options
+  * Added exit log message promised in policyd-spf(5)
+  * Removed adding policyd-spf to %PYTHONPATH
+  + Added prospective SPF checks to see if mail sent from current IP would Fail
+    SPF after being sent. Don't add SPF Received headers for these.
+  * Fixed IP whitelisting to work with multiple IP ranges (patch from Nicolas
+    Litchinko)
+  * Fixed 'seed only' option to work (patch from Nicolas Litchinko)
+  * Fixed domain whitelist to work
+  * Fixed domain whitelist to work with multiple domains (patch from Nicolas
+    Litchinko)
+  * Correctly detect IPv6 addresses in skip and white lists and use correct
+    implicit CIDR for IPv6
+  * Correct examples and policyd-spf(5) to not have spaces in IP and domain
+    lists
+  + Log error if IP whitelist or skip list have non-IP address items in the
+    lists and then don't crash
+  ! Install man pages and config files in FHS compliant locations.
+  ! Removed spec files since I'm not qualified to maintain them
+
 --- 0.5.2 (2007-10-26 15:30 -0400)
   * Corrected regression so appending a header on Permerror works (introduced 
     in 0.4) - Thanks to "John A. Martin" <jam@jamux.com> for the bug report.

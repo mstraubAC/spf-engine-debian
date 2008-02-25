@@ -1,3 +1,27 @@
+pypolicyd-spf (0.6-2) unstable; urgency=low
+
+  * Remove transitional package (rejected by ftp-masters)
+  * Rename debian/docs to debian/postfix-policyd-spf-python.docs for
+    consistency
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 25 Feb 2008 14:30:12 -0500
+
+pypolicyd-spf (0.6-1) UNRELEASED; urgency=low
+
+  * New upstream release
+    - Domain whitelisting fixed
+    - IP whitelists with multiple items fixed
+    - IPv6 whitelist CIDR length fixed
+    - Logging and config file improvements
+  * Add transitional package to ease binary package name transition
+  * Remove pythonpath.patch (incorporated upstream)
+  * Update debian/copyright for 2008
+  * Update install-conf-fix.patch for new binary package name
+  * Add preinst and prerm to move conffile to correct directory for new
+    package name
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 23 Feb 2008 00:38:02 -0500
+
 pypolicyd-spf (0.5.2-3) unstable; urgency=low
 
   * Remove unneeded reference to debian/README.Debian and README in 

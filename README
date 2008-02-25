@@ -4,13 +4,13 @@ Tumgreyspf source
  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
  <jafo@tummy.com>
 python-policyd-spf changes
- Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+ Copyright (c) 2007,2008 Scott Kitterman <scott@kitterman.com>
 <http://www.openspf.org/Software>
 Documentation inputs:
  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
  <jafo@tummy.com>
  2003-2004 Meng Weng Wong <mengwong@pobox.com> from postfix-policyd-spf-perl
- Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+ Copyright (c) 2007,2008 Scott Kitterman <scott@kitterman.com>
 =================
 
 This is python-policyd-spf, an external policy checker for the postfix mail

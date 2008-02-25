@@ -7,7 +7,7 @@
 #  <jafo@tummy.com>
 #
 #  pypolicyd-spf
-#  Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+#  Copyright (c) 2007, 2008 Scott Kitterman <scott@kitterman.com>
 '''
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2 as published 
@@ -22,10 +22,9 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.5.2: October 27, 2007"
+__version__ = "0.6: Feb 20 2008"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
-sys.path.append('/usr/local/lib/policy-spf')
 import policydspfsupp
 
 syslog.openlog(os.path.basename(sys.argv[0]), syslog.LOG_PID, syslog.LOG_MAIL)
@@ -74,7 +73,10 @@ def parse_cidr(cidr_ip):
 #############################################
 def spfbypass(data, check_type, configData):
     if configData.get(check_type):
-        ip = data.get('client_address')
+        if configData.get('Prospective'):
+            ip = configData.get('Prospective')
+        else:
+            ip = data.get('client_address')
         bypass_list = (str(configData.get(check_type)))
         bypass_list_list = bypass_list.split(',')
         if check_type == 'skip_addresses' or check_type == 'Whitelist':
@@ -83,7 +85,15 @@ def spfbypass(data, check_type, configData):
                 good_ip = [parsed_address[0],]
                 cidr_range = parsed_address[1]
                 if not parsed_address[1]:
-                    cidr_range = 32
+                    ip_str = str(good_ip[0])
+                    if spf.RE_IP4.match(ip_str):
+                        cidr_range = 32
+                    elif spf.RE_IP6.match(ip_str):
+                        cidr_range = 128
+                    else:
+                        Message = 'ERROR: ' + ip_str + ' in ' + check_type + ' not IP address. Aborting whitelist processing.'
+                        if debugLevel: syslog.syslog(Message)
+                        return (False, 'None')
                 if cidrmatch(ip, good_ip, int(cidr_range)):
                     if check_type == 'skip_addresses':
                         comment = 'SPF check N/A for local connections - '
@@ -95,16 +105,16 @@ def spfbypass(data, check_type, configData):
                             data.get('sender', '<UNKNOWN>'),
                             data.get('recipient', '<UNKNOWN>'),
                             ))
-                    if debugLevel >= 2: syslog.syslog(Header)
+                    if debugLevel >= 3: syslog.syslog(Header)
                     return (True, Header)
-                else:
-                    return (False, 'None')
+            return (False, 'None')
         elif check_type == 'Domain_Whitelist':
             for domain in bypass_list_list:
                 res = spf.check2(ip, domain, domain)
-                res[0] = res[0].lower()
-                res[0] = res[0].capitalize()
-                if res[0] == 'Pass':
+                domain_res = [res[0], res[1]]
+                domain_res[0] = domain_res[0].lower()
+                domain_res[0] = domain_res[0].capitalize()
+                if domain_res[0] == 'Pass':
                     comment = 'SPF skipped for whitelisted relay domain - '
                     Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
                         % ( data.get('client_address', '<UNKNOWN>'),
@@ -112,16 +122,18 @@ def spfbypass(data, check_type, configData):
                             data.get('sender', '<UNKNOWN>'),
                             data.get('recipient', '<UNKNOWN>'),
                             ))
-                    if debugLevel >= 2: syslog.syslog(Header)
+                    if debugLevel >= 3: syslog.syslog(Header)
                     return (True, Header)
-                else:
-                    return (False, 'None')
+            return (False, 'None')
 #############################################
 def spfcheck(data, instance_dict, configData):  #{{{1
-    debugLevel = configData.get('debugLevel', 0)
-    ip = data.get('client_address')
+    debugLevel = configData.get('debugLevel', 1)
+    if configData.get('Prospective'):
+        ip = configData.get('Prospective')
+    else:
+        ip = data.get('client_address')
     if ip == None:
-        if debugLevel: syslog.syslog('spfcheck: No client address, exiting')
+        if debugLevel >= 2: syslog.syslog('spfcheck: No client address, exiting')
         return(( None, None, instance_dict ))
     # Do not check SPF for localhost addresses 
     skip_check = spfbypass(data, 'skip_addresses', configData)
@@ -131,14 +143,20 @@ def spfcheck(data, instance_dict, configData):  #{{{1
     # known forwarders.
     ip_whitelist = spfbypass(data, 'Whitelist', configData)
     if ip_whitelist:
-        return (('prepend', ip_whitelist[1], instance_dict ))
-
+        if ip_whitelist[0]:
+            return (('prepend', ip_whitelist[1], instance_dict ))
+    # Whitelist designated Domain's sending addresses from SPF checks (e.g. 
+    # known forwarders.
+    domain_whitelist = spfbypass(data, 'Domain_Whitelist', configData)
+    if domain_whitelist:
+        if domain_whitelist[0]:
+            return (('prepend', domain_whitelist[1], instance_dict ))
     #recipient = data.get('recipient')
     receiver=socket.gethostname()
     sender = data.get('sender')
     helo = data.get('helo_name')
     if not sender and not helo:
-        if debugLevel: syslog.syslog('spfcheck: No sender or helo, exiting')
+        if debugLevel >= 2: syslog.syslog('spfcheck: No sender or helo, exiting')
         return(( None, None, instance_dict ))
 
     #  start query
@@ -176,7 +194,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 helo_result.append('helo') 
                 helo_result[0] = helo_result[0].lower()
                 helo_result[0] = helo_result[0].capitalize()
-                if debugLevel:
+                if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
                 if configData.get('HELO_reject') == 'Null' and sender:
                     helo_result.append('dunno')
@@ -200,9 +218,9 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     helo_result[1] = "no SPF record"
                 spfDetail = ('identity=%s; client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
                     % (helo_result[2], ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))
-                syslogData = helo_result[1] + ": " + spfDetail
-                syslogData = str(syslogData)
-                syslog.syslog(syslogData)
+                if debugLevel >= 1:
+                    logdata = str(helo_result[0]) + "; " + spfDetail
+                    syslog.syslog(logdata)
                 header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[1] +') ' + spfDetail
                 helo_result.append(header)
                 instance_dict[instance] = helo_result
@@ -233,7 +251,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 mfrom_result.append('mailfrom')
                 mfrom_result[0] = mfrom_result[0].lower()
                 mfrom_result[0] = mfrom_result[0].capitalize()
-                if debugLevel:
+                if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
                 mfrom_result.append('dunno')
                 if mfrom_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
@@ -251,9 +269,9 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     spfDetail = \
                         ('identity=%s; client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
                         % (mfrom_result[2], ip, helo, sender, data.get('recipient', '<UNKNOWN>')))
-                    syslogData = mfrom_result[1] + ": " + spfDetail
-                    syslogData = str(syslogData)
-                    syslog.syslog(syslogData)
+                    if debugLevel >= 1:
+                        logdata = str(mfrom_result[0]) + "; " + spfDetail
+                        syslog.syslog(logdata)
                     header = 'Received-SPF: '+ mfrom_result[0] + ' (' + mfrom_result[1] +') ' + spfDetail
                     mfrom_result.append(header)
                     instance_dict[instance] = mfrom_result
@@ -280,7 +298,8 @@ def spfcheck(data, instance_dict, configData):  #{{{1
 
 ###################################################
 #  load config file  {{{1
-configFile = '/usr/share/local/policyd-spf/policyd-spf.conf'
+#  Default location:
+configFile = '/etc/python-policyd-spf/policyd-spf.conf'
 if len(sys.argv) > 1:
     if sys.argv[1] in ( '-?', '--help', '-h' ):
         print 'usage: policyd-spf [<configfilename>]'
@@ -290,8 +309,8 @@ if len(sys.argv) > 1:
 configGlobal = policydspfsupp.processConfigFile(filename = configFile)
 
 #  loop reading data  {{{1
-debugLevel = configGlobal.get('debugLevel', 0)
-if debugLevel >= 2: syslog.syslog('Starting')
+debugLevel = configGlobal.get('debugLevel', 1)
+if debugLevel >= 3: syslog.syslog('Starting')
 instance_dict = {'0':'init',}
 instance_dict.clear()
 data = {}
@@ -306,14 +325,14 @@ while 1:
     if not line:
         if debugLevel >= 4: syslog.syslog('Found the end of entry')
         configData = configGlobal
-        if debugLevel >= 2: syslog.syslog('Config: %s' % str(configData))
+        if debugLevel >= 3: syslog.syslog('Config: %s' % str(configData))
 
         #  run the checkers  {{{3
         checkerValue = None
         checkerReason = None
         checkerValue, checkerReason, instance_dict = spfcheck(data, 
                     instance_dict, configData)
-        if configData.get('SPFSEEDONLY', 0):
+        if configData.get('defaultSeedOnly') == 0:
             checkerValue = None
             checkerReason = None
 
@@ -322,14 +341,17 @@ while 1:
             sys.stdout.write('action=550 %s\n\n' % checkerReason)
 
         elif checkerValue == 'prepend':
-            sys.stdout.write('action=prepend %s\n\n' % checkerReason)
+            if configData.get('Prospective'):
+                sys.stdout.write('action=dunno\n\n')
+            else:
+                sys.stdout.write('action=prepend %s\n\n' % checkerReason)
 
         elif checkerValue == 'defer':
             sys.stdout.write('action=defer_if_permit %s\n\n' % checkerReason)
 
         elif checkerValue == 'warn':
             sys.stdout.write('action=warn %s\n\n' % checkerReason)
-            
+
         elif checkerValue == 'result_only':
             sys.stdout.write('action=%s\n\n' % checkerReason)
         else:
@@ -352,3 +374,5 @@ while 1:
     if key not in [ 'protocol_state', 'protocol_name', 'queue_id' ]:
         value = string.lower(value)
     data[key] = value
+
+if debugLevel >= 3: syslog.syslog('Normal exit')
