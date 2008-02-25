@@ -1,3 +1,10 @@
+pypolicyd-spf (0.6-2) unstable; urgency=low
+
+  * Add missing binary install rules needed for multiple binary packages
+  * Rename debian/docs to debian/postfix-policyd-spf-python.docs
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 24 Feb 2008 20:44:09 -0500
+
 pypolicyd-spf (0.6-1) unstable; urgency=low
 
   * New upstream release
