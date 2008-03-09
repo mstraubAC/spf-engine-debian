@@ -1,3 +1,9 @@
+pypolicyd-spf (0.6-2~bpo40+1) etch-backports; urgency=low
+
+  * Initial backport for etch in response to user requests
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 09 Mar 2008 05:13:29 -0400
+
 pypolicyd-spf (0.6-2) unstable; urgency=low
 
   * Remove transitional package (rejected by ftp-masters)
