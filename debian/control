@@ -8,6 +8,7 @@ Standards-Version: 3.7.3
 Homepage: http://www.openspf.org/Software
 Vcs-Svn: svn://svn.debian.org/python-apps/packages/pypolicyd-spf/trunk/
 Vcs-Browser: http://svn.debian.org/wsvn/python-apps/packages/pypolicyd-spf/?op=log
+DM-Upload-Allowed: yes
 
 Package: postfix-policyd-spf-python
 Architecture: all
