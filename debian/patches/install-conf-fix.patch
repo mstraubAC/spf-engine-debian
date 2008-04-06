@@ -1,0 +1,68 @@
+diff -Nur pypolicyd-spf-0.6/policyd-spf pypolicyd-spf-0.6.new/policyd-spf
+--- pypolicyd-spf-0.6/policyd-spf	2008-02-20 16:36:13.000000000 -0500
++++ pypolicyd-spf-0.6.new/policyd-spf	2008-02-20 17:55:20.000000000 -0500
+@@ -299,7 +299,7 @@
+ ###################################################
+ #  load config file  {{{1
+ #  Default location:
+-configFile = '/etc/python-policyd-spf/policyd-spf.conf'
++configFile = '/etc/postfix-policyd-spf-python/policyd-spf.conf'
+ if len(sys.argv) > 1:
+     if sys.argv[1] in ( '-?', '--help', '-h' ):
+         print 'usage: policyd-spf [<configfilename>]'
+diff -Nur pypolicyd-spf-0.6/policyd-spf.1 pypolicyd-spf-0.6.new/policyd-spf.1
+--- pypolicyd-spf-0.6/policyd-spf.1	2008-02-18 22:06:00.000000000 -0500
++++ pypolicyd-spf-0.6.new/policyd-spf.1	2008-02-20 18:00:30.000000000 -0500
+@@ -145,11 +145,12 @@
+ 
+ $ policyd-spf \-h (Display usage message)
+ 
+-$ policyd-spf /etc/policyd-spf/policyd-spf.conf (Config file name to use)
++$ policyd-spf /etc/postfix-policyd-spf-python/policyd-spf.conf (Config file 
++  name to use)
+ 
+ Configuration options are described in the sample configuration file provided
+-with the package policyd-spf.conf(5).  The provided setup.py installs this 
+-configuration file in /etc/policyd-spf/.
++with the package policyd-spf.conf(5).  The provided setup.py installs this
++configuration file in /etc/postfix-policyd-spf-python/.
+ 
+ Additionally, whitelisting certain IP addresses or IP addresses used by listed
+ domains from SPF checks is supported.  Skipping SPF checks for local submission
+diff -Nur pypolicyd-spf-0.6/policyd-spf.conf.5 pypolicyd-spf-0.6.new/policyd-spf.conf.5
+--- pypolicyd-spf-0.6/policyd-spf.conf.5	2008-02-18 22:06:00.000000000 -0500
++++ pypolicyd-spf-0.6.new/policyd-spf.conf.5	2008-02-20 17:59:35.000000000 -0500
+@@ -138,7 +138,7 @@
+ .SH "USAGE"
+ .IX Header "USAGE"
+ Usage:
+-  policyd-spf [/etc/policyd-spf/policyd-spf.conf]
++  policyd-spf [/etc/postfix-policyd-spf-python/policyd-spf.conf]
+ 
+ .SH "OTHER DOCUMENTATION"
+ .IX Header "OTHER DOCUMENTATION"
+@@ -162,8 +162,8 @@
+ .IX Header "DESCRIPTION"
+ 
+ Configuration options are described here and in the configuration file 
+-provided with the package.  The provided setup.py installs this configuration 
+-file in /etc/policyd-spf/.
++provided with the package.  The Debian package installs this configuration 
++file in /etc/postfix-policyd-spf-python/.
+ 
+ Additionally, whitelisting certain IP addresses from SPF checks is supported.
+ The this man page and the sample configuration file show the format to use.
+diff -Nur pypolicyd-spf-0.6/setup.py pypolicyd-spf-0.6.new/setup.py
+--- pypolicyd-spf-0.6/setup.py	2008-02-20 17:32:03.000000000 -0500
++++ pypolicyd-spf-0.6.new/setup.py	2008-02-20 17:55:20.000000000 -0500
+@@ -17,8 +17,8 @@
+       scripts = ['policyd-spf'],
+       data_files=[(os.path.join('share', 'man', 'man1'),
+           ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
+-          ['policyd-spf.conf.5']), (os.path.join('../etc', 'python-policyd-spf'),
+-          ['policyd-spf.conf'])],
++          ['policyd-spf.conf.5']), (os.path.join('../etc', 
++          'postfix-policyd-spf-python'), ['policyd-spf.conf'])],
+       classifiers = [
+ 	'Development Status :: 5 - Production/Stable',
+ 	'Environment :: No Input/Output (Daemon)',
