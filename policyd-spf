@@ -22,7 +22,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.6.1: Apr 05 2008"
+__version__ = "0.7: Jun 20 2008"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
 import policydspfsupp
@@ -70,6 +70,97 @@ def parse_cidr(cidr_ip):
     if len(b) < 2:
         return cidr_ip, cidr
     return a[0], cidr6
+#############################################
+def get_resultcodes(configData, scope):
+    # Parse config options for SPF results to correct Posftix actions
+    actions = {'defer':[], 'reject':[], 'prepend':[]}
+    local = {'local_helo': False, 'local_mfrom': False}
+    unused_results = ['Pass', 'None', 'Neutral', 'Softfail', 'Fail', 'Temperror', 'Permerror'] 
+    helo_policy = ''
+    mfrom_policy = ''
+    reject_domain_list = []
+    sender = data.get('sender')
+    helo = data.get('helo_name')
+    if configData.get('Reject_Not_Pass_Domains'):
+        reject_domains = (str(configData.get('Reject_Not_Pass_Domains')))
+        reject_domain_list = reject_domains.split(',')
+        sender_domain = string.split(sender, '@', 1)
+    
+    if scope == 'helo':
+        helo_policy = configData.get('HELO_reject')
+        if spf.domainmatch(reject_domain_list, helo):
+            helo_policy = 'SPF_Not_Pass'
+            local['local_helo'] = True
+        if helo_policy == 'SPF_Not_Pass':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+                unused_results.remove('Softfail')
+                actions['reject'].append('Softfail')
+                unused_results.remove('Neutral')
+                actions['reject'].append('Neutral')
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: HELO_reject')
+        elif helo_policy == 'Softfail':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+                unused_results.remove('Softfail')
+                actions['reject'].append('Softfail')
+
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: HELO_reject')
+        elif helo_policy == 'Fail' or helo_policy == 'Null':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: HELO_reject')
+    if scope == 'mfrom':
+        mfrom_policy = configData.get('Mail_From_reject')
+        sender_domain = string.split(sender, '@', 1)
+        if spf.domainmatch(reject_domain_list, sender_domain[1]):
+            mfrom_policy = 'SPF_Not_Pass'
+            local['local_mfrom'] = True
+        if mfrom_policy == 'SPF_Not_Pass':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+                unused_results.remove('Softfail')
+                actions['reject'].append('Softfail')
+                unused_results.remove('Neutral')
+                actions['reject'].append('Neutral')
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: Mail_From_reject')
+        elif mfrom_policy == 'Softfail':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+                unused_results.remove('Softfail')
+                actions['reject'].append('Softfail')
+
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: Mail_From_reject')
+        elif mfrom_policy == 'Fail':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: Mail_From_reject')
+
+    if (helo_policy == 'False' and scope == 'helo') or (mfrom_policy == 'False' and scope == 'mfrom'):
+        for result in unused_results:
+            actions['prepend'].append(result)
+        return(actions, local)
+    if configData.get('TempError_Defer') == 'True':
+        actions['defer'].append('Temperror')
+        unused_results.remove('Temperror')
+    if configData.get('PermError_reject') == 'True':
+        actions['reject'].append('Permerror')
+        unused_results.remove('Permerror')
+    for result in unused_results:
+        actions['prepend'].append(result)
+    return(actions, local)
 #############################################
 def spfbypass(data, check_type, configData):
     if configData.get(check_type):
@@ -195,22 +286,19 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 helo_result.append('helo') 
                 helo_result[0] = helo_result[0].lower()
                 helo_result[0] = helo_result[0].capitalize()
+                helo_resultpolicy, local = get_resultcodes(configData, 'helo')
                 if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
                 if configData.get('HELO_reject') == 'Null' and sender:
                     helo_result.append('dunno')
-                elif helo_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
-                    helo_result.append('defer')
-                elif helo_result[0] == 'Permerror' and configData.get('PermError_reject') == 'True':
-                    helo_result.append('reject')
-                elif helo_result[0] == 'Permerror' and configData.get('PermError_reject') == 'False':
-                    helo_result.append('prepend')
-                elif configData.get('HELO_reject') == 'Fail' and helo_result[0] == 'Fail':
-                    helo_result.append('reject')
-                elif configData.get('HELO_reject') == 'SPF_Not_Pass' and (helo_result[0] == 'Fail' or helo_result[0] == 'Softfail' or helo_result[0] == 'Neutral'):
-                    helo_result.append('reject')
-                    helo_result[1] = 'SPF HELO result: rejected due to local policy (Not Pass/None)'
-                else: helo_result.append('prepend')
+                else:
+                    for poss_actions in helo_resultpolicy:
+                        if helo_result[0] in helo_resultpolicy[poss_actions]:
+                            action = poss_actions
+                            helo_result.append(action)
+                    if local['local_helo']:
+                        helo_result[1] = 'Receiver policy for SPF ' + helo_result[0]
+
                 if sender == '':
                     header_sender = '<>'
                 else:
@@ -252,18 +340,15 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 mfrom_result.append('mailfrom')
                 mfrom_result[0] = mfrom_result[0].lower()
                 mfrom_result[0] = mfrom_result[0].capitalize()
+                mfrom_resultpolicy, local = get_resultcodes(configData, 'mfrom')
                 if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
-                mfrom_result.append('dunno')
-                if mfrom_result[0] == 'Temperror' and configData.get('TempError_Defer') == 'True':
-                    mfrom_result[3] = 'defer'
-                elif mfrom_result[0] == 'Permerror' and configData.get('PermError_reject') == 'True':
-                    mfrom_result[3] = 'reject'
-                elif mfrom_result[0] == 'Permerror' and configData.get('PermError_reject') == 'False':
-                    mfrom_result[3] = 'prepend'
-                elif configData.get('Mail_From_reject') == 'Fail' and mfrom_result[0] == 'Fail':
-                    mfrom_result[3] = 'reject'
-                else: mfrom_result[3] = 'prepend'
+                for poss_actions in mfrom_resultpolicy:
+                    if mfrom_result[0] in mfrom_resultpolicy[poss_actions]:
+                        action = poss_actions
+                        mfrom_result.append(action)
+                if local['local_mfrom']:
+                    mfrom_result[1] = 'Receiver policy for SPF ' + mfrom_result[0]
                 if mfrom_result[0] == 'None':
                     mfrom_result[1] = 'no SPF record'
                 if mfrom_result[0] != 'None' or (mfrom_result[0] == 'None' and helo_result[0] == 'None'):

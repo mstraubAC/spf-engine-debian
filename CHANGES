@@ -4,6 +4,18 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.7 (2008-06-22 13:45 -0400)
+  + Reject option for Mail From not pass or none (parallel HELO option)
+  + Reject on Softfail for HELO and Mail From
+  + Add receiver policy options per sender domain to reject non-SPF Pass mail
+    for specific domains
+  + Update policyd-spf(5) for new options
+  ! Refactor result processing for better scalability and easier testing
+  ! Move commented config file to a new file and use/install an uncommented
+    minimal config file to reduce future churn in the operational config file
+  * Fix prepend only (no action) options to work
+  * Clarify in policyd-spf(5) that permerror and temperror setting affect
+    both HELO and Mail From checks when those checks are enabled
 --- 0.6.1 (2008-04-05 01:23 -0400)
   * Pre-initialize helo_result to None to avoid crash if HELO checking is
     disabled

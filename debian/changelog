@@ -1,3 +1,22 @@
+pypolicyd-spf (0.7-1) unstable; urgency=low
+
+  * New upstream release
+    - Added receiver policy options to reject softfail and neutral SPF
+      messages
+    - Use minimal configuration file by default and provide additional
+      fully commented config file
+  * Correct README.Debian directory names (thanks to Carlos Pasqualini
+    for noticing and letting me know)
+  * Freshen debian/patches/install-conf-fix.patch
+  * Install new policyd-spf.conf.commented file with docs
+  * Bump standards version to 3.8.0 and add README.source
+  * Switch to python-central
+    - Add XS/XB-Python-Version: current to debian/control
+    - Update build-dep and debian/rules
+    - Remove debian/pyversions
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 22 Jun 2008 17:55:18 -0400
+
 pypolicyd-spf (0.6.1-1) unstable; urgency=low
 
   [ Scott Kitterman ]

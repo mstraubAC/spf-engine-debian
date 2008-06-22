@@ -128,18 +128,18 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2008-02-18"
+.TH policy-spf 1 "2008-06-20"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.6
+0\.7
 
 .SH "USAGE"
 .IX Header "USAGE"
 
 NOTE: Depending on the packaging and distribution, the exact path to the
-executable may vary. The executable should be included in the Python path.
+executable may vary.
 
 $ policyd-spf (Start using installed config file)
 
@@ -148,8 +148,9 @@ $ policyd-spf \-h (Display usage message)
 $ policyd-spf /etc/policyd-spf/policyd-spf.conf (Config file name to use)
 
 Configuration options are described in the sample configuration file provided
-with the package policyd-spf.conf(5).  The provided setup.py installs this 
-configuration file in /etc/policyd-spf/.
+with the package (policyd-spf.conf.commented) and in policyd-spf.conf(5).  The
+provided setup.py installs an uncommented configuration file in 
+/etc/policyd-spf/.
 
 Additionally, whitelisting certain IP addresses or IP addresses used by listed
 domains from SPF checks is supported.  Skipping SPF checks for local submission

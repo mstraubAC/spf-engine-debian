@@ -3,15 +3,17 @@ Section: mail
 Priority: extra
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.debian.org>
-Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.1), python-all-dev, python-support (>= 0.5.3)
-Standards-Version: 3.7.3
+Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.1), python-dev, python-central (>= 0.6)
+Standards-Version: 3.8.0
 Homepage: http://www.openspf.org/Software
 Vcs-Svn: svn://svn.debian.org/python-apps/packages/pypolicyd-spf/trunk/
 Vcs-Browser: http://svn.debian.org/wsvn/python-apps/packages/pypolicyd-spf/?op=log
 DM-Upload-Allowed: yes
+XS-Python-Version: current
 
 Package: postfix-policyd-spf-python
 Architecture: all
+XB-Python-Version: current
 Depends: ${python:Depends}, python-spf (>= 2.0), postfix (>= 2.1)
 Provides: python-policyd-spf
 Replaces: python-policyd-spf

@@ -6,7 +6,7 @@ import os
 DESC = """python-policyd-spf SPF Postfix policy daemon implemented in Python."""
 
 setup(name='python-policyd-spf',
-      version='0.6',
+      version='0.7',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
