@@ -14,7 +14,7 @@ XS-Python-Version: current
 Package: postfix-policyd-spf-python
 Architecture: all
 XB-Python-Version: current
-Depends: ${python:Depends}, python-spf (>= 2.0), postfix (>= 2.1)
+Depends: ${python:Depends}, python-spf (>= 2.0), postfix (>= 2.1), adduser
 Provides: python-policyd-spf
 Replaces: python-policyd-spf
 Conflicts: python-policyd-spf 
