@@ -1,6 +1,6 @@
-diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/policyd-spf pypolicyd-spf-0.7.new/policyd-spf
---- pypolicyd-spf-0.7/policyd-spf	2008-06-22 12:44:25.000000000 -0400
-+++ pypolicyd-spf-0.7.new/policyd-spf	2008-06-23 00:49:12.000000000 -0400
+diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7.1/policyd-spf pypolicyd-spf-0.7.1.new/policyd-spf
+--- pypolicyd-spf-0.7.1/policyd-spf	2008-07-25 23:58:29.000000000 -0400
++++ pypolicyd-spf-0.7.1.new/policyd-spf	2008-07-26 00:19:25.000000000 -0400
 @@ -385,7 +385,7 @@
  ###################################################
  #  load config file  {{{1
@@ -10,9 +10,9 @@ diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/policyd-spf pypolicyd-spf-0.7.ne
  if len(sys.argv) > 1:
      if sys.argv[1] in ( '-?', '--help', '-h' ):
          print 'usage: policyd-spf [<configfilename>]'
-diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/policyd-spf.1 pypolicyd-spf-0.7.new/policyd-spf.1
---- pypolicyd-spf-0.7/policyd-spf.1	2008-06-20 23:24:45.000000000 -0400
-+++ pypolicyd-spf-0.7.new/policyd-spf.1	2008-06-23 00:51:28.000000000 -0400
+diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7.1/policyd-spf.1 pypolicyd-spf-0.7.1.new/policyd-spf.1
+--- pypolicyd-spf-0.7.1/policyd-spf.1	2008-07-25 23:58:29.000000000 -0400
++++ pypolicyd-spf-0.7.1.new/policyd-spf.1	2008-07-26 00:21:16.000000000 -0400
 @@ -145,12 +145,13 @@
  
  $ policyd-spf \-h (Display usage message)
@@ -32,9 +32,26 @@ diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/policyd-spf.1 pypolicyd-spf-0.7.
  
  Additionally, whitelisting certain IP addresses or IP addresses used by listed
  domains from SPF checks is supported.  Skipping SPF checks for local submission
-diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/policyd-spf.conf.5 pypolicyd-spf-0.7.new/policyd-spf.conf.5
---- pypolicyd-spf-0.7/policyd-spf.conf.5	2008-06-20 23:21:54.000000000 -0400
-+++ pypolicyd-spf-0.7.new/policyd-spf.conf.5	2008-06-23 00:49:12.000000000 -0400
+@@ -251,14 +252,12 @@
+  1. Add the following to /etc/postfix/master.cf:
+ 
+         policyd-spf  unix  -       n       n       -       0       spawn
+-            user=nobody argv=/usr/bin/policyd-spf
++            user=policyd-spf argv=/usr/bin/policyd-spf
+ 
+     NOTE: Check the path to both the installed Python interpreter and
+           policyd-spf.  These vary from system to system.  To use non-default
+           settings, you must also add the config file (see above and 
+-          policyd-spf.conf(5) for details).  If you run other services with
+-          user nobody, create a dedicated user for this policy server and use
+-          that instead.
++          policyd-spf.conf(5) for details).
+ 
+  2. Configure the Postfix policy service in /etc/postfix/main.cf:
+ 
+diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7.1/policyd-spf.conf.5 pypolicyd-spf-0.7.1.new/policyd-spf.conf.5
+--- pypolicyd-spf-0.7.1/policyd-spf.conf.5	2008-07-25 23:58:29.000000000 -0400
++++ pypolicyd-spf-0.7.1.new/policyd-spf.conf.5	2008-07-26 00:19:25.000000000 -0400
 @@ -138,7 +138,7 @@
  .SH "USAGE"
  .IX Header "USAGE"
@@ -53,9 +70,9 @@ diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/policyd-spf.conf.5 pypolicyd-spf
  
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  The this man page and the sample configuration file show the format to use.
-diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7/setup.py pypolicyd-spf-0.7.new/setup.py
---- pypolicyd-spf-0.7/setup.py	2008-06-18 01:50:24.000000000 -0400
-+++ pypolicyd-spf-0.7.new/setup.py	2008-06-23 00:49:12.000000000 -0400
+diff -Nur -x '*.orig' -x '*~' pypolicyd-spf-0.7.1/setup.py pypolicyd-spf-0.7.1.new/setup.py
+--- pypolicyd-spf-0.7.1/setup.py	2008-07-25 23:58:29.000000000 -0400
++++ pypolicyd-spf-0.7.1.new/setup.py	2008-07-26 00:19:25.000000000 -0400
 @@ -17,8 +17,8 @@
        scripts = ['policyd-spf'],
        data_files=[(os.path.join('share', 'man', 'man1'),
