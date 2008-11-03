@@ -1,3 +1,10 @@
+pypolicyd-spf (0.7.1-2) UNRELEASED; urgency=low
+
+  * debian/control
+    - switch Vcs-Browser field to viewsvn
+
+ -- Sandro Tosi <morph@debian.org>  Mon, 03 Nov 2008 22:48:02 +0100
+
 pypolicyd-spf (0.7.1-1) unstable; urgency=low
 
   * New upstream release

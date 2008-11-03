@@ -7,7 +7,7 @@ Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.1), python-dev, python-cen
 Standards-Version: 3.8.0
 Homepage: http://www.openspf.org/Software
 Vcs-Svn: svn://svn.debian.org/python-apps/packages/pypolicyd-spf/trunk/
-Vcs-Browser: http://svn.debian.org/wsvn/python-apps/packages/pypolicyd-spf/trunk/?op=log
+Vcs-Browser: http://svn.debian.org/viewsvn/python-apps/packages/pypolicyd-spf/trunk/
 DM-Upload-Allowed: yes
 XS-Python-Version: current
 
