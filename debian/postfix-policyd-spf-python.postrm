@@ -1,0 +1,20 @@
+#! /bin/sh
+
+set -e
+
+# conffile renamed in 0.6-1
+if dpkg --compare-versions "$2" lt-nl "0.6-1"; then
+    # "$1" is equal to "upgrade" (which means downgrading in this case) or "abort-upgrade"
+    # downgrading to <0.6-1 (0.5.2-3 most probably) -- restore old conffile name
+    if [ ! -e /etc/python-policyd-spf/policyd-spf.conf ]; then
+	test ! -d /etc/python-policyd-spf && mkdir /etc/python-policyd-spf/
+	# policyd-spf.conf should exist but lets test it anyway
+	test -f /etc/postfix-policyd-spf-python/policyd-spf.conf && \
+	mv /etc/postfix-policyd-spf-python/policyd-spf.conf /etc/python-policyd-spf/policyd-spf.conf
+	rmdir /etc/postfix-policyd-spf-python/
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0
