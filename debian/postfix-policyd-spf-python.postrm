@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -e
+
 # conffile renamed in 0.6-1
 if dpkg --compare-versions "$2" lt-nl "0.6-1"; then
     # "$1" is equal to "upgrade" (which means downgrading in this case) or "abort-upgrade"

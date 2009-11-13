@@ -4,6 +4,10 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.7.2 (2009-10-22 02:54 -0400)
+  ! Require at least Python 2.5
+  * Fix to not crash on invalid senders that lack a domain part
+  * Remove unused imports of deprecated popen2 module
 --- 0.7.1 (2008-07-25 23:54 -0400)
   * Fix default log level in policyd-spf.conf.commented to match default
   * Update configuration recommendations in policyd-spf.1
