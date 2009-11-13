@@ -7,3 +7,8 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
+install/postfix-policyd-spf-python::
+	# Install logcheck filter
+	dh_install debian/logcheck etc/logcheck/ignore.d.server
+	mv $(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/logcheck \
+	  $(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/postfix-policyd-spf-python
