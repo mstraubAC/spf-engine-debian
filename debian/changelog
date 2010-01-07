@@ -1,22 +1,33 @@
-pypolicyd-spf (0.7.2-2) UNRELEASED; urgency=low
+pypolicyd-spf (0.7.3-1) unstable; urgency=low
 
+  [ Sandro Tosi ]
   * debian/control
     - switch Vcs-Browser field to viewsvn
 
- -- Sandro Tosi <morph@debian.org>  Mon, 03 Nov 2008 22:48:02 +0100
+  [ Scott Kitterman ]
+  * New upstream release
+    - Works with Python 2.4 now
+  * debian/control
+    - Update homepage for new upstream location
+    - Update XS/XB-Python-Version due to deprecation of current
+    - Improve package description
+  * Add upstream changelog (CHANGES) to postfix-policyd-spf-python.docs
+  * Update debian/watch for the new upstream location
 
- pypolicyd-spf (0.7.2-1) unstable; urgency=low
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 07 Jan 2010 01:23:58 -0500
 
-   * New upstream release
-     - Fix crash on missing "@" in mail from (closes: #551714)
-     - Fix man page type (closes: #517119)
-   * Add logcheck filter (closes: #499503)
-   * Add ${misc:Depends} to debian/control
-   * Bump standards version to 3.8.3 without further change
-   * Use proper © symbol in debian/changelog
-   * Set -e in all maintainer scripts
+pypolicyd-spf (0.7.2-1) unstable; urgency=low
 
-  -- Scott Kitterman <scott@kitterman.com>  Thu, 12 Nov 2009 23:55:03 -0500
+  * New upstream release
+    - Fix crash on missing "@" in mail from (closes: #551714)
+    - Fix man page type (closes: #517119)
+  * Add logcheck filter (closes: #499503)
+  * Add ${misc:Depends} to debian/control
+  * Bump standards version to 3.8.3 without further change
+  * Use proper © symbol in debian/changelog
+  * Set -e in all maintainer scripts
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 12 Nov 2009 23:55:03 -0500
 
 pypolicyd-spf (0.7.1-1) unstable; urgency=low
 
