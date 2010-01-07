@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2009-10-31"
+.TH policy-spf.conf 5 "2010-01-07"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.7\.2
+0\.7\.3
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -400,7 +400,7 @@ TempError_Defer = False
 
 Prospective SPF checking - Check to see if mail sent from the defined IP
 address would pass.  This is useful for outbound MTAs to avoid sending mail that
-would Fail SPF checks when recieved.  Disable HELO checking when using this
+would Fail SPF checks when received.  Disable HELO checking when using this
 option.  It's only potentially useful for Mail From checking. SPF Received
 headers are not added when this option is used.
 
@@ -468,9 +468,9 @@ man 1 policyd-spf, python-spf, <http://www.openspf.org>, RFC 4408
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
-This version of \fBpython-policyd-spf\fR was written by Copyright (c) 2007 
-Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf, written
-by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
+This version of \fBpypolicyd-spf\fR was written by Copyright © 2007,
+2008,2009,2010 Scott Kitterman <scott@kitterman.com>.  It is derived from
+Tumgreyspf, written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
 Portions of the documentation were written by Meng Weng Wong 
 <mengwong@pobox.com>.
 .PP

@@ -1,0 +1,148 @@
+#HELO and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout02.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=1
+
+#HELO fail and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout00.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=2
+
+#no HELO and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=72.81.252.18
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=3
+
+#helo pass and mfrom fail
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=scott@kitterman.org
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=4
+
+#helo pass and mfrom none
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout02.controlledmail.com
+sender=scott@yahoo.com
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=5
+
+#helo pass and mfrom null
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout02.controlledmail.com
+sender=
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=6
+
+#helo fail and mfrom null
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout02.controlledmail.com
+sender=
+recipient=bogus@kitterman.org
+queue_id=q1234
+instance=7
+
+#Multi-recipient dunno
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout03.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=3
+
+#localhost bypass
+request=smtpd_access_policy
+client_address=127.0.0.1
+helo_name=mailout03.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=12
+
+#Helo Neutral and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=aol.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=13
+
+#Whitelist
+request=smtpd_access_policy
+client_address=192.168.0.1
+helo_name=mailout03.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=14
+
+# multi-recipient mfrom fail
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=scott@kitterman.org
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=4
+
+# multi-recipient HELO fail and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout00.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=2
+
+# No SPF
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout00.yahoo.com
+sender=scott@yahoo.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=15
+
+# Permerror reject
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=elvey.com
+sender=scott@elvey.com
+recipient=bogus2@kitterman.org
+queue_id=q1234
+instance=16
+
+# None and None
+request=smtpd_access_policy
+client_address=71.17.127.27
+helo_name=71-17-127-27.estv.hsdb.sasknet.sk.ca
+sender=dalbecbhoj@accessamericatransport.com
+recipient=hostmaster@jamux.com
+
+request=smtpd_access_policy
+client_address=200.120.31.84
+helo_name=autohaus-knabe.de
+sender=daniel.hahnomjy@autohaus-knabe.de
+recipient=jam@jamux.com
+

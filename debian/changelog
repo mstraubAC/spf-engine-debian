@@ -1,3 +1,21 @@
+pypolicyd-spf (0.7.3-1) unstable; urgency=low
+
+  [ Sandro Tosi ]
+  * debian/control
+    - switch Vcs-Browser field to viewsvn
+
+  [ Scott Kitterman ]
+  * New upstream release
+    - Works with Python 2.4 now
+  * debian/control
+    - Update homepage for new upstream location
+    - Update XS/XB-Python-Version due to deprecation of current
+    - Improve package description
+  * Add upstream changelog (CHANGES) to postfix-policyd-spf-python.docs
+  * Update debian/watch for the new upstream location
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 07 Jan 2010 01:23:58 -0500
+
 pypolicyd-spf (0.7.2-1) unstable; urgency=low
 
   * New upstream release

@@ -1,4 +1,3 @@
 version=3
-http://www.openspf.org/blobs/pypolicyd-spf-(.*)\.tar\.gz debian uupdate
-
+http://launchpad.net/pypolicyd-spf/+download http://launchpad.net/pypolicyd-spf/.*/.*/pypolicyd-spf-(.*)\.tar\.gz debian uupdate
 
