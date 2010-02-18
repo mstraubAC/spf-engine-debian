@@ -1,3 +1,14 @@
+pypolicyd-spf (0.8.0-1) unstable; urgency=low
+
+  * New upstream release
+    - Updated Debian config patch
+  * Update debian/copyright for new year
+  * Correct XS/XB-Python-Version to be >= 2.4
+  * Build-dep on python-all instead of python
+  * Correct short description - the package is not a daemon
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 17 Feb 2010 19:12:38 -0500
+
 pypolicyd-spf (0.7.3-1) unstable; urgency=low
 
   [ Sandro Tosi ]
