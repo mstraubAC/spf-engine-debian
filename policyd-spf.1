@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2010-01-07"
+.TH policy-spf 1 "2010-01-18"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.7\.3
+0\.8
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -163,7 +163,10 @@ This documentation assumes you have read Postfix's README_FILES/
 SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
 (SPF).  See RFC 4408 for details.
 
-See policyd-spf.conf(5) for configuration file information.
+See man 5 policyd-spf.conf for configuration file information.
+
+man 5 policyd-spf.peruser provides documentation on setting up and using
+different configuration options on a per user (mail reciepient) basis.
 
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -277,7 +280,8 @@ followed by a empty line:
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-policyd-spf.conf(5), python-spf, <http://www.openspf.org>, RFC 4408
+policyd-spf.conf(5), policyd-spf.peruser(5), python-spf,
+<http://www.openspf.org>, RFC 4408
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"

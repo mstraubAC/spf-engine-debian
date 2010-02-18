@@ -89,24 +89,6 @@ def setExceptHook():
     sys.excepthook = ExceptHook(useSyslog = 1, useStderr = 1)
 
 
-####################
-def quoteAddress(s):
-    '''Quote an address so that it's safe to store in the file-system.
-    Address can either be a domain name, or local part.
-    Returns the quoted address.'''
-
-    s = urllib.quote(s, '@_-+')
-    if len(s) > 0 and s[0] == '.': s = '%2e' + s[1:]
-    return(s)
-
-
-######################
-def unquoteAddress(s):
-    '''Undo the quoting of an address.  Returns the unquoted address.'''
-
-    return(urllib.unquote(s))
-
-
 ###############################################################
 commentRx = re.compile(r'^(.*)#.*$')
 def readConfigFile(path, configData = None, configGlobal = {}):
@@ -130,7 +112,10 @@ def readConfigFile(path, configData = None, configGlobal = {}):
             'Whitelist' : str,
             'skip_addresses': str,
             'Domain_Whitelist' : str,
+            'Domain_Whitelist_PTR': str,
+            'No_Mail': str,
             'Reject_Not_Pass_Domains' : str,
+            'Per_User' : str,
             'defaultSeedOnly' : int
             }
 

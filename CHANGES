@@ -4,6 +4,19 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.8 (2010-02-17 01:38 -0500)
+  + Add Domain_Whitelist_PTR to allow whitelisting from SPF tests based on
+    rDNS PTR match (patch from Colin Stewart <colin@owlfish.com>)
+  * Only check Domain_Whitelist if it actually exists in the configuration
+  + Add No_Mail option to allow for only rejecting from hosts/domains that
+    send no mail ("v=spf1 -all")
+  + Add ability to provide per user (per recipient) settings
+  * Fixed a bug so that skipping SPF checks due to localhost or any whitelist
+    settings does not prepend multiple headers per message for multi recipient
+    messages
+  * Fixed a bug so that non-reject HELO results are correctly used when Mail
+    From checks are disabled (No_Check)
+  * Clean up unused code in policydspfsupp.py
 --- 0.7.3 (2010-01-07 01:00 -0500)
   * No longer require Python 2.5 (Thanks to Matthew Munsey
     <openspf@msm.unending.org>)

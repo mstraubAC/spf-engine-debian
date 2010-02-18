@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2010-01-07"
+.TH policy-spf.conf 5 "2010-01-19"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.7\.3
+0\.8
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -148,6 +148,9 @@ SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
 
 man 1 policyd-spf provides general operation documentation for this
 package.
+
+man 5 policyd-spf.peruser provides documentation on setting up and using
+different configuration options on a per user (mail reciepient) basis.
 
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -167,6 +170,8 @@ file in /etc/policyd-spf/.
 
 Additionally, whitelisting certain IP addresses from SPF checks is supported.
 The this man page and the sample configuration file show the format to use.
+These options can be adjusted on a per user (mail recipient) basis.  Details
+on per user settings can be found in policyd-spf.peruser(5).
 
 .SH "OPTIONS"
 .IX Header "OPTIONS"
@@ -332,6 +337,19 @@ Default:
 
 None
 
+.SH "Limit Rejections To Domains That Send No Mail"
+.IX Header "Limit Rejections To Domains That Send No Mail"
+
+No_Mail - Only reject when SPF indicates the host/domain sends no mail. This
+option will only cause mail to be rejected if the HELO/Mail From record is
+"v=spf1 -all".  This option is useful for rejecting mail in situations where
+the tolerance for rejecting wanted mail is very low. It operates on both HELO
+and Mail From identities if set.
+
+Default:
+
+No_Mail = False
+
 .SH "Domain Specific Receiver Policy"
 .IX Header "Domain Specific Receiver Policy"
 
@@ -451,8 +469,8 @@ is useful for large forwarders with complex outbound infrastructures and SPF
 records.  This option is less scalable than the SPF IP Whitelist.  An x-header 
 is prepended indicating the IP was whitelisted against SPF checks.  This is a 
 trace header only.  This option does nothing if the domain does not have an SPF
-record.  In this case use the SPF IP Whitelist described above. Note the lack
-of spaces in the list.
+record.  In this case use the SPF IP Whitelist described above or
+Domain_Whitelist_PTR (below). Note the lack of spaces in the list.
 
 Example:
 
@@ -462,9 +480,34 @@ Default:
 
 None
 
+.SH "PTR DOMAIN WHITELIST"
+.IX Header "PTR DOMAIN WHITELIST"
+
+Domain_Whitelist_PTR: List of domains (and subdomains)  whose sending IPs
+should be whitelisted from SPF checks based on PTR match of the domain. Use
+this to list trusted forwarders by domain name if they do not publish SPF
+records.  Client IP addresses PTR names are tested to see if they match the
+listed domains.  This is useful for large forwarders with complex outbound
+infrastructures, but no SPF records and predictable host naming. Matching is
+done using the same rules as the SPF PTR mechanism as described in RFC 4408.
+List the parent domain and all subdomains will match. This option is less
+scalable than the SPF IP Whitelist.  An x-header is prepended indicating the IP
+was whitelisted against SPF checks.  This is a trace header only.  This option
+does nothing if the host does not have a PTR record record.  In this case use
+the SPF IP Whitelist described above. Note the lack of spaces in the list.
+
+Example:
+
+Domain_Whitelist_PTR = yahoo.com,yahoogroups.com
+
+Default:
+
+None
+
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-man 1 policyd-spf, python-spf, <http://www.openspf.org>, RFC 4408
+man 1 policyd-spf, man 5 policyd-spf.peruser, python-spf,
+<http://www.openspf.org>, RFC 4408
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
