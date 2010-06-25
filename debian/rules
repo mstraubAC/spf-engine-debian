@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with quilt, --with python2
+
+override_dh_install:
+	# Install logcheck filter
+	dh_install debian/logcheck etc/logcheck/ignore.d.server/postfix-policyd-spf-python
+	dh_install
+
