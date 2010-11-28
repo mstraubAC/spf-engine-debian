@@ -1,3 +1,14 @@
+pypolicyd-spf (0.8.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Bump standards version to 3.9.1 without further change
+  * Update for recent Python policy changes:
+    - Change XS-Python-Version X-Python-Version and bump minimum python
+      version to 2.6.5-13~
+    - Drop XB-Python-Version
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 27 Nov 2010 23:22:23 -0500
+
 pypolicyd-spf (0.8.0-2) unstable; urgency=low
 
   * Convert from CDBS to Debhelper 7
