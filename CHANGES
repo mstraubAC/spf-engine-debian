@@ -4,6 +4,9 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.8.1 (2010-11-27 22:41 -0500)
+  * Prepend headers even when defaultSeedOnly = 0 (now does what's documented)
+  * Fix typos in policyd-spf.conf(5)
 --- 0.8 (2010-02-17 01:38 -0500)
   + Add Domain_Whitelist_PTR to allow whitelisting from SPF tests based on
     rDNS PTR match (patch from Colin Stewart <colin@owlfish.com>)
