@@ -1,3 +1,11 @@
+pypolicyd-spf (0.8.1-2) unstable; urgency=low
+
+  * Rebuild for python transition
+  * Drop ancient version requirements for python-spf and postfix depends
+  * Bump Standards-Version to 3.9.2 without further change
+
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 19 Apr 2011 23:47:33 -0400
+
 pypolicyd-spf (0.8.1-1) unstable; urgency=low
 
   * New upstream release
