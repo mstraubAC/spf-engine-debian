@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2010-01-19"
+.TH policy-spf.conf 5 "2012-01-10"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.8
+0\.9
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -169,7 +169,7 @@ provided with the package.  The provided setup.py installs this configuration
 file in /etc/policyd-spf/.
 
 Additionally, whitelisting certain IP addresses from SPF checks is supported.
-The this man page and the sample configuration file show the format to use.
+This man page and the sample configuration file show the format to use.
 These options can be adjusted on a per user (mail recipient) basis.  Details
 on per user settings can be found in policyd-spf.peruser(5).
 
@@ -191,7 +191,7 @@ the connection was made), Mail From addresss, or HELO/EHLO name is received by
 the policy server, and logs SPF results for each Mail From and HELO check.
 
 debug level 3 generates a log message each time the policy server starts and
-each time it exits, as well as logging an copy of the exact header returned to
+each time it exits, as well as logging a copy of the exact header returned to
 Postfix to be prepended into the message.  Each time the policy server starts,
 debug level 3 also logs the configuration information used by the policy
 server.
@@ -225,14 +225,17 @@ defaultSeedOnly = 1
 
 HELO check rejection policy options are:
 
-SPF_Not_Pass (default) - Reject if result not Pass/None/Tempfail. Unlike Mail
-From checking, there are no standard e-mail use cases where a HELO check should
-not Pass if there is an SPF record for the HELO name (transparent forwarding,
-for example, is not an issue). Technically this option is not fully RFC 4408
-compliant since the Mail From identity is mandatory, but HELO/EHLO is known
-first in the SMTP dialogue and there is no practical reason to waste resources
-on Mail From checks if the HELO check will already cause the message to be
-rejected.
+SPF_Not_Pass (default) - Reject if result not Pass, None, or Temperror
+(alternatively put, reject if the SPF result is Fail, Softfail, Neutral,
+PermError). Unlike Mail From checking, there are no standard e-mail use cases
+where a HELO check should not Pass if there is an SPF record for the HELO name
+(transparent forwarding, for example, is not an issue). Technically this
+option is not fully RFC 4408 compliant since the SPF check for the Mail From
+identity is mandatory and Neutral and None results must be treated the same.
+HELO/EHLO is known first in the SMTP dialogue and there is no practical reason
+to waste resources on Mail From checks if the HELO check will already cause
+the message to be rejected. These deviations should not cause interoperability
+problems when used for HELO.
 
 Softfail - Reject on HELO Softfail or Fail.  Technically this option is not
 fully RFC 4408 compliant since the Mail From identity is mandatory, but HELO/
@@ -256,8 +259,8 @@ spam filters such as SpamAssassin.
 
 No_Check - Never check HELO.  This is only recommended if you are calling the
 policy server twice (once for HELO checks and once for Mail From) with two 
-different configuration files.  This approach is useful to get both the HELO and
-Mail From headers prepended to a message.
+different configuration files.  This approach is useful to get both the HELO
+and Mail From headers prepended to a message.
 
 Default:
 
@@ -267,13 +270,14 @@ HELO_reject = SPF_Not_Pass
 .IX Header "HELO/EHLO PASS RESTRICTION"
 
 HELO Pass Restriction allows integration with other Postfix access
-contlols by provding a user supplied name of a postfix access
+controls by provding a user supplied name of a postfix access
 restriction to be applied to a message when the HELO checking result
 is Pass.  The indicated restriction must be an action as defined for a
 Postfix SMTP server access table access(5) and explained in the
-Postfix RESTRICTION CLASS README.  Note: A helo pass restriction will
-be the returned result even if the mail from result would cause the message to
-be rejected.
+Postfix RESTRICTION CLASS README. The README.per_user_whitelisting file
+provided with this distribution provides examples. Note: A helo pass
+restriction will be the returned result even if the mail from result would
+cause the message to be rejected.
 
 
 Example:
@@ -369,8 +373,8 @@ Default:
 
 None
 
-.SH "Permanatent Error Processing"
-.IX Header "Permanatent Error Processing"
+.SH "Permanent Error Processing"
+.IX Header "Permanent Error Processing"
 
 Policy for rejecting due to SPF PermError options are:
 
@@ -394,13 +398,14 @@ PermError_reject = False
 
 Policy for deferring messages due to SPF TempError options are:
 
-True - Reject the message if the SPF result (for HELO or Mail From) is
+True - Defer the message if the SPF result (for HELO or Mail From) is
 TempError.  This is the traditional usage and has proven useful in reducing
 acceptance of unwanted messages.  Sometimes spam senders do not retry.  
 Sometimes by the time a message is retried the sending IP has made it onto a
 DNS RBL and can then be rejected.  This is not the default because it is
-possible for some DNS errors that are classified as "Temporary" per RFC to be 
-permanent in the sense that they require operator intervention to correct.
+possible for some DNS errors that are classified as "Temporary" per RFC 4408
+to be permanent in the sense that they require operator intervention to
+correct.
 
 This is a global option that affects both HELO and Mail From scopes when
 checks for that scope are enabled. The only per scope setting that can
@@ -504,17 +509,59 @@ Default:
 
 None
 
+.SH "RESULTS HEADER"
+.IX Header "RESULTS HEADER"
+
+The standard method for documenting SPF results in a message (for consumption
+by downstream processes) is the Received-SPF header defined in RFC 4408. This
+is the default header to use. Results can also be documented in the
+Authentication-Results header defined by RFC 5451. The default is
+Received-SPF (SPF), but inclusion of Authentication-Results (AR) headers as an
+alternative to Received-SPF can be specified. 
+
+If there is a requirement to prepend both Received-SPF and Authentication-
+Results headers, then it must be done by processing the message with more than
+one instance of the policy server using different configuration files with
+different Header_Type settings.
+
+Examples:
+
+Header_Type = SPF
+or
+Header_Type = AR
+
+Default:
+
+SPF
+
+.SH "Authentications Results Authentication Identifier"
+.IX Header "Authentications Results Authentication Identifier"
+
+Every Authentication-Results header field has an authentication identifier
+field ('Authserv_Id'). This is similar in syntax to a fully-qualified domain
+name. See policyd-spf.conf.5 and RFC 5451 paragraph 2.3 for details.
+Default is None.  Authserv-Id must be provided if Header_Type 'AR' is used.
+
+The authentication identifier field provides a unique identifier that refers
+to the authenticating service within a given administrative domain. The
+identifier MUST be unique to that domain.  This identifier is intended to be
+machine-readable and not necessarily meaningful to users.
+
+Example:
+
+Authserv_Id = mx.example.com
+
+
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 man 1 policyd-spf, man 5 policyd-spf.peruser, python-spf,
-<http://www.openspf.org>, RFC 4408
+<http://www.openspf.net>, RFC 4408, RFC 5451
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
-This version of \fBpypolicyd-spf\fR was written by Copyright © 2007,
-2008,2009,2010 Scott Kitterman <scott@kitterman.com>.  It is derived from
-Tumgreyspf, written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
-Portions of the documentation were written by Meng Weng Wong 
-<mengwong@pobox.com>.
+This version of \fBpypolicyd-spf\fR was written by Copyright © 2007-2012,
+Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf,
+written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>. Portions
+of the documentation were written by Meng Weng Wong <mengwong@pobox.com>.
 .PP
 This man-page was created by Scott Kitterman <scott@kitterman.com>.

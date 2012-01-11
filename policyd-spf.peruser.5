@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.peruser 5"
-.TH policy-spf.peruser 5 "2010-01-19"
+.TH policy-spf.peruser 5 "2010-11-28"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.8
+0\.9
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -210,16 +210,18 @@ configuration information, with one line per user's configuration information
 (NOTE: due to man page formating requirements, these lines are wrapped - in
 the config file, it must be one line per user):
 
-postmaster@example.com,{'Mail_From_reject'='No_Check'|'PermError_reject'= \
- 'False'|'HELO_reject'='SPF_Not_Pass'|'defaultSeedOnly'= 1|'debugLevel'= \
- 5|'skip_addresses'='127.0.0.0/8,::ffff:127.0.0.0//104,::1//128'| \
- 'TempError_Defer'='False'}
-strict@example.com,{'PermError_reject'='True'|'HELO_reject'= SPF_Not_Pass'| \
- 'TempError_Defer'='True'}
+postmaster@example.com,Mail_From_reject=No_Check|PermError_reject=\
+False|HELO_reject=SPF_Not_Pass|defaultSeedOnly=1|debugLevel=5|\
+skip_addresses=127.0.0.0/8,::ffff:127.0.0.0//104,::1//128|TempError_Defer=False
+strict@example.com,PermError_rejec=True|HELO_reject=SPF_Not_Pass|\
+TempError_Defer=True
 
 It is not necessary to specify all configuration parameters for each user,
 only those that are different than the overall configuration need to be
 specified.
+
+If the specified per user configuration file is missing, an error is logged
+and the global configuration is used instead.
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
@@ -228,8 +230,8 @@ man 1 policyd-spf, man 5 policyd-spf.conf, python-spf,
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
-This version of \fBpypolicyd-spf\fR was written by Copyright © 2007,
-2008,2009,2010 Scott Kitterman <scott@kitterman.com>.  It is derived from
-Tumgreyspf, written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
+This version of \fBpypolicyd-spf\fR was written by Copyright © 2007-2011,
+Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf,
+written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
 .PP
 This man-page was created by Scott Kitterman <scott@kitterman.com>.

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 #
 #  pypolicyd-spf
-#  Copyright © 2010 Scott Kitterman <scott@kitterman.com>
+#  Copyright © 2010-2012 Scott Kitterman <scott@kitterman.com>
 '''
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 2 as published 
-    by the Free Software Foundation.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+       http://www.apache.org/licenses/LICENSE-2.0
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+'''
 
 import syslog
 import re
@@ -29,7 +29,7 @@ def readUserConfigFile(path, recipient, configData):
     recipient.  Returns updated configData for the user.'''
 
     debugLevel = configData.get('debugLevel', 0)
-    if debugLevel >= 4: syslog.syslog('readConfigFile: Loading "%s"' % path)
+    if debugLevel >= 4: syslog.syslog('readUserConfigFile: Loading "%s"' % path)
     if configData == None: configData = {}
     nameConversion = {
             'debugLevel' : int,
@@ -46,15 +46,17 @@ def readUserConfigFile(path, recipient, configData):
             'Domain_Whitelist_PTR': str,
             'No_Mail': str,
             'Reject_Not_Pass_Domains' : str,
-            'defaultSeedOnly' : int
+            'defaultSeedOnly' : int,
+            'Header_Type' : str,
+            'Authserv-Id' : str
             }
 
     #  check to see if it's a file
     try:
         mode = os.stat(path)[0]
     except OSError, e:
-        syslog.syslog('ERROR stating "%s": %s' % ( path, e.strerror ))
-        return(configData)
+        syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
+        return(configData, False)
 
     #  load file
     fp = open(path, 'r')
@@ -80,7 +82,7 @@ def readUserConfigFile(path, recipient, configData):
             conversion = nameConversion.get(config[0])
             name, value = config
             if conversion == None:
-                syslog.syslog('ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
+                syslog.syslog(LOG_ERR,'ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
                 continue
             if debugLevel >= 5: syslog.syslog('readConfigFile: Found entry "%s=%s"'
                 % ( name, value ))
