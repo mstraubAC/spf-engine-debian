@@ -1,3 +1,14 @@
+pypolicyd-spf (0.9-1) unstable; urgency=low
+
+  * New upstream release
+    - Update debian/copyright for licensing changes
+    - Update debian/patches/install-conf-fix.patch for new release
+    - Add Suggests: python-authres for support for optional RFC 5451
+      Authentication-Results header support
+  * Stop installing two copies of upstream changelog (CHANGES)
+
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 10 Jan 2012 22:50:51 -0500
+
 pypolicyd-spf (0.8.1-2) unstable; urgency=low
 
   * Rebuild for python transition
