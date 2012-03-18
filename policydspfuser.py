@@ -23,7 +23,7 @@ import os
 
 ###############################################################
 commentRx = re.compile(r'^(.*)#.*$')
-def readUserConfigFile(path, recipient, configData):
+def _readUserConfigFile(path, recipient, configData):
     '''Reads a configuration file from the specified path, merging it
     with the configuration data specified in configData for the identified
     recipient.  Returns updated configData for the user.'''
@@ -53,7 +53,7 @@ def readUserConfigFile(path, recipient, configData):
 
     #  check to see if it's a file
     try:
-        mode = os.stat(path)[0]
+        os.stat(path)[0]
     except OSError, e:
         syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
         return(configData, False)
@@ -82,9 +82,9 @@ def readUserConfigFile(path, recipient, configData):
             conversion = nameConversion.get(config[0])
             name, value = config
             if conversion == None:
-                syslog.syslog(LOG_ERR,'ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
+                syslog.syslog(syslog.LOG_ERR,'ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
                 continue
-            if debugLevel >= 5: syslog.syslog('readConfigFile: Found entry "%s=%s"'
+            if debugLevel >= 5: syslog.syslog('readUserConfigFile: Found entry "%s=%s"'
                 % ( name, value ))
             configData[name] = conversion(value)
         peruser = True
@@ -93,7 +93,7 @@ def readUserConfigFile(path, recipient, configData):
     return configData, peruser
 
 
-def datacheck(configData, recipient):
+def _datacheck(configData, recipient):
     debugLevel = configData.get('debugLevel', 1)
     if debugLevel >= 3: syslog.syslog('Starting to process per-user settings')
     userdata = configData.get('Per_User')
@@ -101,7 +101,7 @@ def datacheck(configData, recipient):
     usertype, userlocation = string.split(userdata, ',')
     if usertype == "text":
          if debugLevel >= 4: syslog.syslog('Reading per user data (type text) from:  "%s"' % userlocation)
-         configData, peruser = readUserConfigFile(userlocation, recipient, configData)
+         configData, peruser = _readUserConfigFile(userlocation, recipient, configData)
          if debugLevel >= 4: syslog.syslog('Per-user settings for "%s": "%s"' % (recipient, str(configData)))
 
     return configData, peruser
