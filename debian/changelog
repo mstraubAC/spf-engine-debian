@@ -1,3 +1,9 @@
+pypolicyd-spf (1.0-2) UNRELEASED; urgency=low
+
+  * Fix debian watch to work with Launchpad again
+
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 19 Mar 2012 17:09:53 -0400
+
 pypolicyd-spf (1.0-1) unstable; urgency=low
 
   * New upstream release
