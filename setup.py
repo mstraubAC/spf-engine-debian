@@ -1,12 +1,11 @@
-#!/usr/bin/env python
-
 from distutils.core import setup
 import os
+import sys
 
 DESC = """python-policyd-spf SPF Postfix policy server implemented in Python."""
 
 setup(name='python-policyd-spf',
-      version='1.0',
+      version='1.1',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
@@ -20,15 +19,18 @@ setup(name='python-policyd-spf',
           ['policyd-spf.conf']), (os.path.join('share', 'man', 'man5'),
           ['policyd-spf.peruser.5'])],
       classifiers = [
-	'Development Status :: 5 - Production/Stable',
-	'Environment :: No Input/Output (Daemon)',
-	'Intended Audience :: Developers',
-	'License :: OSI Approved :: Apache Software License',
-	'Natural Language :: English',
-	'Operating System :: POSIX',
-	'Programming Language :: Python',
-	'Topic :: Communications :: Email :: Mail Transport Agents',
-	'Topic :: Communications :: Email :: Filters',
-	'Topic :: Software Development :: Libraries :: Python Modules'
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: No Input/Output (Daemon)',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
+        'Operating System :: POSIX',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Topic :: Communications :: Email :: Mail Transport Agents',
+        'Topic :: Communications :: Email :: Filters',
       ]
 )
+
+if sys.version_info < (2, 6):
+    raise Exception("python-policyd-spf requires python2.6/2.7 or python3.2 and later.")

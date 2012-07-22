@@ -3,17 +3,17 @@ Section: mail
 Priority: optional
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.debian.org>
-Build-Depends: debhelper (>= 7.3.16), python (>= 2.6.5-13~), quilt (>= 0.46-7)
+Build-Depends: debhelper (>= 7.3.16), python3, quilt (>= 0.46-7)
 Standards-Version: 3.9.3
 Homepage: https://launchpad.net/pypolicyd-spf
 Vcs-Svn: svn://svn.debian.org/python-apps/packages/pypolicyd-spf/trunk/
 Vcs-Browser: http://svn.debian.org/viewsvn/python-apps/packages/pypolicyd-spf/trunk/
-X-Python-Version: >= 2.4
+X-Python3-Version: >= 3.2
 
 Package: postfix-policyd-spf-python
 Architecture: all
-Depends: ${python:Depends}, ${misc:Depends}, python-spf, postfix, adduser
-Suggests: python-authres
+Depends: ${python3:Depends}, ${misc:Depends}, python3-spf, postfix, adduser
+Suggests: python3-authres
 Description: Postfix policy server for SPF checking
  postfix-policyd-spf-python is a full featured Postfix SMTPd policy engine for
  SPF checking. It includes a variety of whitelisting mechanisms and policy

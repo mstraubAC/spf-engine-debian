@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 #  Check SPF results and provide recommended action back to Postfix.
@@ -23,7 +23,7 @@
    limitations under the License.
 '''
 
-__version__ = "1.0: MAR 17, 2012"
+__version__ = "1.1: JUL 21, 2012"
 
 testing = True
 
@@ -49,13 +49,13 @@ def _cidrmatch(connectip, ipaddrs, n):
 
     try:
         if connectip.count(':'):
-            MASK = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFL
+            MASK = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
             connectip = spf.inet_pton(connectip)
             for arg in ipaddrs:
                 ipaddrs[ipaddrs.index(arg)] = spf.inet_pton(arg)
             bin = spf.bin2long6
         else:
-            MASK = 0xFFFFFFFFL
+            MASK = 0xFFFFFFFF
             bin = spf.addr2bin
         c = ~(MASK >> n) & MASK & bin(connectip)
         for ip in [bin(ip) for ip in ipaddrs]:
@@ -264,16 +264,16 @@ def _spfbypass(data, check_type, configData):
             if debugLevel >= 4: syslog.syslog ("PTR Domain Whitelist enabled.")
             try:
                 # Try a reverse DNS lookup first and try and match against the domain list that way
-                ipComponents = string.split(ip, '.')
+                ipComponents = ip.split('.')
                 ipComponents.reverse()
-                rDNSLookup = string.join(ipComponents, '.')+'.in-addr.arpa'
+                rDNSLookup = '.'.join([quad for quad in ipComponents]) + '.in-addr.arpa'
                 rDNSResults = spf.DNSLookup (rDNSLookup, 'ptr')
                 if (len (rDNSResults) > 0):
                     rDNSName = rDNSResults [0][1]
                 else:
                     # Reverse lookup didn't find any records, so don't continue with the check
                     rDNSName = None
-            except spf.TempError, e:
+            except spf.TempError as e:
                 # DNS timeout - continue with the base SPF check.
                 rDNSName = None
             if (rDNSName is not None):
@@ -320,7 +320,7 @@ def _spfcheck(data, instance_dict, configData, peruser):  #{{{1
         instance = str(int(random.random()*100000))
     # This is to prevent multiple headers being prepended
     # for multi-recipient mail.
-    if instance_dict.has_key(instance):
+    if instance in instance_dict:
         found_instance = instance_dict[instance]
     else:
         found_instance = []
@@ -647,7 +647,7 @@ def _spfcheck(data, instance_dict, configData, peruser):  #{{{1
 configFile = '/etc/python-policyd-spf/policyd-spf.conf'
 if len(sys.argv) > 1:
     if sys.argv[1] in ( '-?', '--help', '-h' ):
-        print 'usage: policyd-spf [<configfilename>]'
+        print('usage: policyd-spf [<configfilename>]')
         sys.exit(1)
     configFile = sys.argv[1]
 
@@ -663,14 +663,14 @@ lineRx = re.compile(r'^\s*([^=\s]+)\s*=(.*)$')
 while 1:
     line = sys.stdin.readline()
     if not line: break
-    line = string.rstrip(line)
+    line = line.rstrip()
     if debugLevel >= 4: syslog.syslog('Read line: "%s"' % line)
 
     #  end of entry  {{{2
     if not line:
         peruser = False
         if debugLevel >= 4: syslog.syslog('Found the end of entry')
-        configData = dict(configGlobal.items())
+        configData = dict(list(configGlobal.items()))
         if configData.get('Per_User'):
             import policydspfuser
             configData, peruser = policydspfuser._datacheck(configData, data.get('recipient'))
@@ -723,7 +723,7 @@ while 1:
     key = m.group(1)
     value = m.group(2)
     if key not in [ 'protocol_state', 'protocol_name', 'queue_id' ]:
-        value = string.lower(value)
+        value = value.lower()
     data[key] = value
 
 if debugLevel >= 3: syslog.syslog('Normal exit')

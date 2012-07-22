@@ -1,3 +1,14 @@
+pypolicyd-spf (1.1-1) experimental; urgency=low
+
+  * New upstream release
+    - Ported to Python 3
+    - Update build-depends/depends/suggests and build --with python3
+    - Override override_dh_auto_build, auto_install, and auto_clean since
+      debhelper doesn't know about python3 distutils
+    - Refresh patches
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 21 Jul 2012 21:45:30 -0400
+
 pypolicyd-spf (1.0-2) unstable; urgency=low
 
   * Move logcheck rules out of subdirectory (Closes: #675789)

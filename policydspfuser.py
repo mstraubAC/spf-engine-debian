@@ -54,7 +54,7 @@ def _readUserConfigFile(path, recipient, configData):
     #  check to see if it's a file
     try:
         os.stat(path)[0]
-    except OSError, e:
+    except OSError as e:
         syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
         return(configData, False)
 
@@ -65,19 +65,19 @@ def _readUserConfigFile(path, recipient, configData):
         if not line: break
 
         #  parse line
-        line = string.strip(string.split(line, '#', 1)[0])
+        line = (line.split('#', 1)[0]).strip()
         if not line: continue
-        data = map(string.strip, string.split(line, ',', 1))
+        data = [q.strip() for q in line.split(',', 1)]
         user, value = data
         if user != recipient:
             peruser = False
             continue
         values = {}
-        valuelist = string.split(value, '|')
+        valuelist = value.split('|')
         for valuepair in valuelist:
-            key, item = string.split(valuepair, '=')
+            key, item = valuepair.split('=')
             values[key] = item
-        for config in values.iteritems():
+        for config in values.items():
             #  check validity of name
             conversion = nameConversion.get(config[0])
             name, value = config
@@ -98,7 +98,7 @@ def _datacheck(configData, recipient):
     if debugLevel >= 3: syslog.syslog('Starting to process per-user settings')
     userdata = configData.get('Per_User')
     if debugLevel >= 3: syslog.syslog('User data: '+ str(userdata))
-    usertype, userlocation = string.split(userdata, ',')
+    usertype, userlocation = userdata.split(',')
     if usertype == "text":
          if debugLevel >= 4: syslog.syslog('Reading per user data (type text) from:  "%s"' % userlocation)
          configData, peruser = _readUserConfigFile(userlocation, recipient, configData)

@@ -1,9 +1,9 @@
 This patch is to integrate with the package namespace for Debian and derived
 distributions.  It has not gone, and does not need to go, upstream.
-Index: pypolicyd-spf-1.0/policyd-spf
+Index: pypolicyd-spf-1.1/policyd-spf
 ===================================================================
---- pypolicyd-spf-1.0.orig/policyd-spf	2012-03-17 23:51:37.000000000 -0400
-+++ pypolicyd-spf-1.0/policyd-spf	2012-03-18 00:33:41.897527156 -0400
+--- pypolicyd-spf-1.1.orig/policyd-spf	2012-07-21 21:24:58.754207273 -0400
++++ pypolicyd-spf-1.1/policyd-spf	2012-07-21 21:48:28.234165627 -0400
 @@ -644,7 +644,7 @@
  ###################################################
  #  load config file  {{{1
@@ -12,11 +12,11 @@ Index: pypolicyd-spf-1.0/policyd-spf
 +configFile = '/etc/postfix-policyd-spf-python/policyd-spf.conf'
  if len(sys.argv) > 1:
      if sys.argv[1] in ( '-?', '--help', '-h' ):
-         print 'usage: policyd-spf [<configfilename>]'
-Index: pypolicyd-spf-1.0/policyd-spf.1
+         print('usage: policyd-spf [<configfilename>]')
+Index: pypolicyd-spf-1.1/policyd-spf.1
 ===================================================================
---- pypolicyd-spf-1.0.orig/policyd-spf.1	2012-03-17 23:51:37.000000000 -0400
-+++ pypolicyd-spf-1.0/policyd-spf.1	2012-03-18 00:33:41.901527155 -0400
+--- pypolicyd-spf-1.1.orig/policyd-spf.1	2012-07-21 21:24:58.758207273 -0400
++++ pypolicyd-spf-1.1/policyd-spf.1	2012-07-21 21:48:28.238165627 -0400
 @@ -145,12 +145,13 @@
  
  $ policyd-spf \-h (Display usage message)
@@ -53,10 +53,10 @@ Index: pypolicyd-spf-1.0/policyd-spf.1
  
   2. Configure the Postfix policy service in /etc/postfix/main.cf:
  
-Index: pypolicyd-spf-1.0/policyd-spf.conf.5
+Index: pypolicyd-spf-1.1/policyd-spf.conf.5
 ===================================================================
---- pypolicyd-spf-1.0.orig/policyd-spf.conf.5	2012-03-17 23:51:37.000000000 -0400
-+++ pypolicyd-spf-1.0/policyd-spf.conf.5	2012-03-18 00:33:41.901527155 -0400
+--- pypolicyd-spf-1.1.orig/policyd-spf.conf.5	2012-07-21 21:24:58.778207272 -0400
++++ pypolicyd-spf-1.1/policyd-spf.conf.5	2012-07-21 21:48:28.238165627 -0400
 @@ -138,7 +138,7 @@
  .SH "USAGE"
  .IX Header "USAGE"
@@ -75,11 +75,11 @@ Index: pypolicyd-spf-1.0/policyd-spf.conf.5
  
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
-Index: pypolicyd-spf-1.0/setup.py
+Index: pypolicyd-spf-1.1/setup.py
 ===================================================================
---- pypolicyd-spf-1.0.orig/setup.py	2012-03-17 23:51:37.000000000 -0400
-+++ pypolicyd-spf-1.0/setup.py	2012-03-18 00:33:41.901527155 -0400
-@@ -16,9 +16,9 @@
+--- pypolicyd-spf-1.1.orig/setup.py	2012-07-21 21:24:58.758207273 -0400
++++ pypolicyd-spf-1.1/setup.py	2012-07-21 21:48:28.238165627 -0400
+@@ -15,9 +15,9 @@
        scripts = ['policyd-spf'],
        data_files=[(os.path.join('share', 'man', 'man1'),
            ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
@@ -90,5 +90,5 @@ Index: pypolicyd-spf-1.0/setup.py
 +          'postfix-policyd-spf-python'), ['policyd-spf.conf']),
 +          (os.path.join('share', 'man', 'man5'), ['policyd-spf.peruser.5'])],
        classifiers = [
- 	'Development Status :: 5 - Production/Stable',
- 	'Environment :: No Input/Output (Daemon)',
+         'Development Status :: 5 - Production/Stable',
+         'Environment :: No Input/Output (Daemon)',

@@ -1,4 +1,4 @@
-Python Postfix Policy for SPF (python-policy-spf) 1.0
+Python Postfix Policy for SPF (python-policy-spf) 1.1
 Python based policy daemon for Postfix SPF checking
 Tumgreyspf source
  Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
@@ -27,21 +27,21 @@ Documentation inputs:
 =================
 
 This is python-policyd-spf, an external policy checker for the postfix mail
-server.  It will use pyspf to check SPF records to determine if email should 
+server.  It will use pyspf to check SPF records to determine if email should
 be rejected by your server.
 
-To install from the tar.gz (is this software has been packaged for your 
-distribution, the packaged version is recommended and should be installed using
-your normal distribution packaging tools):
+To install from the tar.gz (is this software has been packaged for your
+distribution, the packaged version is recommended and should be installed
+using your normal distribution packaging tools):
 
 1.  Extract the package from the tarball (tar -xvvzf ...)
 2.  Enter the package directory (cd ...)
 3.  python setup.py build
 4.  As root python setup.py install
 
-It requires Python and the pyspf (python-spf) library version 2.0 or higher.
-If pyspf not available through your packaging system, it can be downloaded
-from:
+It requires Python (python2.6, python2.7, or python3.2) and the pyspf
+(python-spf) library version 2.0 or higher.  If pyspf not available through
+your packaging system, it can be downloaded from:
 
 http://sourceforge.net/projects/pymilter/
 

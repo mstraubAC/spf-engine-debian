@@ -57,7 +57,7 @@ def _processConfigFile(filename = None, config = None, useSyslog = 1,
     if filename != None:
         try:
             _readConfigFile(filename, config)
-        except Exception, e:
+        except Exception as e:
             if useSyslog:
                 syslog.syslog(e.args[0])
             if useStderr:
@@ -75,9 +75,9 @@ class ExceptHook:
    def __call__(self, etype, evalue, etb):
       import traceback
       tb = traceback.format_exception(*(etype, evalue, etb))
-      tb = map(string.rstrip, tb)
-      tb = string.join(tb, '\n')
-      for line in string.split(tb, '\n'):
+      tb = list([a.rstrip('\n') for a in tb])
+      tb = '\n'.join([c for c in tb])
+      for line in tb.split('\n'):
          if self.useSyslog:
             syslog.syslog(line)
          if self.useStderr:
@@ -124,7 +124,7 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
     #  check to see if it's a file
     try:
         mode = os.stat(path)[0]
-    except OSError, e:
+    except OSError as e:
         syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
         return(configData)
     if not stat.S_ISREG(mode):
@@ -138,9 +138,9 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
         if not line: break
 
         #  parse line
-        line = string.strip(string.split(line, '#', 1)[0])
+        line = (line.split('#', 1)[0]).strip()
         if not line: continue
-        data = map(string.strip, string.split(line, '=', 1))
+        data = [q.strip() for q in line.split('=')]
         if len(data) != 2:
             if len(data) == 1:
                 if debugLevel >= 1:
