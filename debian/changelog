@@ -1,3 +1,10 @@
+pypolicyd-spf (1.1-2) experimental; urgency=low
+
+  * Simplify debian/rules to build using python3 to avoid distutils shebang
+    rewriting
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 02 Aug 2012 17:03:48 -0400
+
 pypolicyd-spf (1.1-1) experimental; urgency=low
 
   * New upstream release
