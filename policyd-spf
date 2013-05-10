@@ -23,7 +23,7 @@
    limitations under the License.
 '''
 
-__version__ = "1.1: JUL 21, 2012"
+__version__ = "1.1.2: MAY 10, 2013"
 
 testing = True
 

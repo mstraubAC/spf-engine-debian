@@ -4,6 +4,14 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 1.1.2 (2013-05-10 13:13 -0400)
+    Brown paper bag release
+  * Add MANIFEST.in and rename in setup.py to make package compatible with
+    using sdist (fixes missing files in 1.1.1)
+
+--- 1.1.1 (2013-05-10 12:23 -0400)
+  * Fixed documentation to be more compatible with running with Python3.
+
 --- 1.1 (2012-07-21 21:30 -0400)
   + Ported to Python 3. Tested on python3.2, python2.7, and python2.6.
     Versions previous to python2.6 will not work. 

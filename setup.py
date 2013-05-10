@@ -2,10 +2,10 @@ from distutils.core import setup
 import os
 import sys
 
-DESC = """python-policyd-spf SPF Postfix policy server implemented in Python."""
+DESC = """pypolicyd-spf SPF Postfix policy server implemented in Python."""
 
-setup(name='python-policyd-spf',
-      version='1.1',
+setup(name='pypolicyd-spf',
+      version='1.1.2',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
@@ -33,4 +33,4 @@ setup(name='python-policyd-spf',
 )
 
 if sys.version_info < (2, 6):
-    raise Exception("python-policyd-spf requires python2.6/2.7 or python3.2 and later.")
+    raise Exception("pypolicyd-spf requires python2.6/2.7 or python3.2 and later.")

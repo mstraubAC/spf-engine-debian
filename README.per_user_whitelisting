@@ -41,11 +41,9 @@ Postfix "check_policy_service" access restriction to apply the
 
     /etc/postfix/master.cf:
         policyd-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python
-            /usr/bin/policyd-spf
+            user=nobody argv=/usr/bin/policyd-spf
         policyd-spf-fin unix  -    n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python
-            /usr/bin/policyd-spf /etc/python-policyd-spf/policyd-spf-fin.conf
+            user=nobody argv=/usr/bin/policyd-spf /etc/python-policyd-spf/policyd-spf-fin.conf
 
     /etc/postfix/main.cf:
         spf_fin = check_policy_service unix:private/policyd-spf-fin
