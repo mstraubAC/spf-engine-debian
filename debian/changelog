@@ -1,8 +1,14 @@
-pypolicyd-spf (1.1.2-2) UNRELEASED; urgency=low
+pypolicyd-spf (1.2-1) unstable; urgency=low
 
+  [ Jakub Wilk ]
   * Fix a typo in README.source.
 
- -- Jakub Wilk <jwilk@debian.org>  Wed, 12 Jun 2013 01:44:23 +0200
+  [ Scott Kitterman ]
+  * New upstream release
+    - Bump minimum python3 version to 3.3 for ipaddress
+    - Refreshed patches
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 25 Jul 2013 15:15:14 -0400
 
 pypolicyd-spf (1.1.2-1) unstable; urgency=low
 
