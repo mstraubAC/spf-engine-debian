@@ -4,6 +4,15 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 1.2 (2013-07-25)
+  ! Added external dependency on ipaddr module for python versions < 3.3
+  * Fix PTR whitelist to work with IPv6 connections (patch from Frank
+    Hunszinger) - LP: #1179266
+  * Replace custom code with use of ipaddr/ipaddress to perform CIDR matching
+  ! CIDR network definitions are now more limited to correct networks
+    - Double slashes are no longer allowed
+    - Updated defaults and documentation for skip_addresses to match
+
 --- 1.1.2 (2013-05-10 13:13 -0400)
     Brown paper bag release
   * Add MANIFEST.in and rename in setup.py to make package compatible with

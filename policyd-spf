@@ -23,7 +23,7 @@
    limitations under the License.
 '''
 
-__version__ = "1.1.2: MAY 10, 2013"
+__version__ = "1.2: JULY 25, 2013"
 
 testing = True
 
@@ -36,6 +36,10 @@ import socket
 import spf
 import policydspfsupp
 try:
+    import ipaddress
+except ImportError:
+    import ipaddr as ipaddress
+try:
     import authres
 except:
     pass # authres not needed in default configuration.
@@ -44,44 +48,30 @@ syslog.openlog(os.path.basename(sys.argv[0]), syslog.LOG_PID, syslog.LOG_MAIL)
 policydspfsupp._setExceptHook()
 
 #############################################
-def _cidrmatch(connectip, ipaddrs, n):
-    """Match connect IP against a list of other IP addresses. From pyspf."""
+def _cidrmatch(ip, netwrk):
+    """Match connect IP against a CIDR network of other IP addresses."""
 
     try:
-        if connectip.count(':'):
-            MASK = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            connectip = spf.inet_pton(connectip)
-            for arg in ipaddrs:
-                ipaddrs[ipaddrs.index(arg)] = spf.inet_pton(arg)
-            bin = spf.bin2long6
-        else:
-            MASK = 0xFFFFFFFF
-            bin = spf.addr2bin
-        c = ~(MASK >> n) & MASK & bin(connectip)
-        for ip in [bin(ip) for ip in ipaddrs]:
-            if c == ~(MASK >> n) & MASK & ip: return True
-    except socket.error: pass
-    return False
+        address = ipaddress.ip_address(ip)
+    except AttributeError:
+        address = ipaddress.IPAddress(ip)
+    try:
+        network = ipaddress.IPv4Network(netwrk)
+    except ipaddress.AddressValueError:
+        network = ipaddress.IPv6Network(netwrk)
+    return network.__contains__(address)
 
-def _parse_cidr(cidr_ip):
-    """Breaks CIDR notation into a (address,cidr,cidr6) tuple.  The cidr 
-       defaults to 32 if not present. Derived from pyspf"""
-    RE_DUAL_CIDR = re.compile(r'//(0|[1-9]\d*)$')
-    RE_CIDR = re.compile(r'/(0|[1-9]\d*)$')
-    a = RE_DUAL_CIDR.split(cidr_ip)
-    if len(a) == 3:
-        cidr_ip, cidr6 = a[0], int(a[1])
+def _get_rdns_lookup(ip):
+    try:
+        address = ipaddress.ip_address(ip)
+    except AttributeError:
+        address = ipaddress.IPAddress(ip)
+    if isinstance(address, ipaddress.IPv4Address):
+        components = address.exploded.split('.')
+        return '.'.join(components[::-1]) + '.in-addr.arpa'    
     else:
-        cidr6 = None
-    a = RE_CIDR.split(cidr_ip)
-    if len(a) == 3:
-        cidr_ip, cidr = a[0], int(a[1])
-    else:
-        cidr = None
-    b = cidr_ip.split(':', 1)
-    if len(b) < 2:
-        return cidr_ip, cidr
-    return a[0], cidr6
+        components = address.exploded.split(':')
+        return '.'.join('.'.join(list(quad)) for quad in components)[::-1] + '.ip6.arpa'
 #############################################
 def _get_resultcodes(configData, scope):
     # Parse config options for SPF results to correct Posftix actions
@@ -189,46 +179,37 @@ def _spfbypass(data, check_type, configData):
         bypass_list = (str(configData.get(check_type)))
         bypass_list_list = bypass_list.split(',')
         if check_type == 'skip_addresses' or check_type == 'Whitelist':
-            for cidr in bypass_list_list:
-                parsed_address = _parse_cidr(cidr)
-                good_ip = [parsed_address[0],]
-                cidr_range = parsed_address[1]
-                if not parsed_address[1]:
-                    ip_str = str(good_ip[0])
-                    if spf.RE_IP4.match(ip_str):
-                        cidr_range = 32
-                    elif spf.RE_IP6.match(ip_str):
-                        cidr_range = 128
-                    else:
-                        Message = 'ERROR: ' + ip_str + ' in ' + check_type + ' not IP address. Aborting whitelist processing.'
-                        if debugLevel: syslog.syslog(Message)
-                        return (False, 'None')
-                if _cidrmatch(ip, good_ip, int(cidr_range)):
-                    if check_type == 'skip_addresses':
-                        comment = 'SPF check N/A for local connections - '
-                    else:
-                        comment = 'SPF skipped for whitelisted relay - '
-                    if 'SPF' in configData.get('Header_Type'):
-                        Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
-                            % ( data.get('client_address', '<UNKNOWN>'),
-                                data.get('helo_name', '<UNKNOWN>'),
-                                data.get('sender', '<UNKNOWN>'),
-                                data.get('recipient', '<UNKNOWN>'),
-                                ))
-                    elif 'AR' in configData.get('Header_Type'):
-                        try:
-                            Header = str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
-                                results = [authres.NoneAuthenticationResult(comment = \
-                                '{0} client-ip={1}; helo={2}; envelope-from={3}; receiver={4}'.format(comment, data.get('client_address', '<UNKNOWN>'),\
-                                    data.get('helo_name', '<UNKNOWN>'), data.get('sender', '<UNKNOWN>'), data.get('recipient', '<UNKNOWN>'))
-                                    )]))
-                        except TypeError as x:
-                            if str(x).startswith('sequence item 2'):
-                                syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
-                                raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
-
-                    if debugLevel >= 3: syslog.syslog(Header)
-                    return (True, Header)
+            for skip_network in bypass_list_list:
+                try:
+                    if _cidrmatch(ip, skip_network):
+                        if check_type == 'skip_addresses':
+                            comment = 'SPF check N/A for local connections - '
+                        else:
+                            comment = 'SPF skipped for whitelisted relay - '
+                        if 'SPF' in configData.get('Header_Type'):
+                            Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                                % ( data.get('client_address', '<UNKNOWN>'),
+                                    data.get('helo_name', '<UNKNOWN>'),
+                                    data.get('sender', '<UNKNOWN>'),
+                                    data.get('recipient', '<UNKNOWN>'),
+                                    ))
+                        elif 'AR' in configData.get('Header_Type'):
+                            try:
+                                Header = str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
+                                    results = [authres.NoneAuthenticationResult(comment = \
+                                    '{0} client-ip={1}; helo={2}; envelope-from={3}; receiver={4}'.format(comment, data.get('client_address', '<UNKNOWN>'),\
+                                        data.get('helo_name', '<UNKNOWN>'), data.get('sender', '<UNKNOWN>'), data.get('recipient', '<UNKNOWN>'))
+                                        )]))
+                            except TypeError as x:
+                                if str(x).startswith('sequence item 2'):
+                                    syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
+                                    raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
+                        if debugLevel >= 3: syslog.syslog(Header)
+                        return (True, Header)
+                except ValueError as msg:
+                    Message = 'ERROR: {0} in {1} not IP network.  Message: {2}. Aborting whitelist processing.'.format(skip_network, check_type, msg)
+                    if debugLevel: syslog.syslog(Message)
+                    return (False, 'None')
             return (False, 'None')
         elif check_type == 'Domain_Whitelist':
             for domain in bypass_list_list:
@@ -264,10 +245,7 @@ def _spfbypass(data, check_type, configData):
             if debugLevel >= 4: syslog.syslog ("PTR Domain Whitelist enabled.")
             try:
                 # Try a reverse DNS lookup first and try and match against the domain list that way
-                ipComponents = ip.split('.')
-                ipComponents.reverse()
-                rDNSLookup = '.'.join([quad for quad in ipComponents]) + '.in-addr.arpa'
-                rDNSResults = spf.DNSLookup (rDNSLookup, 'ptr')
+                rDNSResults = spf.DNSLookup (_get_rdns_lookup(ip), 'ptr')
                 if (len (rDNSResults) > 0):
                     rDNSName = rDNSResults [0][1]
                 else:

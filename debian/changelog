@@ -1,3 +1,15 @@
+pypolicyd-spf (1.2-1) unstable; urgency=low
+
+  [ Jakub Wilk ]
+  * Fix a typo in README.source.
+
+  [ Scott Kitterman ]
+  * New upstream release
+    - Bump minimum python3 version to 3.3 for ipaddress
+    - Refreshed patches
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 25 Jul 2013 15:15:14 -0400
+
 pypolicyd-spf (1.1.2-1) unstable; urgency=low
 
   * New upstream release
