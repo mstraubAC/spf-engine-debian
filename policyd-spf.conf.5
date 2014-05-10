@@ -133,7 +133,7 @@
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-1\.1\.1
+1\.3
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -144,7 +144,7 @@ Usage:
 .IX Header "OTHER DOCUMENTATION"
 This documentation assumes you have read Postfix's README_FILES/
 SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
-(SPF).  See RFC 4408 for details.
+(SPF).  See RFC 7208 for details.
 
 man 1 policyd-spf provides general operation documentation for this
 package.
@@ -229,25 +229,20 @@ SPF_Not_Pass (default) - Reject if result not Pass, None, or Temperror
 (alternatively put, reject if the SPF result is Fail, Softfail, Neutral,
 PermError). Unlike Mail From checking, there are no standard e-mail use cases
 where a HELO check should not Pass if there is an SPF record for the HELO name
-(transparent forwarding, for example, is not an issue). Technically this
-option is not fully RFC 4408 compliant since the SPF check for the Mail From
-identity is mandatory and Neutral and None results must be treated the same.
-HELO/EHLO is known first in the SMTP dialogue and there is no practical reason
-to waste resources on Mail From checks if the HELO check will already cause
-the message to be rejected. These deviations should not cause interoperability
-problems when used for HELO.
-
-Softfail - Reject on HELO Softfail or Fail.  Technically this option is not
-fully RFC 4408 compliant since the Mail From identity is mandatory, but HELO/
-EHLO is known first in the SMTP dialogue and there is no practical reason to
-waste resources on Mail From checks if the HELO check will already cause the
-message to be rejected.
-
-Fail - Reject only on HELO Fail.  Technically this option is not fully RFC 4408
-compliant since the Mail From identity is mandatory, but HELO/EHLO is known
+(transparent forwarding, for example, is not an issue). HELO/EHLO is known
 first in the SMTP dialogue and there is no practical reason to waste resources
 on Mail From checks if the HELO check will already cause the message to be
-rejected.
+rejected. This should not cause interoperability problems when used for HELO.
+
+Softfail - Reject on HELO Softfail or Fail.  HELO/EHLO is known first in the
+SMTP dialogue and there is no practical reason to waste resources on Mail
+From checks if the HELO check will already cause the message to be rejected.
+This should not cause interoperability problems when used for HELO.
+
+Fail - Reject only on HELO Fail. HELO/EHLO is known first in the 
+SMTP dialogue and there is no practical reason to waste resources on Mail 
+From checks if the HELO check will already cause the message to be rejected. 
+This should not cause interoperability problems when used for HELO. 
 
 Null - Only reject HELO Fail for Null sender (SPF Classic).  This is the
 approach used by the pre-RFC 4408 reference implementation and many of the pre-
@@ -294,15 +289,13 @@ None
 Mail From rejection policy options are:
 
 SPF_Not_Pass - Reject if result not Pass/None/Tempfail. This option
-is not RFC 4408 compliant since the mail with an SPF Neutral result is treated
+is not RFC 7208 compliant since the mail with an SPF Neutral result is treated
 differently than mail with no SPF record and Softfail results are not supposed
 to cause mail rejection.  Global use of this option is not recommended. Use
 per-domain if needed (per-domain usage described below).
 
-Softfail - Reject on HELO Softfail or Fail.  Technically this option is not
-fully RFC 4408 compliant since Softfail results are not supposed to cause mail
-rejection.  Global use of this option is not recommended. Use
-per-domain if needed (per-domain usage described below).
+Softfail - Reject on Mail From Softfail or Fail.  Global use of this option is
+not recommended. Use per-domain if needed (per-domain usage described below).
 
 Fail (default) - Reject on Mail From Fail.
 
@@ -314,8 +307,9 @@ are calling the policy server twice (once for HELO checks and once for Mail
 From) with two different configuration files.  This approach is useful to get 
 both the HELO and Mail From headers prepended to a message.  It could also be
 used to do HELO checking only (because HELO checking has a lower false positive
-risk than Mail From checking), but this approach would not be fully RFC 4408
-compliant since the Mail From identity is mandatory.
+risk than Mail From checking), but this approach may not be fully RFC 7208
+compliant since the Mail From identity is mandatory if HELO checking does not
+reach a definitive result.
 
 Default:
 
@@ -361,9 +355,8 @@ Using this option, a list of domains can be defined for special processing
 when messages do not Pass SPF.  This can be useful for commonly spoofed
 domains that are not yet publishing SPF records with \-all.  Specifically, if
 mail from a domain in this list has a Neutral/Softfail result, it will be
-rejected (as if it had a Fail result).  This option is not supported by RFC
-4408, but if needed, it is better to do it on a per-domain basis rather than
-globally.
+rejected (as if it had a Fail result).  If needed, it is better to do it on a
+per-domain basis rather than globally.
 
 Example:
 
@@ -403,7 +396,7 @@ TempError.  This is the traditional usage and has proven useful in reducing
 acceptance of unwanted messages.  Sometimes spam senders do not retry.  
 Sometimes by the time a message is retried the sending IP has made it onto a
 DNS RBL and can then be rejected.  This is not the default because it is
-possible for some DNS errors that are classified as "Temporary" per RFC 4408
+possible for some DNS errors that are classified as "Temporary" per RFC 7208
 to be permanent in the sense that they require operator intervention to
 correct.
 
@@ -494,7 +487,7 @@ this to list trusted forwarders by domain name if they do not publish SPF
 records.  Client IP addresses PTR names are tested to see if they match the
 listed domains.  This is useful for large forwarders with complex outbound
 infrastructures, but no SPF records and predictable host naming. Matching is
-done using the same rules as the SPF PTR mechanism as described in RFC 4408.
+done using the same rules as the SPF PTR mechanism as described in RFC 7208.
 List the parent domain and all subdomains will match. This option is less
 scalable than the SPF IP Whitelist.  An x-header is prepended indicating the IP
 was whitelisted against SPF checks.  This is a trace header only.  This option
@@ -513,9 +506,9 @@ None
 .IX Header "RESULTS HEADER"
 
 The standard method for documenting SPF results in a message (for consumption
-by downstream processes) is the Received-SPF header defined in RFC 4408. This
+by downstream processes) is the Received-SPF header defined in RFC 7208. This
 is the default header to use. Results can also be documented in the
-Authentication-Results header defined by RFC 5451. The default is
+Authentication-Results header, which is also covered in  RFC 7208. The default is
 Received-SPF (SPF), but inclusion of Authentication-Results (AR) headers as an
 alternative to Received-SPF can be specified. 
 
@@ -539,7 +532,7 @@ SPF
 
 Every Authentication-Results header field has an authentication identifier
 field ('Authserv_Id'). This is similar in syntax to a fully-qualified domain
-name. See policyd-spf.conf.5 and RFC 5451 paragraph 2.3 for details.
+name. See policyd-spf.conf.5 and RFC 7001 paragraph 2.4 for details.
 Default is None.  Authserv-Id must be provided if Header_Type 'AR' is used.
 
 The authentication identifier field provides a unique identifier that refers
@@ -551,11 +544,43 @@ Example:
 
 Authserv_Id = mx.example.com
 
+.SH "DNS Timeout Limit"
+.IX Header "DNS Timeout Limit
+
+RFC 7208 recommends an elapsed time limit for SPF checks of at least 20
+seconds.  Lookup_Time allows the maximum time (seconds) to be adjusted.  20
+seconds is the default.  
+
+Example:
+
+Lookup_Time = 20
+
+Default
+
+20 (seconds)
+
+.SH "DNS Void Lookup Limit"
+.IX Header "DNS Void Lookup Limit"
+RFC 7208 adds a new processing limit called "void lookup limit" (See section
+4.6.4).  Void lookups are DNS queries within an SPF record for which DNS
+queries return either a positive answer (RCODE 0) with an answer count of 0,
+or a "Name Error" (RCODE 3) answer.  This should not need to be changed.
+Although new in an RFC in RFC 7208, this limit has been widely deployed in the
+Mail::SPF perl library without issue.  Default is 2, but it can be adjusted.
+Only relevant for pyspf 2.0.9 and later.  Ignored for earlier releases.
+
+Example:
+
+Void_Limit = 2
+
+Default
+
+2
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 man 1 policyd-spf, man 5 policyd-spf.peruser, python-spf,
-<http://www.openspf.net>, RFC 4408, RFC 5451
+<http://www.openspf.net>, RFC 7208, RFC 7001
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"

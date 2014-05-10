@@ -1,3 +1,19 @@
+pypolicyd-spf (1.3-1) unstable; urgency=medium
+
+  * New upstream release
+    - Updated to support RFC 7208
+    - New configuration parameter to adjust DNS timeout delay, Lookup_Time
+      (Closes: #747349)
+    - When used witn pyspf 2.0.9 meets all RFC 7208 requirements (set minimum
+      python3-spf version)
+    - Refreshed patches
+  * Updated package description
+  * Bump standards version to 3.9.5 without further change
+  * Update debian/README.Debian to match current user name and file
+    locations (Closes: #741516)
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 10 May 2014 02:08:19 -0400
+
 pypolicyd-spf (1.2-1) unstable; urgency=low
 
   [ Jakub Wilk ]
