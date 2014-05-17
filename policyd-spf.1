@@ -128,18 +128,18 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2008-02-18"
+.TH policy-spf 1 "2012-03-17"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.6
+1\.3
 
 .SH "USAGE"
 .IX Header "USAGE"
 
 NOTE: Depending on the packaging and distribution, the exact path to the
-executable may vary. The executable should be included in the Python path.
+executable may vary.
 
 $ policyd-spf (Start using installed config file)
 
@@ -148,8 +148,9 @@ $ policyd-spf \-h (Display usage message)
 $ policyd-spf /etc/policyd-spf/policyd-spf.conf (Config file name to use)
 
 Configuration options are described in the sample configuration file provided
-with the package policyd-spf.conf(5).  The provided setup.py installs this 
-configuration file in /etc/policyd-spf/.
+with the package (policyd-spf.conf.commented) and in policyd-spf.conf(5).  The
+provided setup.py installs an uncommented configuration file in 
+/etc/policyd-spf/.
 
 Additionally, whitelisting certain IP addresses or IP addresses used by listed
 domains from SPF checks is supported.  Skipping SPF checks for local submission
@@ -160,9 +161,12 @@ policyd-spf.conf(5) shows the format to use.
 .IX Header "OTHER DOCUMENTATION"
 This documentation assumes you have read Postfix's README_FILES/
 SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
-(SPF).  See RFC 4408 for details.
+(SPF).  See RFC 7208 for details.
 
-See policyd-spf.conf(5) for configuration file information.
+See man 5 policyd-spf.conf for configuration file information.
+
+man 5 policyd-spf.peruser provides documentation on setting up and using
+different configuration options on a per user (mail reciepient) basis.
 
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -210,7 +214,7 @@ administrators.  See policyd-spf.conf(5) for configuration file details.
 
 Policyd-spf will log messages to syslog about it's activities.  The "debugLevel"
 value in "policyd-spf.conf" can be increased to get additional information to
-be logged.  When set to a value of "0", only    test results (SPF hits/misses) 
+be logged.  When set to a value of "0", only test results (SPF hits/misses) 
 are logged.  Results will be returned to Postfix and logged as a warning by 
 Postfix also.  For logging by this policy server, look for "policyd-spf" in your
 mail log files.
@@ -250,12 +254,14 @@ followed by a empty line:
  1. Add the following to /etc/postfix/master.cf:
 
         policyd-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
+            user=nobody argv=/usr/bin/policyd-spf
 
     NOTE: Check the path to both the installed Python interpreter and
           policyd-spf.  These vary from system to system.  To use non-default
           settings, you must also add the config file (see above and 
-          policyd-spf.conf(5) for details).
+          policyd-spf.conf(5) for details).  If you run other services with
+          user nobody, create a dedicated user for this policy server and use
+          that instead.
 
  2. Configure the Postfix policy service in /etc/postfix/main.cf:
 
@@ -274,14 +280,15 @@ followed by a empty line:
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-policyd-spf.conf(5), python-spf, <http://www.openspf.org>, RFC 4408
+policyd-spf.conf(5), policyd-spf.peruser(5), python-spf,
+<http://www.openspf.org>, RFC 7208
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
-This version of \fBpython-policyd-spf\fR was written by Copyright (c) 2007 
-Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf, written
-by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
-Portions of the documentation were written by Meng Weng Wong 
-<mengwong@pobox.com>.
+This version of \fBpython-policyd-spf\fR was written by Copyright © 2007-2012
+Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf,
+written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>. Portions of
+the documentation were written by Meng Weng Wong <mengwong@pobox.com>.
 .PP
 This man-page was created by Scott Kitterman <scott@kitterman.com>.
+

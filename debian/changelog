@@ -1,8 +1,231 @@
-pypolicyd-spf (0.6-2~bpo40+1) etch-backports; urgency=low
+pypolicyd-spf (1.3-1~bpo70+1) wheezy-backports; urgency=medium
 
-  * Initial backport for etch in response to user requests
+  * Backport for wheezy
+  * Re-add depends on python3-ipaddr for python3.2 compatibility
 
- -- Scott Kitterman <scott@kitterman.com>  Sun, 09 Mar 2008 05:13:29 -0400
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 17 May 2014 09:42:47 -0400
+
+pypolicyd-spf (1.3-1) unstable; urgency=medium
+
+  * New upstream release
+    - Updated to support RFC 7208
+    - New configuration parameter to adjust DNS timeout delay, Lookup_Time
+      (Closes: #747349)
+    - When used witn pyspf 2.0.9 meets all RFC 7208 requirements (set minimum
+      python3-spf version)
+    - Refreshed patches
+  * Updated package description
+  * Bump standards version to 3.9.5 without further change
+  * Update debian/README.Debian to match current user name and file
+    locations (Closes: #741516)
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 10 May 2014 02:08:19 -0400
+
+pypolicyd-spf (1.2-1) unstable; urgency=low
+
+  [ Jakub Wilk ]
+  * Fix a typo in README.source.
+
+  [ Scott Kitterman ]
+  * New upstream release
+    - Bump minimum python3 version to 3.3 for ipaddress
+    - Refreshed patches
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 25 Jul 2013 15:15:14 -0400
+
+pypolicyd-spf (1.1.2-1) unstable; urgency=low
+
+  * New upstream release
+    - Makes upstream documentation Python3 compatible
+  * Update README.Debian to be Python3 compatible and match upstream
+    documentation
+  * Add NEWS.Debian with postfix configuration changes needed to work with
+    the new version
+
+ -- Scott Kitterman <scott@kitterman.com>  Fri, 10 May 2013 13:26:12 -0400
+
+pypolicyd-spf (1.1-3) unstable; urgency=low
+
+  * Upload to unstable
+
+  [ Jakub Wilk ]
+  * Use canonical URIs for Vcs-* fields.
+
+  [ Scott Kitterman ]
+  * Bump standards version to 3.9.4
+    - Bump minimum debhelper version to 8.1.0
+    - Set compat to 8
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 09 May 2013 00:14:21 -0400
+
+pypolicyd-spf (1.1-2) experimental; urgency=low
+
+  * Simplify debian/rules to build using python3 to avoid distutils shebang
+    rewriting
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 02 Aug 2012 17:03:48 -0400
+
+pypolicyd-spf (1.1-1) experimental; urgency=low
+
+  * New upstream release
+    - Ported to Python 3
+    - Update build-depends/depends/suggests and build --with python3
+    - Override override_dh_auto_build, auto_install, and auto_clean since
+      debhelper doesn't know about python3 distutils
+    - Refresh patches
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 21 Jul 2012 21:45:30 -0400
+
+pypolicyd-spf (1.0-2) unstable; urgency=low
+
+  * Move logcheck rules out of subdirectory (Closes: #675789)
+    - Install as postfix-policyd-spf-python.logcheck
+  * Fix debian watch to work with Launchpad again
+
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 05 Jun 2012 01:04:16 -0400
+
+pypolicyd-spf (1.0-1) unstable; urgency=low
+
+  * New upstream release
+    - Refreshed patch
+  * Bumped standards version to 3.9.3 without further change
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 18 Mar 2012 00:33:00 -0400
+
+pypolicyd-spf (0.9-1) unstable; urgency=low
+
+  * New upstream release
+    - Update debian/copyright for licensing changes
+    - Update debian/patches/install-conf-fix.patch for new release
+    - Add Suggests: python-authres for support for optional RFC 5451
+      Authentication-Results header support
+  * Stop installing two copies of upstream changelog (CHANGES)
+
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 10 Jan 2012 22:50:51 -0500
+
+pypolicyd-spf (0.8.1-2) unstable; urgency=low
+
+  * Rebuild for python transition
+  * Drop ancient version requirements for python-spf and postfix depends
+  * Bump Standards-Version to 3.9.2 without further change
+
+ -- Scott Kitterman <scott@kitterman.com>  Tue, 19 Apr 2011 23:47:33 -0400
+
+pypolicyd-spf (0.8.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Bump standards version to 3.9.1 without further change
+  * Update for recent Python policy changes:
+    - Change XS-Python-Version X-Python-Version and bump minimum python
+      version to 2.6.5-13~
+    - Drop XB-Python-Version
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 27 Nov 2010 23:22:23 -0500
+
+pypolicyd-spf (0.8.0-2) unstable; urgency=low
+
+  * Convert from CDBS to Debhelper 7
+    - Port debian/rules to DH 7 --with quilt plus overrides
+    - Drop cdbs from build-depends
+    - Add quilt to build-depends
+    - Update debian/README.source
+    - Bump debhelper version requirement
+    - Change compat to 7
+    - Remove cdbs generated pycompat
+  * Convert from python-central to dh_python2
+    - Drop build-depends on python-central
+    - Version build-depend on python (>- 2.6.5.-2~)
+    - Add --with python2 to debian/rules
+  * Drop obsolete Conflicts/Provides/Replaces: python-policyd-spf
+  * Drop obsolete debian/postfix-policyd-spf-python.postrm/preinst
+  * Fix XB-Python-Version
+  * Bump standards version to 3.8.4 without further change
+  * Drop DM-Upload-Allowed
+
+ -- Scott Kitterman <scott@kitterman.com>  Fri, 25 Jun 2010 14:41:35 -0400
+
+pypolicyd-spf (0.8.0-1) unstable; urgency=low
+
+  * New upstream release
+    - Updated Debian config patch
+  * Update debian/copyright for new year
+  * Correct XS/XB-Python-Version to be >= 2.4
+  * Build-dep on python-all instead of python
+  * Correct short description - the package is not a daemon
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 17 Feb 2010 19:12:38 -0500
+
+pypolicyd-spf (0.7.3-1) unstable; urgency=low
+
+  [ Sandro Tosi ]
+  * debian/control
+    - switch Vcs-Browser field to viewsvn
+
+  [ Scott Kitterman ]
+  * New upstream release
+    - Works with Python 2.4 now
+  * debian/control
+    - Update homepage for new upstream location
+    - Update XS/XB-Python-Version due to deprecation of current
+    - Improve package description
+  * Add upstream changelog (CHANGES) to postfix-policyd-spf-python.docs
+  * Update debian/watch for the new upstream location
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 07 Jan 2010 01:23:58 -0500
+
+pypolicyd-spf (0.7.2-1) unstable; urgency=low
+
+  * New upstream release
+    - Fix crash on missing "@" in mail from (closes: #551714)
+    - Fix man page type (closes: #517119)
+  * Add logcheck filter (closes: #499503)
+  * Add ${misc:Depends} to debian/control
+  * Bump standards version to 3.8.3 without further change
+  * Use proper © symbol in debian/changelog
+  * Set -e in all maintainer scripts
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 12 Nov 2009 23:55:03 -0500
+
+pypolicyd-spf (0.7.1-1) unstable; urgency=low
+
+  * New upstream release
+    - Documentation updates
+    - Freshen install-conf-fix.patch for new release
+  * Create and use dedicated user instead of nobody
+    - Add postfix-policyd-spf-python.postinst to create user if needed
+    - Add depends on adduser 
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 26 Jul 2008 00:14:50 -0400
+
+pypolicyd-spf (0.7-1) unstable; urgency=low
+
+  * New upstream release
+    - Added receiver policy options to reject softfail and neutral SPF
+      messages
+    - Use minimal configuration file by default and provide additional
+      fully commented config file
+  * Correct README.Debian directory names (thanks to Carlos Pasqualini
+    for noticing and letting me know)
+  * Freshen debian/patches/install-conf-fix.patch
+  * Install new policyd-spf.conf.commented file with docs
+  * Bump standards version to 3.8.0 and add README.source
+  * Switch to python-central
+    - Add XS/XB-Python-Version: current to debian/control
+    - Update build-dep and debian/rules
+    - Remove debian/pyversions
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 22 Jun 2008 17:55:18 -0400
+
+pypolicyd-spf (0.6.1-1) unstable; urgency=low
+
+  [ Scott Kitterman ]
+  * New upstream release
+    - Fix crash if HELO checking is disabled
+
+  [ Piotr Ożarowski ]
+  * Add DM-Upload-Allowed: yes
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 05 Apr 2008 01:58:32 -0400
 
 pypolicyd-spf (0.6-2) unstable; urgency=low
 

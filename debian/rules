@@ -1,9 +1,20 @@
 #!/usr/bin/make -f
-# -*- mode: makefile; coding: utf-8 -*-
 
-DEB_PYTHON_SYSTEM=pysupport
+%:
+	dh $@ --with quilt,python3
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/python-distutils.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
+override_dh_auto_build:
 
+override_dh_auto_install:
+	python3 $(CURDIR)/setup.py install --install-layout=deb --root $(CURDIR)/debian/postfix-policyd-spf-python
+	# Install logcheck filter
+	dh_install debian/postfix-policyd-spf-python.logcheck etc/logcheck/ignore.d.server
+	dh_install
+
+override_dh_auto_clean:
+	python3 $(CURDIR)/setup.py clean
+	rm -rf $(CURDIR)/build
+
+override_dh_usrlocal:
+	dh_usrlocal
+	dh_python3

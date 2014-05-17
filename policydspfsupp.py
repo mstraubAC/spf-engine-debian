@@ -1,35 +1,44 @@
+# -*- coding: utf-8 -*-
 #
 #  Tumgreyspf
-#  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+#  Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
 #
 #  pypolicyd-spf changes
-#  Copyright (c) 2007,2008 Scott Kitterman <scott@kitterman.com>
+#  Copyright © 2007-12 Scott Kitterman <scott@kitterman.com>
 '''
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 2 as published 
-    by the Free Software Foundation.
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+       http://www.apache.org/licenses/LICENSE-2.0
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+'''
 
-import syslog, os, sys, string, re, time, popen2, urllib, stat
+import syslog
+import os
+import sys
+import string
+import re
+import stat
 
 
 #  default values
 defaultConfigData = {
-        'debugLevel' : 1,
+        'debugLevel' : 5,
         'HELO_reject' : 'SPF_Not_Pass',
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
         'TempError_Defer'  : 'False',
-        'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0//104,::1//128',
-        'defaultSeedOnly' : 1
+        'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0/104,::1',
+        'defaultSeedOnly' : 1,
+        'Header_Type' : 'SPF',
+        'Lookup_Time' : 20,
+        'Void_Limit' : 2
         }
 
 
@@ -40,7 +49,7 @@ class ConfigException(Exception):
 
 
 ####################################################################
-def processConfigFile(filename = None, config = None, useSyslog = 1,
+def _processConfigFile(filename = None, config = None, useSyslog = 1,
         useStderr = 0):
     '''Load the specified config file, exit and log errors if it fails,
     otherwise return a config dictionary.'''
@@ -49,8 +58,8 @@ def processConfigFile(filename = None, config = None, useSyslog = 1,
     if config == None: config = policydspfsupp.defaultConfigData
     if filename != None:
         try:
-            readConfigFile(filename, config)
-        except Exception, e:
+            _readConfigFile(filename, config)
+        except Exception as e:
             if useSyslog:
                 syslog.syslog(e.args[0])
             if useStderr:
@@ -66,11 +75,11 @@ class ExceptHook:
       self.useStderr = useStderr
    
    def __call__(self, etype, evalue, etb):
-      import traceback, string
+      import traceback
       tb = traceback.format_exception(*(etype, evalue, etb))
-      tb = map(string.rstrip, tb)
-      tb = string.join(tb, '\n')
-      for line in string.split(tb, '\n'):
+      tb = list([a.rstrip('\n') for a in tb])
+      tb = '\n'.join([c for c in tb])
+      for line in tb.split('\n'):
          if self.useSyslog:
             syslog.syslog(line)
          if self.useStderr:
@@ -78,31 +87,13 @@ class ExceptHook:
 
 
 ####################
-def setExceptHook():
+def _setExceptHook():
     sys.excepthook = ExceptHook(useSyslog = 1, useStderr = 1)
-
-
-####################
-def quoteAddress(s):
-    '''Quote an address so that it's safe to store in the file-system.
-    Address can either be a domain name, or local part.
-    Returns the quoted address.'''
-
-    s = urllib.quote(s, '@_-+')
-    if len(s) > 0 and s[0] == '.': s = '%2e' + s[1:]
-    return(s)
-
-
-######################
-def unquoteAddress(s):
-    '''Undo the quoting of an address.  Returns the unquoted address.'''
-
-    return(urllib.unquote(s))
 
 
 ###############################################################
 commentRx = re.compile(r'^(.*)#.*$')
-def readConfigFile(path, configData = None, configGlobal = {}):
+def _readConfigFile(path, configData = None, configGlobal = {}):
     '''Reads a configuration file from the specified path, merging it
     with the configuration data specified in configData.  Returns a
     dictionary of name/value pairs based on configData and the values
@@ -123,17 +114,25 @@ def readConfigFile(path, configData = None, configGlobal = {}):
             'Whitelist' : str,
             'skip_addresses': str,
             'Domain_Whitelist' : str,
-            'defaultSeedOnly' : int
+            'Domain_Whitelist_PTR': str,
+            'No_Mail': str,
+            'Reject_Not_Pass_Domains' : str,
+            'Per_User' : str,
+            'defaultSeedOnly' : int,
+            'Header_Type' : str,
+            'Authserv_Id' : str,
+            'Lookup_Time' : int,
+            'Void_Limit'  : int
             }
 
     #  check to see if it's a file
     try:
         mode = os.stat(path)[0]
-    except OSError, e:
-        syslog.syslog('ERROR stating "%s": %s' % ( path, e.strerror ))
+    except OSError as e:
+        syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
         return(configData)
     if not stat.S_ISREG(mode):
-        syslog.syslog('ERROR: is not a file: "%s", mode=%s' % ( path, oct(mode) ))
+        syslog.syslog(syslog.LOG_ERR,'ERROR: is not a file: "%s", mode=%s' % ( path, oct(mode) ))
         return(configData)
 
     #  load file
@@ -143,9 +142,9 @@ def readConfigFile(path, configData = None, configGlobal = {}):
         if not line: break
 
         #  parse line
-        line = string.strip(string.split(line, '#', 1)[0])
+        line = (line.split('#', 1)[0]).strip()
         if not line: continue
-        data = map(string.strip, string.split(line, '=', 1))
+        data = [q.strip() for q in line.split('=')]
         if len(data) != 2:
             if len(data) == 1:
                 if debugLevel >= 1:

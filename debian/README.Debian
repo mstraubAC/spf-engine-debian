@@ -7,7 +7,7 @@ This package must be integrated with Postfix to be effective:
  1. Add the following to /etc/postfix/master.cf:
 
         policyd-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf /etc/python-policyd-spf/policyd-spf.conf
+            user=policyd-spf argv=/usr/bin/policyd-spf
 
  2. Configure the Postfix policy service in /etc/postfix/main.cf:
 
@@ -16,6 +16,8 @@ This package must be integrated with Postfix to be effective:
             reject_unauth_destination
             check_policy_service unix:private/policyd-spf
             ...
+
+        policyd-spf_time_limit = 3600
 
     NOTE:  Specify check_policy_service AFTER reject_unauth_destination or
     else your system can become an open relay.
