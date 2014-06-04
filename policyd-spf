@@ -23,7 +23,7 @@
    limitations under the License.
 '''
 
-__version__ = "1.3: May 9, 2014"
+__version__ = "1.3.1: Jun 4, 2014"
 
 testing = True
 
@@ -648,7 +648,14 @@ instance_dict.clear()
 data = {}
 lineRx = re.compile(r'^\s*([^=\s]+)\s*=(.*)$')
 while 1:
-    line = sys.stdin.readline()
+    # Python readline assumes ascii here, but sometimes it's not
+    try:
+        lineraw = sys.stdin.buffer.readline()
+        line = lineraw.decode('UTF-8')
+    except AttributeError:
+        # python2.7 compatibility, it doesn't care about ascii or not, but
+        # lacks sys.stid.buffer
+        line = sys.stdin.readline() 
     if not line: break
     line = line.rstrip()
     if debugLevel >= 4: syslog.syslog('Read line: "%s"' % line)
@@ -684,16 +691,29 @@ while 1:
             if configData.get('Prospective'):
                 sys.stdout.write('action=dunno\n\n')
             else:
-                sys.stdout.write('action=prepend %s\n\n' % checkerReason)
+                try:
+                    sys.stdout.write('action=prepend %s\n\n' % checkerReason)
+                except UnicodeEncodeError:
+                    sys.stdout.write('action=prepend %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
 
         elif checkerValue == 'defer':
-            sys.stdout.write('action=defer_if_permit %s\n\n' % checkerReason)
+            try:
+                sys.stdout.write('action=defer_if_permit %s\n\n' % checkerReason)
+            except UnicodeEncodeError:
+                sys.stdout.write('action=defer_if_permit %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
 
         elif checkerValue == 'warn':
-            sys.stdout.write('action=warn %s\n\n' % checkerReason)
+            try:
+                sys.stdout.write('action=warn %s\n\n' % checkerReason)
+            except UnicodeEncodeError:
+                sys.stdout.write('action=warn %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
 
         elif checkerValue == 'result_only':
-            sys.stdout.write('action=%s\n\n' % checkerReason)
+            try:
+                sys.stdout.write('action=%s\n\n' % checkerReason)
+            except UnicodeEncodeError:
+                sys.stdout.write('action=%s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
+
         else:
             sys.stdout.write('action=dunno\n\n')
 
