@@ -1,9 +1,17 @@
-pypolicyd-spf (1.3-1~bpo70+1) wheezy-backports; urgency=medium
+pypolicyd-spf (1.3.1-1~bpo70+1) wheezy-backports; urgency=medium
 
-  * Backport for wheezy
-  * Re-add depends on python3-ipaddr for python3.2 compatibility
+  * Updated backport for wheezy
+  * Re-add depends on python3-ipaddr for python3.2 compatibility and adjust
+    minimum python3 version accordingly
 
- -- Scott Kitterman <scott@kitterman.com>  Sat, 17 May 2014 09:42:47 -0400
+ -- Scott Kitterman <scott@kitterman.com>  Mon, 09 Jun 2014 13:08:49 -0400
+
+pypolicyd-spf (1.3.1-1) unstable; urgency=medium
+
+  * Fix crashes caused by non-ascii characters in email addresses and lack
+    of input validation (LP: #1325579)
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 04 Jun 2014 02:24:50 -0400
 
 pypolicyd-spf (1.3-1) unstable; urgency=medium
 
