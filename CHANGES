@@ -4,6 +4,17 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 1.3.2 (2015-08-12)
+  * Fix python3 incompatibility in cases where HELO name is somehow missing
+    (LP: #1184102)
+  * Updated README to mention the minimum ipaddr version, if needed, is 2.1.10
+    (LP: #1229862)
+  * Fix up header caching (LP: #1422325)
+  * Fix and refactor for simplicity detection of Authserv_Id missing from
+    configuration (LP: #1484239)
+  * Add try/except around SPF record queries of No_Mail option to avoid errors
+    on bogus TXT records
+
 --- 1.3.1 (2014-06-14)
   * Fix case where, when run with python3 the policy server would choke on
     email addresses that contained non-ascii characters (LP: #1325579)
