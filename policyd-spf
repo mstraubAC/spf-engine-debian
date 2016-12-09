@@ -23,8 +23,8 @@
    limitations under the License.
 '''
 
-__version__ = "2.0.0"
-__date__ = "2016-12-02"
+__version__ = "2.0.1"
+__date__ = "2016-12-08"
 
 testing = True
 
@@ -554,16 +554,13 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                 if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR, 'Header_Type includes both SPF and AR - invalid configuration.')
                 raise SyntaxError('Header_Type includes both SPF and AR - invalid configuration.')
             if 'AR' in configData.get('Header_Type'):
-                try:
-                    header += str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
-                        results = [authres.SPFAuthenticationResult(result = helo_result[0],
-                        result_comment = helo_result[2],
-                        smtp_helo = helo, smtp_helo_comment =
-                        'client-ip={0}; helo={1}; envelope-from={2}; receiver={3}'.format(ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))]))
-                except TypeError as x:
-                    if str(x).startswith('sequence item 2'):
-                        if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
-                        raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.') 
+                if not configData.get('Authserv_Id'):
+                    raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
+                header += str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
+                    results = [authres.SPFAuthenticationResult(result = helo_result[0],
+                    result_comment = helo_result[2],
+                    smtp_helo = helo, smtp_helo_comment =
+                    'client-ip={0}; helo={1}; envelope-from={2}; receiver={3}'.format(ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))]))
             else:
                 header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[2] +') ' + spfDetail
             if helo_result[3] != 'reject' and helo_result[3] != 'defer':
@@ -650,16 +647,13 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                         if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR, 'Header_Type includes both SPF and AR - invalid configuration.')
                         raise SyntaxError('Header_Type includes both SPF and AR - invalid configuration.')
                     if 'AR' in configData.get('Header_Type'):
-                        try:
-                            header += str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
-                                results = [authres.SPFAuthenticationResult(result = mfrom_result[0],
-                                result_comment = mfrom_result[2],
-                                smtp_mailfrom = spf.split_email(sender,'example.com')[1], smtp_mailfrom_comment =
-                                'client-ip={0}; helo={1}; envelope-from={2}; receiver={3}'.format(ip, helo, sender, data.get('recipient', '<UNKNOWN>')))]))
-                        except TypeError as x:
-                            if str(x).startswith('sequence item 2'):
-                                if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
-                                raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.') 
+                        if not configData.get('Authserv_Id'):
+                            raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
+                        header += str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
+                            results = [authres.SPFAuthenticationResult(result = mfrom_result[0],
+                            result_comment = mfrom_result[2],
+                            smtp_mailfrom = spf.split_email(sender,'example.com')[1], smtp_mailfrom_comment =
+                            'client-ip={0}; helo={1}; envelope-from={2}; receiver={3}'.format(ip, helo, sender, data.get('recipient', '<UNKNOWN>')))]))
                     else:
                         header = 'Received-SPF: '+ mfrom_result[0] + ' (' + mfrom_result[2] +') ' + spfDetail
                     if mfrom_result[3] != 'reject' and mfrom_result[3] != 'defer':

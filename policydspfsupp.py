@@ -28,7 +28,7 @@ import stat
 
 #  default values
 defaultConfigData = {
-        'debugLevel' : 5,
+        'debugLevel' : 1,
         'HELO_reject' : 'Fail',
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',

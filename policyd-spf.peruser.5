@@ -128,9 +128,11 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.peruser 5"
-.TH policy-spf.peruser 5 "2016-02-20"
+.TH policy-spf.peruser 5
 .SH "NAME"
-policyd-spf (python) \- pure-Python Postfix policy daemon for SPF checking
+policyd-spf
+\-
+policyd-spf python per-user configuration
 .SH "VERSION"
 .IX Header "VERSION"
 2\.0\.0
@@ -193,7 +195,8 @@ user table has to be traversed for each message recipient.
 
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-
+\X'ps:'\c
+.br
 .SH "Text Per-User Configuration File"
 .IX Header "Text"
 
@@ -209,8 +212,8 @@ provided in or installed by the package.
 
 The configuration of the file is a comma separated combination of user and
 configuration information, with one line per user's configuration information
-(NOTE: due to man page formating requirements, these lines are wrapped - in
-the config file, it must be one line per user):
+(NOTE: due to man page formatting requirements, these lines may be wrapped in
+your pager - in the config file, it must be one line per user):
 
 postmaster@example.com,Mail_From_reject=No_Check|PermError_reject=\
 False|HELO_reject=SPF_Not_Pass|TestOnly=1|debugLevel=5|\

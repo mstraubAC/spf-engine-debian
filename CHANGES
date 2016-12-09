@@ -4,6 +4,13 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 2.0.1 (2016-12-08)
+  * Man page formatting and spelling corrections
+  * Corrected default debug level (LP: #1647089)
+  * Amplified loging level '-1' description
+  * Forward port version 1.3.2 fixes for detection of missing Authserv_Id that
+    were inadvertently not brought back to trunk
+
 --- 2.0.0 (2016-12-02)
   ! No longer python2 compatible, minimum python3 version is 3.3 for ipaddress
   ! Removed support for use of ipaddr
@@ -52,6 +59,17 @@
     restriction classes
   * Fixed a typo in policyd-spf-peruser.5 that made the example configuration
     file invalid
+
+--- 1.3.2 (2015-08-12)
+  * Fix python3 incompatibility in cases where HELO name is somehow missing
+    (LP: #1184102)
+  * Updated README to mention the minimum ipaddr version, if needed, is 2.1.10
+    (LP: #1229862)
+  * Fix up header caching (LP: #1422325)
+  * Fix and refactor for simplicity detection of Authserv_Id missing from
+    configuration (LP: #1484239)
+  * Add try/except around SPF record queries of No_Mail option to avoid errors
+    on bogus TXT records
 
 --- 1.3.1 (2014-06-14)
   * Fix case where, when run with python3 the policy server would choke on

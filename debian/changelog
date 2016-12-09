@@ -1,3 +1,11 @@
+pypolicyd-spf (2.0.1-1) unstable; urgency=medium
+
+  * New upstream release
+  * Add lintian override for spelling-error-in-readme-debian since the check
+    is wrong in this case, but it isn't something lintian can reliably fix
+
+ -- Scott Kitterman <scott@kitterman.com>  Fri, 09 Dec 2016 00:04:12 -0500
+
 pypolicyd-spf (2.0.0-1) unstable; urgency=medium
 
   * New upstream release (Closes: #808847, #816850)
