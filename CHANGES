@@ -4,6 +4,73 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 2.0.1 (2016-12-08)
+  * Man page formatting and spelling corrections
+  * Corrected default debug level (LP: #1647089)
+  * Amplified loging level '-1' description
+  * Forward port version 1.3.2 fixes for detection of missing Authserv_Id that
+    were inadvertently not brought back to trunk
+
+--- 2.0.0 (2016-12-02)
+  ! No longer python2 compatible, minimum python3 version is 3.3 for ipaddress
+  ! Removed support for use of ipaddr
+  ! Changed default for HELO checking from SPF_Not_Pass to Fail (same as
+    MailFrom) even though I think Not Pass makes more sense in order to
+    still the complaints (Fedora, you can drop your sed call in the spec file
+    now). (LP: #1571144)
+  ! Changed default for Authserv-ID to use local hostname to provide a
+    reasonable default Authserv-ID. (LP: #1575608)
+  ! Increased minimum pyspf (python-spf) version to 2.0.9 so that Void_Limit
+    is always available and used.
+  ! Added new Hide_Receiver option to prevent accidental disclosure of BCC
+    receivers and enabled it by default to maximize privacy.  (LP: #1394294)
+  ! Changed the name of the defaultSeedOnly option to TestOnly.  The previous
+    name is still accepted, but an error is logged.  The old name is a legacy
+    from the greylising functionaliy in tumgreyspf (from which this was forked
+    in 2007).  The new name better reflects what the option does.
+  + Added new Reason_Message option to allow for custom reject/defer message
+    (LP: #1422324) - Thanks to Bastian Blank for the significant patch
+  + Added support for RFC 7372 email authentication specific enhanced status
+    codes as well as an option to use standard Postfix codes instead
+  + Added new HELO_Whitelist option to allow for whitelisting from SPF checks
+    based on specific HELO/EHLO names (LP: #1602761)
+  + Added new Whitelist_Lookup_Time to allow for adjustments on the maximum
+    time allowed for whitelist related DNS lookups to complete - This should
+    also help with LP: #1622137
+  + Refactored and extended per user configuration to work for more
+    configuration options
+  + Added new 'None' option for Header_Type.  When set, no header field of any
+    kind is added to the message (LP: #1531724)
+  + Added new Mock option for enhanced interoperability with downstream
+    milters - See policyd-spf.conf.5 for details
+  * Fix additional cases of choking on invalid email addresses (LP: #1342105)
+  * Reviewed and refactored logging to provide logging details at various
+    detail levels more consistent with the documentation.  Also added a new
+    log level, '-1' for completely silent running.
+  * Added a new PERFORMANCE CONSIDERATIONS section to policyd-spf.1.
+  * Fix python3 incompatibility in cases where HELO name is somehow missing
+    (LP: #1184102)
+  * Improved per-user settings processing to avoid issues with multiple or
+    incorrect header fields being appended to multi-recipient messages
+  * Refactored processing for the No_Mail option to use the pyspf cache from
+    the previous SPF query rather than a new DNS lookup - should help with
+    LP: #1622137
+  * Fixed an issue that may have caused issues with multi-recipient use of
+    restriction classes
+  * Fixed a typo in policyd-spf-peruser.5 that made the example configuration
+    file invalid
+
+--- 1.3.2 (2015-08-12)
+  * Fix python3 incompatibility in cases where HELO name is somehow missing
+    (LP: #1184102)
+  * Updated README to mention the minimum ipaddr version, if needed, is 2.1.10
+    (LP: #1229862)
+  * Fix up header caching (LP: #1422325)
+  * Fix and refactor for simplicity detection of Authserv_Id missing from
+    configuration (LP: #1484239)
+  * Add try/except around SPF record queries of No_Mail option to avoid errors
+    on bogus TXT records
+
 --- 1.3.1 (2014-06-14)
   * Fix case where, when run with python3 the policy server would choke on
     email addresses that contained non-ascii characters (LP: #1325579)

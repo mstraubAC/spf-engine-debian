@@ -5,7 +5,7 @@ import sys
 DESC = """pypolicyd-spf SPF Postfix policy server implemented in Python."""
 
 setup(name='pypolicyd-spf',
-      version='1.3.1',
+      version='2.0.1',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
@@ -25,12 +25,11 @@ setup(name='pypolicyd-spf',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: POSIX',
-        'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Topic :: Communications :: Email :: Mail Transport Agents',
         'Topic :: Communications :: Email :: Filters',
       ]
 )
 
-if sys.version_info < (2, 6):
-    raise Exception("pypolicyd-spf requires python2.6/2.7 or python3.2 and later.")
+if sys.version_info < (3, 3):
+    raise Exception("pypolicyd-spf requires python3.3 and later.")

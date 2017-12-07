@@ -4,7 +4,7 @@ set -e
 
 if [ "$1" = "configure" ]; then
 	if ! id -u policyd-spf >/dev/null 2>&1; then
-		adduser --quiet --system --group --no-create-home policyd-spf
+		adduser --quiet --system --group --no-create-home --home /nonexistent policyd-spf
 	elif [ -n "$2" ]; then
 		addgroup --quiet --system policyd-spf
 		usermod -g policyd-spf policyd-spf

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 #  pypolicyd-spf
-#  Copyright © 2010-2012 Scott Kitterman <scott@kitterman.com>
+#  Copyright © 2010-2016 Scott Kitterman <scott@kitterman.com>
 '''
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 
 import syslog
 import re
-import string
 import os
 
 ###############################################################
@@ -44,20 +43,25 @@ def _readUserConfigFile(path, recipient, configData):
             'skip_addresses': str,
             'Domain_Whitelist' : str,
             'Domain_Whitelist_PTR': str,
+            'HELO_Whitelist':str,
             'No_Mail': str,
             'Reject_Not_Pass_Domains' : str,
             'defaultSeedOnly' : int,
+            'SPF_Enhanced_Status_Codes' : str,
             'Header_Type' : str,
+            'Hide_Receiver' : str,
             'Authserv-Id' : str,
             'Lookup_Time' : int,
-            'Void_Limit'  : int
+            'Whitelist_Lookup_Time' : int,
+            'Void_Limit'  : int,
+            'Reason_Message' : str,
             }
 
     #  check to see if it's a file
     try:
         os.stat(path)[0]
     except OSError as e:
-        syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
+        if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
         return(configData, False)
 
     #  load file
@@ -84,12 +88,13 @@ def _readUserConfigFile(path, recipient, configData):
             conversion = nameConversion.get(config[0])
             name, value = config
             if conversion == None:
-                syslog.syslog(syslog.LOG_ERR,'ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
+                if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR,'ERROR: Unknown name "%s" in file "%s" in per user settings' % ( name, path ))
                 continue
-            if debugLevel >= 5: syslog.syslog('readUserConfigFile: Found entry "%s=%s"'
+            if debugLevel >= 5: syslog.syslog('readUserConfigFile: Found entry "%s=%s" in per user settings'
                 % ( name, value ))
             configData[name] = conversion(value)
         peruser = True
+        break
     fp.close()
 
     return configData, peruser
@@ -103,7 +108,9 @@ def _datacheck(configData, recipient):
     usertype, userlocation = userdata.split(',')
     if usertype == "text":
          if debugLevel >= 4: syslog.syslog('Reading per user data (type text) from:  "%s"' % userlocation)
-         configData, peruser = _readUserConfigFile(userlocation, recipient, configData)
+         userconfigData, peruser = _readUserConfigFile(userlocation, recipient, configData)
          if debugLevel >= 4: syslog.syslog('Per-user settings for "%s": "%s"' % (recipient, str(configData)))
+         for item in userconfigData:
+             configData[item] = userconfigData[item]
 
     return configData, peruser

@@ -4,7 +4,10 @@ debugLevel = 1
 
 #  If set to 0, no messages are rejected by SPF.  This allows you to see the 
 #  potential impact of SPF checking in your mail logs without rejecting mail.
-defaultSeedOnly = 1
+TestOnly = 1
+
+#  Reject and deferred reason
+#Reason_Message = Message {rejectdefer} due to: {spf}. Please see {url}
 
 #  HELO check rejection policy. Options are:
 #  HELO_reject = SPF_Not_Pass (default) - Reject if result not Pass/None/Tempfail.
@@ -13,7 +16,7 @@ defaultSeedOnly = 1
 #  HELO_reject = Null - Only reject HELO Fail for Null sender (SPF Classic)
 #  HELO_reject = False - Never reject/defer on HELO, append header only. 
 #  HELO_reject = No_Check - Never check HELO.
-HELO_reject = SPF_Not_Pass
+HELO_reject = Fail
 
 #  HELO pass restriction policy.
 #  HELO_pass_restriction = helo_passed_spf - Apply the given restriction when
@@ -69,6 +72,10 @@ skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0/104,::1
 #  Example (default is no whitelist):
 #  Whitelist = 192.168.0.0/31,192.168.1.12
 
+# SPF HELO WHITELIST: HELO/EHLO host names to skip SPF checks for.
+# Example (default is no HELO_Whitelist):
+# HELO_Whitelist = relay.example.com,sender.example.org
+
 #  Domain_Whitelist: List of domains whose sending IPs (defined by passing
 #  their SPF check should be whitelisted from SPF.
 #  Example (default is no domain whitelist):
@@ -79,24 +86,53 @@ skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0/104,::1
 # Example (default is no PTR whitelist)
 # Domain_Whitelist_PTR = yahoo.com
 
+# SPF ENHANCED STATUS CODES: Override Postfix enhanced status codes to use the
+# RFC 7372 codes.  Disable by setting this option to "No".
+# SPF_Enhanced_Status_Codes = No
+
 # Type of header to insert to document SPF result. Can be Received-SPF (SPF)
 # or Authentication Results (AR). It cannot be both.
 # Examples: (default is Received-SPF):
 # Header_Type = AR
 # Header_Type = SPF
 
+# In order to avoid disclosing BCC recipients in SPF header fields,
+# Hide_Receiver is set to Yes by default in the interest of maximizing
+# privacy.  This setting will replace the actual recipient with <UNKNOWN> both
+# in header fields and SMTP responses.  The latter may make it more difficult
+# for senders to troubleshoot issues with their SPF deployments.
+#Hide_Receiver = No
+Hide_Receiver = Yes
+
 # Every Authentication-Results header field has an authentication identifier
 # field ('Authserv_Id'). This is similar in syntax to a fully-qualified domain
 # name. See policyd-spf.conf.5 and RFC 7001 paragraph 2.4 for details.
-# Default is None.  Authserv-Id must be provided if Header_Type 'AR' is used.
+# Default is HOSTNAME (as provided by socket.gethostname).  Authserv-Id must
+# be provided if Header_Type 'AR' is used.
 # Authserv_Id = mx.example.com
+Authserv_Id = HEADER
 
 # RFC 7208 recommends an elapsed time limit for SPF checks of at least 20
 # seconds.  Lookup_Time allows the maximum time (seconds) to be adjusted.  20
 # seconds is the default.
 # Lookup_Time = 20
 
+# Some of the available whitelisting mechanisms, i.e. Domain_Whitelist, 
+# Domain_Whitelist_PTR, and HELO_Whitelist, require specific non-SPF DNS
+# lookups to determine if a connection should be white listed from SPF checks.
+#  The maximum amount of time (in seconds) allocated for each of these checks,
+# when used (none are enabled by default), is controlled by the
+# Whitelist_Lookup_Time parameter.  It defaults to 10 seconds and is applied
+# independently to each whitelisting method in use. 
+# Whitelist_Lookup_Time = 10
+
 # RFC 7208 adds a new processing limit called "void lookup limit" (See section
-# 4.6.4).  Default is 2, but it can be adjusted.  Only relevant for pyspf
-# 2.0.9 and later.  Ignored for earlier releases.
+# 4.6.4).  Default is 2, but it can be adjusted.
 # Void_Limit = 2
+
+# In some versions of postfix, for bizarre Sendmail compatibility reasons, the
+# first header field added by a policy server is not visible to milters.  To
+# make this easy to work around, set the Mock value to true and a fixed header
+# field will be inserted so the actual SPF check will be the second field and
+# visible to milters such as DMARC milter.
+# Mock = False

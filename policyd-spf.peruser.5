@@ -128,12 +128,14 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.peruser 5"
-.TH policy-spf.peruser 5 "2012-03-17"
+.TH policy-spf.peruser 5
 .SH "NAME"
-python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
+policyd-spf
+\-
+policyd-spf python per-user configuration
 .SH "VERSION"
 .IX Header "VERSION"
-1\.3
+2\.0\.0
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -161,9 +163,9 @@ file.
 
 Additionally, different configurations can be provided on a per user basis.
 This man page describes setup and user of per user (mail recipient)
-configurations.  Currently these configurations can either be stored in a text
-file or a Berkeley DB (libdb) datase.  If there is sufficient interest, other
-data storage methods may be supported in the future.
+configurations.  Currently these configurations can only be stored in a text
+file.  If there is sufficient interest, other data storage methods may be
+supported in the future.
 
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
@@ -171,10 +173,9 @@ data storage methods may be supported in the future.
 Use of per-user configuration is defined in the application configuration
 file with the setting "Per_User".  The value of the setting gives the type and
 location of the per-user configuration information.  Currently supported types
-are text and bsddb.  User is defined an email address of a recipient of the
-message.
+is text.  User is defined an email address of a recipient of the message.
 
-All options available at the application level (See man 5 policyd-spf.conf)
+Most options available at the application level (See man 5 policyd-spf.conf)
 can be adjusted on a per-user basis.  Per-user checks can only be done as part
 of smtpd_recipient_restrictions.  Per-user actions are not possible at other
 stages of the SMTP dialogue.  The user is not yet known for
@@ -185,13 +186,17 @@ the message was only to a single recipient.  If per-user configurations are
 used when recipient information is not available, warnings will be logged and
 the per-user information will be ignored.
 
+The following options cannot be modified on a per user basis: Lookup_Time,
+Header_Type, Hide_Receiver, Authserv_Id, Prospective, debugLevel, and Mock.
+
 In addition to specifying individual users, regular expression matching is
 also available, but may have performance implications since the entire
 user table has to be traversed for each message recipient.
 
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-
+\X'ps:'\c
+.br
 .SH "Text Per-User Configuration File"
 .IX Header "Text"
 
@@ -207,13 +212,13 @@ provided in or installed by the package.
 
 The configuration of the file is a comma separated combination of user and
 configuration information, with one line per user's configuration information
-(NOTE: due to man page formating requirements, these lines are wrapped - in
-the config file, it must be one line per user):
+(NOTE: due to man page formatting requirements, these lines may be wrapped in
+your pager - in the config file, it must be one line per user):
 
 postmaster@example.com,Mail_From_reject=No_Check|PermError_reject=\
-False|HELO_reject=SPF_Not_Pass|defaultSeedOnly=1|debugLevel=5|\
+False|HELO_reject=SPF_Not_Pass|TestOnly=1|debugLevel=5|\
 skip_addresses=127.0.0.0/8,::ffff:127.0.0.0//104,::1//128|TempError_Defer=False
-strict@example.com,PermError_rejec=True|HELO_reject=SPF_Not_Pass|\
+strict@example.com,PermError_reject=True|HELO_reject=SPF_Not_Pass|\
 TempError_Defer=True
 
 It is not necessary to specify all configuration parameters for each user,
@@ -230,8 +235,9 @@ man 1 policyd-spf, man 5 policyd-spf.conf, python-spf,
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
-This version of \fBpypolicyd-spf\fR was written by Copyright © 2007-2011,
+This version of \fBpolicyd-spf\fR was written by Copyright © 2007-2016,
 Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf,
 written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
 .PP
-This man-page was created by Scott Kitterman <scott@kitterman.com>.
+This man-page was created by Scott Kitterman <scott@kitterman.com> and is
+licensed under the same terms as the program.

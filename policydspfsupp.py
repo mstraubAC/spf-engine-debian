@@ -4,7 +4,7 @@
 #  Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
 #
 #  pypolicyd-spf changes
-#  Copyright © 2007-12 Scott Kitterman <scott@kitterman.com>
+#  Copyright © 2007-16 Scott Kitterman <scott@kitterman.com>
 '''
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,23 +22,28 @@
 import syslog
 import os
 import sys
-import string
 import re
 import stat
 
 
 #  default values
 defaultConfigData = {
-        'debugLevel' : 5,
-        'HELO_reject' : 'SPF_Not_Pass',
+        'debugLevel' : 1,
+        'HELO_reject' : 'Fail',
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
         'TempError_Defer'  : 'False',
         'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0/104,::1',
-        'defaultSeedOnly' : 1,
+        'TestOnly' : 1,
+        'SPF_Enhanced_Status_Codes' : 'Yes',
         'Header_Type' : 'SPF',
+        'Hide_Receiver' : 'Yes',
+        'Authserv_Id' : 'HOSTNAME',
         'Lookup_Time' : 20,
-        'Void_Limit' : 2
+        'Whitelist_Lookup_Time' : 10,
+        'Void_Limit' : 2,
+        'Reason_Message' : 'Message {rejectdefer} due to: {spf}. Please see {url}',
+        'Mock' : False
         }
 
 
@@ -113,26 +118,33 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
             'Prospective' : str,
             'Whitelist' : str,
             'skip_addresses': str,
+            'HELO_Whitelist': str,
             'Domain_Whitelist' : str,
             'Domain_Whitelist_PTR': str,
             'No_Mail': str,
             'Reject_Not_Pass_Domains' : str,
             'Per_User' : str,
+            'TestOnly' : int,
             'defaultSeedOnly' : int,
+            'SPF_Enhanced_Status_Codes' : str,
             'Header_Type' : str,
+            'Hide_Receiver' : str,
             'Authserv_Id' : str,
             'Lookup_Time' : int,
-            'Void_Limit'  : int
+            'Whitelist_Lookup_Time': int,
+            'Void_Limit'  : int,
+            'Reason_Message' : str,
+            'Mock' : bool
             }
 
     #  check to see if it's a file
     try:
         mode = os.stat(path)[0]
     except OSError as e:
-        syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
+        if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR,'ERROR stating "%s": %s' % ( path, e.strerror ))
         return(configData)
     if not stat.S_ISREG(mode):
-        syslog.syslog(syslog.LOG_ERR,'ERROR: is not a file: "%s", mode=%s' % ( path, oct(mode) ))
+        if debugLevel >= 0: syslog.syslog(syslog.LOG_ERR,'ERROR: is not a file: "%s", mode=%s' % ( path, oct(mode) ))
         return(configData)
 
     #  load file
@@ -143,6 +155,7 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
 
         #  parse line
         line = (line.split('#', 1)[0]).strip()
+        if debugLevel >= 3: syslog.syslog(str(line))
         if not line: continue
         data = [q.strip() for q in line.split('=')]
         if len(data) != 2:
@@ -159,7 +172,7 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
         #  check validity of name
         conversion = nameConversion.get(name)
         if conversion == None:
-            syslog.syslog('ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
+            if debugLevel >= 0: syslog.syslog('ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
             continue
 
         if debugLevel >= 5: syslog.syslog('readConfigFile: Found entry "%s=%s"'
