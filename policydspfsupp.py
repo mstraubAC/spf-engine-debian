@@ -43,6 +43,7 @@ defaultConfigData = {
         'Whitelist_Lookup_Time' : 10,
         'Void_Limit' : 2,
         'Reason_Message' : 'Message {rejectdefer} due to: {spf}. Please see {url}',
+        'No_Mail' : False,
         'Mock' : False
         }
 

@@ -235,24 +235,26 @@ TestOnly = 1
 
 HELO check rejection policy options are:
 
-SPF_Not_Pass (default) - Reject if result not Pass, None, or Temperror
+Fail - (Default) Reject only on HELO Fail. HELO/EHLO is known first in the 
+SMTP dialogue and there is no practical reason to waste resources on Mail 
+From checks if the HELO check will already cause the message to be rejected. 
+This should not cause interoperability problems when used for HELO. 
+
+SPF_Not_Pass - Reject if result not Pass, None, or Temperror
 (alternatively put, reject if the SPF result is Fail, Softfail, Neutral,
 PermError). Unlike Mail From checking, there are no standard e-mail use cases
 where a HELO check should not Pass if there is an SPF record for the HELO name
 (transparent forwarding, for example, is not an issue). HELO/EHLO is known
 first in the SMTP dialogue and there is no practical reason to waste resources
 on Mail From checks if the HELO check will already cause the message to be
-rejected. This should not cause interoperability problems when used for HELO.
+rejected. This is not consistent with the RFC 7208 requirement to treat none
+and neutral the same, but should not cause interoperability problems when used
+for HELO.
 
 Softfail - Reject on HELO Softfail or Fail.  HELO/EHLO is known first in the
 SMTP dialogue and there is no practical reason to waste resources on Mail
 From checks if the HELO check will already cause the message to be rejected.
 This should not cause interoperability problems when used for HELO.
-
-Fail - Reject only on HELO Fail. HELO/EHLO is known first in the 
-SMTP dialogue and there is no practical reason to waste resources on Mail 
-From checks if the HELO check will already cause the message to be rejected. 
-This should not cause interoperability problems when used for HELO. 
 
 Null - Only reject HELO Fail for Null sender (SPF Classic).  This is the
 approach used by the pre-RFC 4408 reference implementation and many of the pre-
@@ -330,16 +332,17 @@ Mail_From_reject = Fail
 
 Mail From Pass Restriction allows integration with other Postfix access
 contlols by provding a user supplied name of a postfix access
-restriction to be applied to a message when the HELO checking result
+restriction to be applied to a message when the Mail From checking result
 is Pass.  The indicated restriction must be an action as defined for a
 Postfix SMTP server access table access(5) and explained in the
-Postfix RESTRICTION CLASS README. Note: A mail from pass restriction will
-be the returned result even if the helo result would cause the message to be
-rejected.
+Postfix RESTRICTION CLASS README. The README.per_user_whitelisting file
+provided with this distribution provides examples. Note: A mail from pass
+restriction will be the returned result even if the helo result would cause
+the message to be rejected.
 
 Example:
 
-mail_from_pass_restriction = mfrom_passed_spf
+Mail_From_pass_restriction = mfrom_passed_spf
 
 Default:
 
