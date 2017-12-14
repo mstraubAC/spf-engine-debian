@@ -4,10 +4,10 @@ Priority: optional
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.debian.org>
 Build-Depends: debhelper (>= 9), dh-python, python3, quilt (>= 0.46-7)
-Standards-Version: 3.9.8
+Standards-Version: 4.1.2
 Homepage: https://launchpad.net/pypolicyd-spf
 Vcs-Svn: svn://anonscm.debian.org/python-apps/packages/pypolicyd-spf/trunk/
-Vcs-Browser: http://anonscm.debian.org/viewvc/python-apps/packages/pypolicyd-spf/trunk/
+Vcs-Browser: https://anonscm.debian.org/viewvc/python-apps/packages/pypolicyd-spf/trunk/
 X-Python3-Version: >= 3.3
 
 Package: postfix-policyd-spf-python

@@ -1,3 +1,12 @@
+pypolicyd-spf (2.0.2-1) unstable; urgency=medium
+
+  * New upstream release
+  * Update debian/watch to use secure URI
+  * Update Vcs-Browser to use secure URI
+  * Bump standards-version to 4.1.2 without further change
+
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 14 Dec 2017 14:43:33 -0500
+
 pypolicyd-spf (2.0.1-1) unstable; urgency=medium
 
   * New upstream release
