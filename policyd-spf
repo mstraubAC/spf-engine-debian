@@ -22,7 +22,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.6: Feb 20 2008"
+__version__ = "0.6.1: Apr 05 2008"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
 import policydspfsupp
@@ -180,6 +180,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
     if not found_instance:
         Mail_From_pass_restriction = configData.get('Mail_From_pass_restriction')
         HELO_pass_restriction = configData.get('HELO_pass_restriction')
+        helo_result = ['None',]
         # First do HELO check
         #  if no helo name sent, use domain from sender for later use.
         if not helo:

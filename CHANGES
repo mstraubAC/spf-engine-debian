@@ -4,6 +4,9 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.6.1 (2008-04-05 01:23 -0400)
+  * Pre-initialize helo_result to None to avoid crash if HELO checking is
+    disabled
 --- 0.6 (2008-02-20 16:35 -0500)
   ! Logging redesign:
     - Change default loglevel to 1 and readjust loglevel 1 and 2 to 2 and 3
