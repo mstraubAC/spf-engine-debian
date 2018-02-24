@@ -4,10 +4,28 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.4 (2007-07-09 17:24)
+  + Process HELO first and reject if allowed before looking up Mail From
+  + Log failure to find SPF library
+  ! Rationalize text of logging and comments back to Postfix - any script that
+    parses logs from this program automatically will need to be updated.
+  * Remove obsolete code for using non-Python SPF libraries
+  + Activate support for config files (refactored legacy code)
+  ! Change PermError default from Reject to Prepend
+    - Reject on PermError was inconsistent with traditional SPF usage.
+  ! Remove obsolete undistributed files from SVN trunk
+  ! Remove INSTALL file (redundant to man 1 policyd-spf)
+  * Adjust master.cf recommendations in INSTALL for new recommendations from
+    Weitse Venema (postfix-users mailing list).
+  * Change indentation from tabs to spaces in legacy code
+  + Support case insensitive SPF results as required by RFC 4408.
+  + SPF results reported with initial capitalization.
+  + Add SPF whitelist facility in config file
+
 --- 0.3 (2007-02-23 11:54)
-  * Refactored and simplified SPF results reporting/logging.
+  * Refactored and simplified SPF results reporting/logging
   * Changed logging to match RFC 4408 SPF-Received: terminology
-  * Fixed processing to skip SPF for localhost connections to work for IPv6.
+  * Fixed processing to skip SPF for localhost connections to work for IPv6
   + Implemented prepending of SPF-Received: header.
   + Added man page (man 1 policyd-spf)
 

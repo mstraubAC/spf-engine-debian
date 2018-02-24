@@ -6,7 +6,7 @@ import os
 DESC = """python-policyd-spf SPF Postfix policy daemon implemented in Python."""
 
 setup(name='python-policyd-spf',
-      version='0.1',
+      version='0.4',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
@@ -16,7 +16,8 @@ setup(name='python-policyd-spf',
       keywords = ['Postfix','spf','email'],
       scripts = ['policyd-spf'],
       data_files=[(os.path.join('share', 'man', 'man1'),
-          ['policyd-spf.1'])],
+          ['policyd-spf.1']), (os.path.join('share', 'local', 'policyd-spf'),
+          ['policyd-spf.conf'])],
       classifiers = [
 	'Development Status :: 5 - Production/Stable',
 	'Environment :: No Input/Output (Daemon)',
