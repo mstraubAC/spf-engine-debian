@@ -4,6 +4,19 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.5.2 (2007-10-26 15:30 -0400)
+  * Corrected regression so appending a header on Permerror works (introduced 
+    in 0.4) - Thanks to "John A. Martin" <jam@jamux.com> for the bug report.
+  * Log and prepend Mail From result instead of HELO result if both are None.
+  * Provide default explanation for None results (so header and log fields are
+    not left empty
+  * Use correct RFC 4408 identity names (mailfrom/helo) in headers, logging,
+    and SMTP replies
+  * Use package installed config file if none is specified and related
+    documentation updates
+  * Fix default installation location for man pages and config file
+  * Revised README.per_user_whitelisting
+
 --- 0.5.1 (2007-10-17 14:47 -0400)
   * Corrected regression so reject on Permerror works (introduced in 0.4)
     Thanks to "John A. Martin" <jam@jamux.com> for the bug report.

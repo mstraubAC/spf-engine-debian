@@ -22,7 +22,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.5.1: October 17, 2007"
+__version__ = "0.5.2: October 27, 2007"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
 sys.path.append('/usr/local/lib/policy-spf')
@@ -173,7 +173,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 helo_fake_sender = 'postmaster@' + helo
                 res = spf.check2(ip, helo_fake_sender, helo)
                 helo_result = [res[0], res[1]]
-                helo_result.append('HELO') 
+                helo_result.append('helo') 
                 helo_result[0] = helo_result[0].lower()
                 helo_result[0] = helo_result[0].capitalize()
                 if debugLevel:
@@ -185,7 +185,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 elif helo_result[0] == 'Permerror' and configData.get('PermError_reject') == 'True':
                     helo_result.append('reject')
                 elif helo_result[0] == 'Permerror' and configData.get('PermError_reject') == 'False':
-                    helo_result('prepend')
+                    helo_result.append('prepend')
                 elif configData.get('HELO_reject') == 'Fail' and helo_result[0] == 'Fail':
                     helo_result.append('reject')
                 elif configData.get('HELO_reject') == 'SPF_Not_Pass' and (helo_result[0] == 'Fail' or helo_result[0] == 'Softfail' or helo_result[0] == 'Neutral'):
@@ -196,8 +196,10 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     header_sender = '<>'
                 else:
                     header_sender = sender
-                spfDetail = (helo_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
-                    % ( ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))
+                if helo_result[0] == 'None':
+                    helo_result[1] = "no SPF record"
+                spfDetail = ('identity=%s; client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                    % (helo_result[2], ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))
                 syslogData = helo_result[1] + ": " + spfDetail
                 syslogData = str(syslogData)
                 syslog.syslog(syslogData)
@@ -228,7 +230,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
             if configData.get('Mail_From_reject') != 'No_Check':
                 res = spf.check2(ip, sender, helo)
                 mfrom_result = [res[0], res[1]]
-                mfrom_result.append('Mail From')
+                mfrom_result.append('mailfrom')
                 mfrom_result[0] = mfrom_result[0].lower()
                 mfrom_result[0] = mfrom_result[0].capitalize()
                 if debugLevel:
@@ -243,10 +245,12 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 elif configData.get('Mail_From_reject') == 'Fail' and mfrom_result[0] == 'Fail':
                     mfrom_result[3] = 'reject'
                 else: mfrom_result[3] = 'prepend'
-                if mfrom_result[0] != 'None':
+                if mfrom_result[0] == 'None':
+                    mfrom_result[1] = 'no SPF record'
+                if mfrom_result[0] != 'None' or (mfrom_result[0] == 'None' and helo_result[0] == 'None'):
                     spfDetail = \
-                        (mfrom_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
-                        % ( ip, helo, sender, data.get('recipient', '<UNKNOWN>')))
+                        ('identity=%s; client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                        % (mfrom_result[2], ip, helo, sender, data.get('recipient', '<UNKNOWN>')))
                     syslogData = mfrom_result[1] + ": " + spfDetail
                     syslogData = str(syslogData)
                     syslog.syslog(syslogData)
@@ -276,7 +280,7 @@ def spfcheck(data, instance_dict, configData):  #{{{1
 
 ###################################################
 #  load config file  {{{1
-configFile = None
+configFile = '/usr/share/local/policyd-spf/policyd-spf.conf'
 if len(sys.argv) > 1:
     if sys.argv[1] in ( '-?', '--help', '-h' ):
         print 'usage: policyd-spf [<configfilename>]'

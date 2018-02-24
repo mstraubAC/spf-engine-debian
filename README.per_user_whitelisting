@@ -18,7 +18,7 @@ recipients.
             reject_unknown_client_hostname ...
         permissive = permit
 
-        smtpd_recipient_restrictions =
+        smtpd_recipient_restrictions
             permit_mynetworks
             reject_unauth_destination
             check_recipient_access hash:/etc/postfix/recipient_access
@@ -32,43 +32,8 @@ Postfix "check_policy_service" access restriction to apply the
 "permissive" restriction only to messages getting SPF Pass.
 
     /etc/python-policyd-spf/policyd-spf.conf:
-        HELO_pass_restriction = passed_spf
-        Mail_From_pass_restriction = passed_spf
-
-    /etc/postfix/master.cf:
-        policyd-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
-
-    /etc/postfix/main.cf:
-        smtpd_restriction_classes = restrictive, permissive, passed_spf
-        restrictive = reject_unknown_sender_domain
-            reject_unknown_client_hostname ...
-        permissive = permit
-        passed_spf =
-            check_recipient_access hash:/etc/postfix/recipient_access
-            restrictive
-
-        smtpd_recipient_restrictions
-            permit_mynetworks
-            reject_unauth_destination
-            check_policy_service unix:private/policyd-spf
-            restrictive
-
-        policyd-spf_time_limit = 3600
-
-    /etc/postfix/recipient_access:
-        joe@my.domain        permissive
-        jane@my.domain        restrictive
-
-The "check_policy_service" can apply only one action at a time.
-Consequently, the above example will not insert a Received-SPF header
-field into a message getting SPF pass.  One way to work around this is
-to apply the "check_policy_service" restriction a second time as shown
-below.
-
-    /etc/python-policyd-spf/policyd-spf.conf:
-        HELO_pass_restriction = passed_spf
-        Mail_From_pass_restriction = passed_spf
+        HELO_pass_restriction = spf_fin, passed_spf
+        Mail_From_pass_restriction = spf_fin, passed_spf
 
     /etc/python-policyd-spf/policyd-spf-fin.conf:
         HELO_reject = False
@@ -76,23 +41,27 @@ below.
 
     /etc/postfix/master.cf:
         policyd-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
+            user=nobody argv=/usr/bin/python
+            /usr/bin/policyd-spf
         policyd-spf-fin unix  -    n       n       -       0       spawn
-            user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
-            /etc/python-policyd-spf/policyd-spf-fin.conf
+            user=nobody argv=/usr/bin/python
+            /usr/bin/policyd-spf /etc/python-policyd-spf/policyd-spf-fin.conf
 
     /etc/postfix/main.cf:
-        smtpd_restriction_classes = restrictive, permissive, passed_spf
+        spf_fin = check_policy_service unix:private/policyd-spf-fin
+
+        smtpd_restriction_classes = restrictive, permissive, spf_fin, passed_spf
+
         restrictive = reject_unknown_sender_domain
             reject_unknown_client_hostname ...
+
         permissive = permit
-        passed_spf =
-            check_policy_service unix:private/policyd-spf-fin
+
+        passed_spf
             check_recipient_access hash:/etc/postfix/recipient_access
             restrictive
 
-        smtpd_recipient_restrictions
-            permit_mynetworks
+        smtpd_recipient_restrictions             permit_mynetworks
             reject_unauth_destination
             check_policy_service unix:private/policyd-spf
             restrictive

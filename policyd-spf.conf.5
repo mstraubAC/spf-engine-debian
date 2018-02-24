@@ -128,17 +128,17 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2007-10-15"
+.TH policy-spf.conf 5 "2007-10-27"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.5\.1
+0\.5\.2
 
 .SH "USAGE"
 .IX Header "USAGE"
 Usage:
-  policyd-spf /usr/local/policyd-spf/policyd-spf.conf [Config file name to use]
+  policyd-spf [/usr/local/policyd-spf/policyd-spf.conf]
 
 .SH "OTHER DOCUMENTATION"
 .IX Header "OTHER DOCUMENTATION"
@@ -152,13 +152,16 @@ package.
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
 
-python-policyd-spf operates with a set of default configuration options.  These
-options can be changed through use of configuration files.
+python-policyd-spf operates with a default installed configuration file and 
+set of default configuration options that are used if the configuration file
+cannot be found.  These options can be changed by changing the installed 
+configuration files or through giving a path to an alternate configuration 
+file.
 
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 
-Configuration options are described here and in the sample configuration file 
+Configuration options are described here and in the configuration file 
 provided with the package.  The provided setup.py installs this configuration 
 file in /usr/local/policyd-spf/.
 
