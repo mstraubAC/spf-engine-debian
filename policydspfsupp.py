@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 #
 #  Tumgreyspf
-#  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+#  Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
 #
 #  pypolicyd-spf changes
-#  Copyright (c) 2007,2008 Scott Kitterman <scott@kitterman.com>
+#  Copyright © 2007,2008,2009,2010 Scott Kitterman <scott@kitterman.com>
 '''
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2 as published 
@@ -18,7 +19,13 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-import syslog, os, sys, string, re, time, urllib, stat
+import syslog
+import os
+import sys
+import string
+import re
+import urllib
+import stat
 
 
 #  default values
@@ -66,7 +73,7 @@ class ExceptHook:
       self.useStderr = useStderr
    
    def __call__(self, etype, evalue, etb):
-      import traceback, string
+      import traceback
       tb = traceback.format_exception(*(etype, evalue, etb))
       tb = map(string.rstrip, tb)
       tb = string.join(tb, '\n')

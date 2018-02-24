@@ -1,0 +1,176 @@
+#HELO and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout02.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+instance=1
+
+#HELO fail and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout00.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+instance=2
+
+#no HELO and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=72.81.252.18
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+instance=3
+
+#helo pass and mfrom fail
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=scott@fail.kitterman.org
+recipient=bogus@kitterman.org
+instance=4
+
+#helo pass and mfrom none
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout02.controlledmail.com
+sender=scott@yahoo.com
+recipient=bogus@kitterman.org
+
+#helo pass and mfrom null
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout02.controlledmail.com
+sender=
+recipient=bogus@kitterman.org
+
+#helo fail and mfrom null
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=fail.kitterman.org
+sender=
+recipient=bogus@kitterman.org
+
+#Multi-recipient dunno
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout04.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+instance=3
+
+#localhost bypass
+request=smtpd_access_policy
+client_address=127.0.0.1
+helo_name=mailout03.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+
+#Helo Neutral and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=neutral.kitterman.org
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+
+#Whitelist
+request=smtpd_access_policy
+client_address=192.168.0.1
+helo_name=mailout03.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+
+# multi-recipient mfrom fail
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=scott@fail.kitterman.org
+recipient=bogus2@kitterman.org
+instance=4
+
+# multi-recipient HELO fail and mfrom pass
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=fail.kitterman.org
+sender=scott@kitterman.com
+recipient=bogus2@kitterman.org
+instance=2
+
+# No SPF
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=mailout00.yahoo.com
+sender=scott@yahoo.com
+recipient=bogus2@kitterman.org
+
+# Permerror reject
+request=smtpd_access_policy
+client_address=72.81.252.18
+helo_name=permerror.kitterman.org
+sender=scott@permerror.kitterman.org
+recipient=bogus2@kitterman.org
+
+# None and None
+request=smtpd_access_policy
+client_address=71.17.127.27
+helo_name=71-17-127-27.estv.hsdb.sasknet.sk.ca
+sender=dalbecbhoj@accessamericatransport.com
+recipient=hostmaster@jamux.com
+
+# None and None
+request=smtpd_access_policy
+client_address=200.120.31.84
+helo_name=autohaus-knabe.de
+sender=daniel.hahnomjy@autohaus-knabe.de
+recipient=jam@jamux.com
+
+# mfrom softfail and helo pass
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=scott@softfail.kitterman.org
+recipient=bogus@kitterman.org
+
+# mfrom neutral and helo pass
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=scott@neutral.kitterman.org
+recipient=bogus@kitterman.org
+
+# mfrom none and helo softfail
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=softfail.kitterman.org
+sender=scott@yahoo.com
+recipient=bogus@kitterman.org
+
+# mfrom none and helo neutral
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=neutral.kitterman.org
+sender=scott@yahoo.com
+recipient=bogus@kitterman.org
+
+#HELO none and mfrom fail
+request=smtpd_access_policy
+client_address=204.15.80.0
+helo_name=mailout09.controlledmail.com
+sender=scott@kitterman.com
+recipient=bogus@kitterman.org
+
+#HELO Nomail and mfrom Nomail
+request=smtpd_access_policy
+client_address=204.15.80.0
+helo_name=kitterman.biz
+sender=scott@kitterman.biz
+recipient=bogus@kitterman.org
+
+# mfrom MAILER-DAEMON and helo pass
+request=smtpd_access_policy
+client_address=72.81.252.19
+helo_name=mailout00.controlledmail.com
+sender=MAILER-DAEMON
+recipient=bogus@kitterman.org
+
+.

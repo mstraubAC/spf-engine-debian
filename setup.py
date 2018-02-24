@@ -6,12 +6,11 @@ import os
 DESC = """python-policyd-spf SPF Postfix policy server implemented in Python."""
 
 setup(name='python-policyd-spf',
-      version='0.7.2',
+      version='0.7.3',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
-      url='http://www.openspf.org/Software',
-      license='GNU General Public License',
+      url='https://launchpad.net/pypolicyd-spf',
       py_modules=['policydspfsupp'],
       keywords = ['Postfix','spf','email'],
       scripts = ['policyd-spf'],

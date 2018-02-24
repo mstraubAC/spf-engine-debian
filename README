@@ -1,16 +1,16 @@
-Python Postfix Policy for SPF (python-policy-spf) 0.7.1
+Python Postfix Policy for SPF (python-policy-spf) 0.7.3
 Python based policy daemon for Postfix SPF checking
 Tumgreyspf source
- Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+ Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
  <jafo@tummy.com>
 python-policyd-spf changes
- Copyright (c) 2007,2008,2009 Scott Kitterman <scott@kitterman.com>
-<http://www.openspf.org/Software>
+ Copyright © 2007,2008,2009 Scott Kitterman <scott@kitterman.com>
+<https://launchpad.net/pypolicyd-spf>
 Documentation inputs:
- Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+ Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
  <jafo@tummy.com>
  2003-2004 Meng Weng Wong <mengwong@pobox.com> from postfix-policyd-spf-perl
- Copyright (c) 2007,2008,2009 Scott Kitterman <scott@kitterman.com>
+ Copyright © 2007,2008,2009,2010 Scott Kitterman <scott@kitterman.com>
 =================
 
 This is python-policyd-spf, an external policy checker for the postfix mail
@@ -26,9 +26,9 @@ your normal distribution packaging tools):
 3.  python setup.py build
 4.  As root python setup.py install
 
-It requires at least Python 2.5 and the pyspf (python-spf) library version 2.0
-or higher. If pyspf not available through your packaging system, it can be
-downloaded from:
+It requires Python and the pyspf (python-spf) library version 2.0 or higher.
+If pyspf not available through your packaging system, it can be downloaded
+from:
 
 http://sourceforge.net/projects/pymilter/
 
