@@ -22,7 +22,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.4: July 9, 2007"
+__version__ = "0.4.1: August 12, 2007"
 
 import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
 sys.path.append('/usr/local/lib/policy-spf')
@@ -136,7 +136,8 @@ def spfcheck(data, instance_dict, configData):  #{{{1
         [0] SPF result 
         [1] SPF reason
         [2] Identity (HELO/Mail From)
-        [3] Action based on local policy'''
+        [3] Action based on local policy
+        [4] Header'''
     if not found_instance:
         # First do HELO check
         #  if no helo name sent, use domain from sender for later use.
@@ -168,7 +169,6 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     helo_result.append('reject')
                     helo_result[1] = 'HELO result rejected due to local policy (Not Pass/None)'
                 else: helo_result.append('prepend')
-                instance_dict[instance] = helo_result
 
                 spfDetail = (helo_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
                     % ( data.get('client_address', '<UNKNOWN>'),
@@ -180,6 +180,8 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                 syslogData = str(syslogData)
                 syslog.syslog(syslogData)
                 header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[1] +') ' + spfDetail
+                helo_result.append(header)
+                instance_dict[instance] = helo_result
                 # Only act on the HELO result if it is authoritative.
                 if helo_result[3] == 'reject':
                     return(( 'reject', header, instance_dict ))
@@ -209,8 +211,6 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     mfrom_result[3] = 'reject'
                 else: mfrom_result[3] = 'prepend'
                 if mfrom_result[0] != 'None':
-                    instance_dict[instance] = mfrom_result
-
                     spfDetail = (mfrom_result[2] + ' client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
                         % ( data.get('client_address', '<UNKNOWN>'),
                             data.get('helo_name', '<UNKNOWN>'),
@@ -221,13 +221,21 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     syslogData = str(syslogData)
                     syslog.syslog(syslogData)
                     header = 'Received-SPF: '+ mfrom_result[0] + ' (' + mfrom_result[1] +') ' + spfDetail
-                # Only act on the HELO result if it is authoritative.
+                    mfrom_result.append(header)
+                    instance_dict[instance] = mfrom_result
+                # Act on the Mail From result if it is authoritative.
                 if mfrom_result[3] == 'reject':
                     return(( 'reject', header, instance_dict ))
                 if mfrom_result[3] == 'defer':
                     return(( 'defer', header, instance_dict ))
                 if mfrom_result[3] != 'dunno' or helo_result[3] =='dunno':
                     return(( 'prepend', header, instance_dict ))
+    else:
+        cached_instance = instance_dict[instance]
+        if cached_instance[3] == 'prepend':
+            return(( 'dunno', 'Header already pre-pended', instance_dict ))
+        else:
+            return(( cached_instance[3], cached_instance[4], instance_dict ))
     return(( 'None', 'None', instance_dict ))
 
 ###################################################
@@ -270,7 +278,6 @@ while 1:
             checkerReason = None
 
         #  handle results  {{{3
-
         if checkerValue == 'reject':
             sys.stdout.write('action=550 %s\n\n' % checkerReason)
 

@@ -4,6 +4,9 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.4.1 (2007-08-13 11:00 -0400)
+  * Correct multi-recipient caching to work for multi-recipient rejections
+
 --- 0.4 (2007-07-09 17:24)
   + Process HELO first and reject if allowed before looking up Mail From
   + Log failure to find SPF library
