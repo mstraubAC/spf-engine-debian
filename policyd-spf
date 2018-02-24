@@ -1,0 +1,254 @@
+#!/usr/bin/python
+#
+#  Check SPF results and provide recommended action back to Postfix.
+#
+#  Tumgreyspf source
+#  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+#  <jafo@tummy.com>
+#
+#  pypolicyd-spf
+#  Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+'''
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 2 as published 
+    by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
+
+__version__ = "0.3: February 23, 2007"
+
+import syslog, os, sys, string, re, time, popen2, urllib, stat, errno, socket, spf
+sys.path.append('/usr/local/lib/policy-spf')
+import policydspfsupp
+
+syslog.openlog(os.path.basename(sys.argv[0]), syslog.LOG_PID, syslog.LOG_MAIL)
+policydspfsupp.setExceptHook()
+
+#############################################
+def cidrmatch(connectip, ipaddrs, n):
+    """Match connect IP against a list of other IP addresses. From pyspf."""
+
+    try:
+        if connectip.count(':'):
+            MASK = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFL
+            connectip = spf.inet_pton(connectip)
+            for arg in ipaddrs:
+                ipaddrs[ipaddrs.index(arg)] = spf.inet_pton(arg)
+            bin = spf.bin2long6
+        else:
+            MASK = 0xFFFFFFFFL
+            bin = spf.addr2bin
+        c = ~(MASK >> n) & MASK & bin(connectip)
+        for ip in [bin(ip) for ip in ipaddrs]:
+            if c == ~(MASK >> n) & MASK & ip: return True
+    except socket.error: pass
+    return False
+
+def parse_cidr(cidr_ip):
+    """Breaks CIDR notation into a (address,cidr,cidr6) tuple.  The cidr 
+       defaults to 32 if not present. Derived from pyspf"""
+    import re
+    RE_DUAL_CIDR = re.compile(r'//(0|[1-9]\d*)$')
+    RE_CIDR = re.compile(r'/(0|[1-9]\d*)$')
+    a = RE_DUAL_CIDR.split(cidr_ip)
+    if len(a) == 3:
+        cidr_ip, cidr6 = a[0], int(a[1])
+    else:
+        cidr6 = None
+    a = RE_CIDR.split(cidr_ip)
+    if len(a) == 3:
+        cidr_ip, cidr = a[0], int(a[1])
+    else:
+        cidr = None
+    b = cidr_ip.split(':', 1)
+    if len(b) < 2:
+        return cidr_ip, cidr
+    return a[0], cidr6
+
+#############################################
+def spfcheck(data, configData, configGlobal):  #{{{1
+	debugLevel = configGlobal.get('debugLevel', 0)
+	ip = data.get('client_address')
+	if ip == None:
+		if debugLevel: syslog.syslog('spfcheck: No client address, exiting')
+		return(( None, None ))
+	# Do not check SPF for localhost addresses - add to skip addresses to 
+	# skip SPF for internal networks if desired.
+	skip_addresses = ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',]
+	for cidr in skip_addresses:
+		parsed_address = parse_cidr(cidr)
+		good_ip = [parsed_address[0],]
+		if cidrmatch(ip, good_ip, int(parsed_address[1])):
+			return (( None, 'SPF check N/A for local connections' ))
+
+	sender = data.get('sender')
+	helo = data.get('helo_name')
+	if not sender and not helo:
+		if debugLevel: syslog.syslog('spfcheck: No sender or helo, exiting')
+		return(( None, None ))
+
+	#  if no helo name sent, use domain from sender
+	if not helo:
+		foo = string.split(sender, '@', 1)
+		if len(foo) <  2: helo = 'unknown'
+		else: helo = foo[1]
+
+	#  start query
+	spfResult = None
+	spfReason = None
+
+	#  try to use pyspf
+	try:
+		ret = spf.check2(i = ip, s = sender, h = helo)
+		spfResult = string.strip(ret[0])
+		spfReason = string.strip(ret[1])
+		if debugLevel:
+			syslog.syslog('spfcheck: pyspf result: "%s"' % str(ret))
+	except ImportError:
+		pass
+
+	#  try spfquery - Add back in later
+	'''if not spfResult:
+		#  check for spfquery
+		spfqueryPath = configGlobal['spfqueryPath']
+		if not os.path.exists(spfqueryPath):
+			if debugLevel:
+				syslog.syslog('spfcheck: No spfquery at "%s", exiting'
+						% spfqueryPath)
+			return(( None, None ))
+
+		#  open connection to spfquery
+		fpIn, fpOut = popen2.popen2('%s -file -' % spfqueryPath)
+		fpOut.write('%s %s %s\n' % ( ip, sender, helo ))
+		fpOut.close()
+		spfData = fpIn.readlines()
+		fpIn.close()
+		if debugLevel:
+			syslog.syslog('spfcheck: spfquery result: "%s"' % str(spfData))
+		spfResult = string.strip(spfData[0])
+		spfReason = string.strip(spfData[1])'''
+
+	#  read result
+	if sender:
+		identity = 'identity=mailfrom; '
+	else:
+		identity = 'identity=helo; '
+	spfDetail = (identity + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s; '
+			% ( data.get('client_address', '<UNKNOWN>'),
+				data.get('helo_name', '<UNKNOWN>'),
+				data.get('sender', '<UNKNOWN>'),
+				data.get('recipient', '<UNKNOWN>'),
+				 ))
+	queue = ('QUEUEID=%s; '% ( data.get('queue_id', '<UNKNOWN>')))
+	syslogData = spfReason + ":" + queue + spfDetail
+	syslogData = str(syslogData)
+	syslog.syslog(syslogData)
+	
+	if spfResult == 'fail':
+		return(( 'reject', 'QUEUE_ID:%s SPF Reports: %s' 
+			% ( data.get('queue_id', '<UNKNOWN>'), str(spfReason) )))
+
+	if spfResult == 'permerror':
+		return(( 'reject', 'QUEUE_ID:%s SPF Reports: %s' 
+			% ( data.get('queue_id', '<UNKNOWN>'), str(spfReason) )))
+	
+	if spfResult == 'temperror':
+		return(( 'defer', 'QUEUE_ID:%s SPF Reports: %s' 
+			% ( data.get('queue_id', '<UNKNOWN>'), str(spfReason) )))
+	header = 'Received-SPF: '+ spfResult + ' (' + spfReason +') ' + spfDetail
+	
+	return(( 'prepend', header ))
+
+###################################################
+#  load config file  {{{1
+configFile = policydspfsupp.defaultConfigFilename
+if len(sys.argv) > 1:
+	if sys.argv[1] in ( '-?', '--help', '-h' ):
+		print 'usage: policy-spf [<configfilename>]'
+		sys.exit(1)
+	configFile = sys.argv[1]
+
+configGlobal = policydspfsupp.processConfigFile(filename = configFile)
+#  loop reading data  {{{1
+debugLevel = configGlobal.get('debugLevel', 0)
+if debugLevel >= 2: syslog.syslog('Starting')
+instance_list = []
+data = {}
+lineRx = re.compile(r'^\s*([^=\s]+)\s*=(.*)$')
+while 1:
+	line = sys.stdin.readline()
+	if not line: break
+	line = string.rstrip(line)
+	if debugLevel >= 4: syslog.syslog('Read line: "%s"' % line)
+
+	#  end of entry  {{{2
+	if not line:
+		if debugLevel >= 4: syslog.syslog('Found the end of entry')
+		#TO DO Make Config file work 
+		configData = configGlobal
+		#configData = policydspfsupp.lookupConfig(configGlobal.get('configPath'),
+		#		data, configGlobal)
+		if debugLevel >= 2: syslog.syslog('Config: %s' % str(configData))
+
+		#  run the checkers  {{{3
+		checkerValue = None
+		checkerReason = None
+		checkerValue, checkerReason = spfcheck(data, configData,
+						configGlobal)
+		if configData.get('SPFSEEDONLY', 0):
+			checkerValue = None
+			checkerReason = None
+
+		#  handle results  {{{3
+
+		if checkerValue == 'reject':
+			sys.stdout.write('action=550 %s\n\n' % checkerReason)
+			
+		elif checkerValue == 'prepend':
+			instance = data.get('instance')
+			# The following if is only needed for testing.  Postfix 
+			# will always provide instance.
+			if not instance:
+				import random
+				instance = str(int(random.random()*100000))
+			# This is to prevent multiple headers being prepended
+			# for multi-recipient mail.
+			found_instance = instance_list.count(instance)
+			if found_instance == 0:
+				sys.stdout.write('action=prepend %s\n\n' % checkerReason)
+				instance_list.append(instance)
+			else:
+				sys.stdout.write('action=dunno\n\n')
+		elif checkerValue == 'defer':
+			sys.stdout.write('action=defer_if_permit %s\n\n' % checkerReason)
+
+		elif checkerValue == 'warn':
+			sys.stdout.write('action=warn %s\n\n' % checkerReason)
+			
+		else:
+			sys.stdout.write('action=dunno\n\n')
+
+		#  end of record  {{{3
+		sys.stdout.flush()
+		data = {}
+		continue
+
+	#  parse line  {{{2
+	m = lineRx.match(line)
+	if not m: 
+		syslog.syslog('ERROR: Could not match line "%s"' % line)
+		continue
+
+	#  save the string  {{{2
+	key = m.group(1)
+	value = m.group(2)
+	if key not in [ 'protocol_state', 'protocol_name', 'queue_id' ]:
+		value = string.lower(value)
+	data[key] = value

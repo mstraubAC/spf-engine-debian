@@ -1,0 +1,30 @@
+# Legend:
+# --- = A new release
+#   + = Added a feature (in a backwards compatible way)
+#   ! = Changed something significant, or removed a feature
+#   * = Fixed a bug, or made a minor improvement
+
+--- 0.3 (2007-02-23 11:54)
+  * Refactored and simplified SPF results reporting/logging.
+  * Changed logging to match RFC 4408 SPF-Received: terminology
+  * Fixed processing to skip SPF for localhost connections to work for IPv6.
+  + Implemented prepending of SPF-Received: header.
+  + Added man page (man 1 policyd-spf)
+
+--- 0.2 (2007-02-07 16:50)
+  * Changed skip local connections to use CIDR match rather than string.
+  * Log non-fail/error results to syslog
+
+--- 0.1 (2007-01-17 18:00)
+
+  ! Initial release
+  ! Removed greylisting
+  ! Stubbed out config files until they can be updated and integrated
+  + Defer on temperror
+  + Reject on permerror
+  + Check HELO for null Sender (Mail From)
+
+
+--- 0.0 Source from Tumgreyspf (2007-01-11 00:00)
+
+  ! Source Tumgreyspf Version 1.24 

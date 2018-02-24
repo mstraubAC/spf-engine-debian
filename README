@@ -1,0 +1,107 @@
+Python Postfix Policy for SPF (python-policy-spf) 0.01
+Python based policy daemon for Postfix SPF checking
+Tumgreyspf source
+ Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+ <jafo@tummy.com>
+python-policyd-spf changes
+ Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+<http://www.openspf.org/Software>
+Documentation inputs:
+ Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
+ <jafo@tummy.com>
+ 2003-2004 Meng Weng Wong <mengwong@pobox.com> from postfix-policyd-spf-perl
+ Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+=================
+
+This is python-policyd-spf, an external policy checker for the postfix mail
+server.  It will use pyspf to check SPF records to determine if email should 
+be rejected by your server.
+
+LICENSE
+
+   python-policyd-spf is licensed under the GPLv2.
+
+REQUIREMENTS
+
+   Python 2.3 or above
+      http://www.python.org/
+
+   Postfix 2.1 or above
+      http://www.postfix.org/
+
+   Pyspf 2.0 or above
+      http://cheeseshop.python.org/pypi/pyspf/
+
+DESCRIPTION
+
+This documentation assumes you have read Postfix's README_FILES/
+SMTPD_POLICY_README..
+
+Each time a Postfix SMTP server process is started it connects to the policy
+service socket, and Postfix runs one instance of this Python script.  By
+default, a Postfix SMTP server process terminates after 100 seconds of idle
+time, or after serving 100 clients.  Thus, the cost of starting this Python
+script is smoothed out over time.
+
+The default policy_time_limit is 1000 seconds.  This may be too short for some
+SMTP transactions to complete.  As recommended in SMTPD_POLICY_README, this
+should be extended to 3600 seconds.  To do so, set "policy_time_limit = 3600"
+in /etc/postfix/main.cf.
+
+Detailed instructions for installing python-policy-spf and integrating it with
+Postfix can be found in the INSTALL file (Note: Versions of the program packaged
+with specific distributions may provide a distribution specific install file).
+
+Messages that get a Fail or Permerror SPF result will be rejected.  Messages
+that get a Temperror result will be deferred if otherwise permitted.  Messages
+that get other SPF results (Pass, None, Neutral, Softfail) will have the 
+SPF Received header prepended.  Note: Spamasassisn 3.2 and follow will use this
+header for spam scoring so there is no need to configure a separate SPF check in
+these Spamassassin versions.  See Spamassassin documentation for details.
+
+LOGGING
+
+   Policyd-spf will log messages to syslog about it's activities.  The
+   "debugLevel" value in "policyd-spf.conf" can be increased to get
+   additional information to be logged.  When set to a value of "0", only
+   test results (SPF hits/misses) are logged.  Results will be returned to 
+   Postfix and logged as a warning by Postfix also.  For logging by this policy
+   server, look for "policyd-spf" in your mail log files.
+
+   TODO Warning - Currently config files are not processed.  Logging can be 
+   changed in the default values in policydspfsupp.py.
+
+TESTING
+
+To test the policy daemon by hand, execute:
+
+    % python /usr/bin/policyd-spf
+
+Each query is a bunch of attributes.  Order does not matter, and the daemon
+uses only a few of all the attributes shown below:
+
+    request=smtpd_access_policy
+    protocol_state=RCPT
+    protocol_name=SMTP
+    helo_name=some.domain.tld
+    queue_id=8045F2AB23
+    instance=12345.6789
+    sender=foo@bar.tld
+    recipient=bar@foo.tld
+    client_address=1.2.3.4
+    client_name=another.domain.tld
+    [empty line]
+
+The policy daemon will answer in the same style, with an attribute list
+followed by a empty line:
+
+    action=dunno
+    [empty line]
+
+CONFIGURATION VALUES
+
+      SPFSEEDONLY=0 will only check SPF and log, not use it for decisions.  SPF 
+        will be used if SPFSEEDONLY!=0
+
+      debugLevel=0 log only SPF results.  Values of 1 - 4 result in increasing
+        levels of detail.
