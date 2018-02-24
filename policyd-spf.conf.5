@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2008-06-18"
+.TH policy-spf.conf 5 "2009-10-31"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.7
+0\.7\.2
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -427,8 +427,8 @@ skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0//104,::1//128
 .SH "SPF IP WHITELIST"
 .IX Header "SPF IP WHITELIST"
 
-A comma separated CIDR Notation list of IP addresses not to skip SPF checks 
-for. Use this list to whitelist trusted relays (such as a secondary MX and 
+A comma separated CIDR Notation list of IP addresses to skip SPF checks for.
+Use this list to whitelist trusted relays (such as a secondary MX and 
 trusted forwarders).  An x-header is prepended indicating the IP was
 whitelisted against SPF checks.  This is a trace header only.  Note the lack
 of spaces in the list.
