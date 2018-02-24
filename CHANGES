@@ -4,6 +4,19 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.5.1 (2007-10-17 14:47 -0400)
+  * Corrected regression so reject on Permerror works (introduced in 0.4)
+    Thanks to "John A. Martin" <jam@jamux.com> for the bug report.
+  * Fixed Restriction Class option to be useful.
+  + Made restriction class names configurable
+  + Added per user whitelisting README to explain how it's useful
+    Thanks to "John A. Martin" <jam@jamux.com> for the contribution.
+  * Corrected SPF-Recieved header to us <> for null sender
+  * Corrected Postfix integration section of policyd-spf(1) to reflect correct
+    policy service time limit name.
+  * Corrected installed config file locations in both man pages.
+  * Header and logging cleanup (removed trailing ';' and adjusted whitespace).
+
 --- 0.5 (2007-10-03 13:39 -0400)
   + Added man page for configuration file formatting (man 5 policyd-spf.conf) 
   * Moved explicit logging of the result headers for HELO and Mail From from

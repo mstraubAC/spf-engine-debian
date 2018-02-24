@@ -128,17 +128,33 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf 1"
-.TH policy-spf 1 "2007-10-03"
+.TH policy-spf 1 "2007-10-17"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.5
+0\.5\.1
 
 .SH "USAGE"
 .IX Header "USAGE"
-Usage:
-    \% python /usr/bin/policyd-spf
+
+NOTE: Depending on the packaging and distribution, the exact path to the
+executable may vary. The executable should be included in the Python path.
+
+$ policyd-spf [Start with package defaults]
+
+$ policyd-spf \-h [Display usage message]
+
+$ policyd-spf /usr/local/policyd-spf/policyd-spf.conf [Config file name to use]
+
+Configuration options are described in the sample configuration file provided
+with the package policyd-spf.conf(5).  The provided setup.py installs this 
+configuration file in /usr/local/policyd-spf/.
+
+Additionally, whitelisting certain IP addresses or IP addresses used by listed
+domains from SPF checks is supported.  Skipping SPF checks for local submission
+or trusted relays is also provided.  The sample configuration file and
+policyd-spf.conf(5) shows the format to use.
 
 .SH "OTHER DOCUMENTATION"
 .IX Header "OTHER DOCUMENTATION"
@@ -189,25 +205,6 @@ checking does not present a false positive risk.  These settings are a matter
 of local policy and should be adjusted to meet the requirements of site
 administrators.  See policyd-spf.conf(5) for configuration file details.
 
-.SH "USAGE"
-.IX Header "USAGE"
-
-NOTE: Depending on the packaging and distribution, the exact path to the
-executable may vary. The executable should be included in the Python path.
-
-$ policyd-spf [Start with package defaults]
-$ policyd-spf -h [Display usage message]
-$ policyd-spf /etc/policyd-spf/policyd-spf.conf [Config file name to use]
-
-Configuration options are described in the sample configuration file provided
-with the package policyd-spf.conf(5).  The provided setup.py installs this 
-configuration file in /usr/local/policyd-spf/.
-
-Additionally, whitelisting certain IP addresses or IP addresses used by listed
-domains from SPF checks is supported.  Skipping SPF checks for local submission
-or trusted relays is also provided.  The sample configuration file and
-policyd-spf.conf(5) shows the format to use.
-
 .SH "LOGGING"
 .IX Header "LOGGING"
 
@@ -224,7 +221,7 @@ Testing the policy daemon
 
 To test the policy daemon by hand, execute:
 
-    % policyd-spf
+    policyd-spf
 
 Each query is a bunch of attributes.  Order does not matter, and the daemon
 uses only a few of all the attributes shown below:
@@ -256,7 +253,9 @@ followed by a empty line:
             user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
 
     NOTE: Check the path to both the installed Python interpreter and
-          policyd-spf.  These vary from system to system.
+          policyd-spf.  These vary from system to system.  To use non-default
+          settings, you must also add the config file (see above and 
+          policyd-spf.conf(5) for details).
 
  2. Configure the Postfix policy service in /etc/postfix/main.cf:
 
@@ -265,13 +264,13 @@ followed by a empty line:
             reject_unauth_destination
             check_policy_service unix:private/policyd-spf
             ...
-        policy_time_limit = 3600
+        policyd-spf_time_limit = 3600
 
     NOTE:  Specify check_policy_service AFTER reject_unauth_destination or
            else your system can become an open relay.
 
 
- 3. Restart Postfix.
+ 3. Reload Postfix.
 
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
