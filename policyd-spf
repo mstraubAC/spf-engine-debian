@@ -23,29 +23,33 @@
    limitations under the License.
 '''
 
-__version__ = "2.0.1"
-__date__ = "2016-12-08"
+__version__ = "2.0.2"
+__date__ = "2017-12-14"
 
 testing = True
 
 import syslog
 import os
 import sys
+import re
+import socket
+import ipaddress # needs python3.3, python2 backport doesn't work
+# import random - Only needed for testing, so imported in line if needed.
+
+import spf
+# import authres - not needed in default configuration, imported if needed in
+# main program loop.
+
+import policydspfsupp
+# import policydspfuser - Only imported if per-user settings are activated for
+# efficiency.
+
 if int(sys.version_info.major) < 3 or (int(sys.version_info.major) == 3 and \
     int(sys.version_info.minor) < 3):
     raise ImportError("Python 3.3 or later is required")
-import re
-import socket
-import spf
 maj, minor, micro = spf.__version__.split(':')[0].split('.')
 if int(micro) < 9:
     raise ImportError("At least pyspf 2.0.9 is required.")
-import policydspfsupp
-import ipaddress # needs python3.3, python2 backport doesn't work
-try:
-    import authres
-except:
-    pass # authres not needed in default configuration.
 
 syslog.openlog(os.path.basename(sys.argv[0]), syslog.LOG_PID, syslog.LOG_MAIL)
 policydspfsupp._setExceptHook()
@@ -497,13 +501,17 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
             HELO_pass_restriction = configData.get('HELO_pass_restriction')
             HELO_reject = configData.get('HELO_reject')
             Mail_From_reject = configData.get('Mail_From_reject')
-            No_Mail = configData.get('No_Mail')
+            if configData.get('No_Mail') == 'True':
+                No_Mail = True
+            else: No_Mail = False
         else:
             Mail_From_pass_restriction = peruserconfigData.get('Mail_From_pass_restriction')
             HELO_pass_restriction = peruserconfigData.get('HELO_pass_restriction')
             HELO_reject = peruserconfigData.get('HELO_reject')
             Mail_From_reject = peruserconfigData.get('Mail_From_reject')
-            No_Mail = peruserconfigData.get('No_Mail')
+            if peruserconfigData.get('No_Mail') == 'True':
+                No_Mail = True
+            else: No_Mail = False
         helo_result = ['None',]
         # First do HELO check
         #  if no helo name sent, use domain from sender for later use.
@@ -740,6 +748,13 @@ if len(sys.argv) > 1:
     configFile = sys.argv[1]
 
 configGlobal = policydspfsupp._processConfigFile(filename = configFile)
+
+if configGlobal.get('Header_Type') == 'AR':
+    try:
+        import authres
+    except ImportError:
+        syslog.syslog(syslog.LOG_ERR,'ERROR: Configured for Authentication Results header type, but authres module missing')
+        raise ImportError("Configured for Authentication Results, but authres missing..")
 
 #  loop reading data  {{{1
 debugLevel = configGlobal.get('debugLevel', 1)

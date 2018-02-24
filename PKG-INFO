@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: pypolicyd-spf
-Version: 2.0.1
+Version: 2.0.2
 Summary: pypolicyd-spf SPF Postfix policy server implemented in Python.
 Home-page: https://launchpad.net/pypolicyd-spf
 Author: Scott Kitterman

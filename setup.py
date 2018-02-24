@@ -5,7 +5,7 @@ import sys
 DESC = """pypolicyd-spf SPF Postfix policy server implemented in Python."""
 
 setup(name='pypolicyd-spf',
-      version='2.0.1',
+      version='2.0.2',
       description=DESC,
       author='Scott Kitterman',
       author_email='scott@kitterman.com',
