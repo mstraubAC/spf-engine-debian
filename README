@@ -1,4 +1,4 @@
-Python Postfix Policy for SPF (python-policy-spf) 0.5
+Python Postfix Policy for SPF (python-policy-spf) 0.7.1
 Python based policy daemon for Postfix SPF checking
 Tumgreyspf source
  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
