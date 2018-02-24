@@ -23,7 +23,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.8.0: FEB 17, 2010"
+__version__ = "0.8.1: NOV 27, 2010"
 
 import syslog
 import os
@@ -605,7 +605,7 @@ while 1:
         checkerReason = None
         checkerValue, checkerReason, instance_dict = spfcheck(data, 
                     instance_dict, configData, peruser)
-        if configData.get('defaultSeedOnly') == 0:
+        if configData.get('defaultSeedOnly') == 0 and checkerValue != 'prepend':
             checkerValue = None
             checkerReason = None
 

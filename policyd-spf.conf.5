@@ -179,7 +179,7 @@ on per user settings can be found in policyd-spf.peruser(5).
 .SH "LOGGING"
 .IX Header "LOGGING"
 
-"debugLevel" controls ths amount of information logged by the policy server.
+"debugLevel" controls the amount of information logged by the policy server.
 
 The default, 1, logs no debugging messages, just basic SPF results and errors
 generated through the policy server.  This value can be increased up to 5 
@@ -342,7 +342,7 @@ None
 
 No_Mail - Only reject when SPF indicates the host/domain sends no mail. This
 option will only cause mail to be rejected if the HELO/Mail From record is
-"v=spf1 -all".  This option is useful for rejecting mail in situations where
+"v=spf1 \-all".  This option is useful for rejecting mail in situations where
 the tolerance for rejecting wanted mail is very low. It operates on both HELO
 and Mail From identities if set.
 

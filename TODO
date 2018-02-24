@@ -1,2 +1,4 @@
 Python DBM, Berkeley DB, or Python sqlite local policy support
+Implement the option to provide Authentication Results headers in addition to
+or instead of SPF Received headers
 Refactor code to make it less repetitive and more maintainable
