@@ -4,6 +4,10 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 1.1 (2012-07-21 21:30 -0400)
+  + Ported to Python 3. Tested on python3.2, python2.7, and python2.6.
+    Versions previous to python2.6 will not work. 
+
 --- 1.0 (2012-03-17 23:34 -0400)
   * Fixed missing authentication results headers for no authentication
     performed cases (when authres is enabled)
