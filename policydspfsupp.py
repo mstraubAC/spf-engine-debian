@@ -3,7 +3,7 @@
 #  Copyright (c) 2004-2005, Sean Reifschneider, tummy.com, ltd.
 #
 #  pypolicyd-spf changes
-#  Copyright (c) 2007, Scott Kitterman <scott@kitterman.com>
+#  Copyright (c) 2007,2008 Scott Kitterman <scott@kitterman.com>
 '''
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2 as published 
@@ -23,13 +23,13 @@ import syslog, os, sys, string, re, time, popen2, urllib, stat
 
 #  default values
 defaultConfigData = {
-        'debugLevel' : 0,
-        'defaultSeedOnly' : 1,
+        'debugLevel' : 1,
         'HELO_reject' : 'SPF_Not_Pass',
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
         'TempError_Defer'  : 'False',
-        'skip_addresses' : ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',]
+        'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0//104,::1//128',
+        'defaultSeedOnly' : 1
         }
 
 
@@ -109,20 +109,21 @@ def readConfigFile(path, configData = None, configGlobal = {}):
     read from path.'''
 
     debugLevel = configGlobal.get('debugLevel', 0)
-    if debugLevel >= 3: syslog.syslog('readConfigFile: Loading "%s"' % path)
+    if debugLevel >= 5: syslog.syslog('readConfigFile: Loading "%s"' % path)
     if configData == None: configData = {}
     nameConversion = {
             'debugLevel' : int,
-            'defaultSeedOnly' : int,
             'HELO_reject' : str,
             'Mail_From_reject' : str,
             'PermError_reject' : str,
             'TempError_Defer' : str,
             'Mail_From_pass_restriction' : str,
             'HELO_pass_restriction' : str,
+            'Prospective' : str,
             'Whitelist' : str,
             'skip_addresses': str,
-            'Domain_Whitelist' : str
+            'Domain_Whitelist' : str,
+            'defaultSeedOnly' : int
             }
 
     #  check to see if it's a file
@@ -147,8 +148,9 @@ def readConfigFile(path, configData = None, configGlobal = {}):
         data = map(string.strip, string.split(line, '=', 1))
         if len(data) != 2:
             if len(data) == 1:
-                syslog.syslog('Configuration item "%s" not defined in file "%s"'
-                    % ( line, path ))
+                if debugLevel >= 1:
+                    syslog.syslog('Configuration item "%s" not defined in file "%s"'
+                        % ( line, path ))
             else:
                 syslog.syslog('ERROR parsing line "%s" from file "%s"'
                     % ( line, path ))

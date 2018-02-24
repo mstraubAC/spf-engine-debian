@@ -128,17 +128,17 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2007-10-27"
+.TH policy-spf.conf 5 "2008-02-18"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.5\.2
+0\.6
 
 .SH "USAGE"
 .IX Header "USAGE"
 Usage:
-  policyd-spf [/usr/local/policyd-spf/policyd-spf.conf]
+  policyd-spf [/etc/policyd-spf/policyd-spf.conf]
 
 .SH "OTHER DOCUMENTATION"
 .IX Header "OTHER DOCUMENTATION"
@@ -163,7 +163,7 @@ file.
 
 Configuration options are described here and in the configuration file 
 provided with the package.  The provided setup.py installs this configuration 
-file in /usr/local/policyd-spf/.
+file in /etc/policyd-spf/.
 
 Additionally, whitelisting certain IP addresses from SPF checks is supported.
 The this man page and the sample configuration file show the format to use.
@@ -175,31 +175,33 @@ The this man page and the sample configuration file show the format to use.
 .IX Header "LOGGING"
 
 "debugLevel" controls ths amount of information logged by the policy server.
-The default, 0, logs no debugging messages, just basic SPF results and errors
+
+The default, 1, logs no debugging messages, just basic SPF results and errors
 generated through the policy server.  This value can be increased up to 5 
 (values higher than 5 will not cause an error, but will not log any additional
 information).
 
-debug level 1 adds a log message if no client address (IP address from which
+debug level 2 adds a log message if no client address (IP address from which
 the connection was made), Mail From addresss, or HELO/EHLO name is received by
 the policy server, and logs SPF results for each Mail From and HELO check.
 
-debug level 2 generates a log message each time the policy server starts and
+debug level 3 generates a log message each time the policy server starts and
 each time it exits, as well as logging an copy of the exact header returned to
 Postfix to be prepended into the message.  Each time the policy server starts,
-debug level 2 also logs the configuration information used by the policy
+debug level 3 also logs the configuration information used by the policy
 server.
-
-debug level 3 logs each config file read (with file name and path).
 
 debug level 4 logs the complete data set received by Postfix via the policy
 interface and when the end of the entry is read.
 
-debug level 5 logs each configuration attribute read from a configuration file.
+debug level 5 is used to debug config file processing and can only be set in 
+code and not via the config file.
+
+If debug level is 0, then the policy server logs errors only.
 
 Default:
 
-debugLevel = 0
+debugLevel = 1
 
 .SH "TEST OPERATION"
 .IX Header "TEST OPERATION"
@@ -344,6 +346,21 @@ Default:
 
 TempError_Defer = False
 
+.SH "Prospective SPF Check"
+.IX Header "Prospective SPF Check"
+
+Prospective SPF checking - Check to see if mail sent from the defined IP
+address would pass.  This is useful for outbound MTAs to avoid sending mail that
+would Fail SPF checks when recieved.  Disable HELO checking when using this
+option.  It's only potentially useful for Mail From checking. SPF Received
+headers are not added when this option is used.
+
+Prospective = 192.168.0.4
+
+Default:
+
+None
+
 .SH "LOCAL SPF BYPASS LIST"
 .IX Header "LOCAL SPF BYPASS LIST"
 
@@ -352,11 +369,11 @@ for internal networks if desired. Defaults are standard IPv4 and IPv6 localhost
 addresses. This can also be used, to allow mail from local clients submitting 
 mail to an MTA also acting as a Mail Submission Agent (MSA) to be skipped.  An 
 x-header is prepended indicating SPF checks were skipped due to a local
-address.  This is a trace header only.
+address.  This is a trace header only.  Note the lack of spaces in the list.
 
 Default:
 
-skip_addresses = 127.0.0.0/8, ::ffff:127.0.0.0//104, ::1//128
+skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0//104,::1//128
 
 .SH "SPF IP WHITELIST"
 .IX Header "SPF IP WHITELIST"
@@ -364,11 +381,12 @@ skip_addresses = 127.0.0.0/8, ::ffff:127.0.0.0//104, ::1//128
 A comma separated CIDR Notation list of IP addresses not to skip SPF checks 
 for. Use this list to whitelist trusted relays (such as a secondary MX and 
 trusted forwarders).  An x-header is prepended indicating the IP was
-whitelisted against SPF checks.  This is a trace header only.
+whitelisted against SPF checks.  This is a trace header only.  Note the lack
+of spaces in the list.
 
 Example:
 
-Whitelist = 192.168.0.0/31, 192.168.1.0/30
+Whitelist = 192.168.0.0/31,192.168.1.0/30
 
 Default:
 
@@ -384,11 +402,12 @@ is useful for large forwarders with complex outbound infrastructures and SPF
 records.  This option is less scalable than the SPF IP Whitelist.  An x-header 
 is prepended indicating the IP was whitelisted against SPF checks.  This is a 
 trace header only.  This option does nothing if the domain does not have an SPF
-record.  In this case use the SPF IP Whitelist described above.
+record.  In this case use the SPF IP Whitelist described above. Note the lack
+of spaces in the list.
 
 Example:
 
-Domain_Whitelist = pobox.com, trustedforwarder.org
+Domain_Whitelist = pobox.com,trustedforwarder.org
 
 Default:
 
