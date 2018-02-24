@@ -23,7 +23,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.'''
 
-__version__ = "0.7.3: JAN 07, 2010"
+__version__ = "0.8.0: FEB 17, 2010"
 
 import syslog
 import os
@@ -94,7 +94,7 @@ def get_resultcodes(configData, scope):
             sender_domain = sender.split('@', 1)[1]
         else:
             sender_domain = ''
-    
+
     if scope == 'helo':
         helo_policy = configData.get('HELO_reject')
         if spf.domainmatch(reject_domain_list, helo):
@@ -228,8 +228,37 @@ def spfbypass(data, check_type, configData):
                     if debugLevel >= 3: syslog.syslog(Header)
                     return (True, Header)
             return (False, 'None')
+        elif check_type == 'Domain_Whitelist_PTR':
+            if debugLevel >= 4: syslog.syslog ("PTR Domain Whitelist enabled.")
+            try:
+                # Try a reverse DNS lookup first and try and match against the domain list that way
+                ipComponents = string.split(ip, '.')
+                ipComponents.reverse()
+                rDNSLookup = string.join(ipComponents, '.')+'.in-addr.arpa'
+                rDNSResults = spf.DNSLookup (rDNSLookup, 'ptr')
+                if (len (rDNSResults) > 0):
+                    rDNSName = rDNSResults [0][1]
+                else:
+                    # Reverse lookup didn't find any records, so don't continue with the check
+                    rDNSName = None
+            except spf.TempError, e:
+                # DNS timeout - continue with the base SPF check.
+                rDNSName = None
+            if (rDNSName is not None):
+                for domain in bypass_list_list:
+                    if (rDNSName.endswith (domain)):
+                        comment = 'SPF skipped for PTR whitelisted relay domain - '
+                        Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                            % ( data.get('client_address', '<UNKNOWN>'),
+                                data.get('helo_name', '<UNKNOWN>'),
+                                data.get('sender', '<UNKNOWN>'),
+                                data.get('recipient', '<UNKNOWN>'),
+                                ))
+                        if debugLevel >= 3: syslog.syslog(Header)
+                        return (True, Header)
+            return (False, 'None')
 #############################################
-def spfcheck(data, instance_dict, configData):  #{{{1
+def spfcheck(data, instance_dict, configData, peruser):  #{{{1
     debugLevel = configData.get('debugLevel', 1)
     if configData.get('Prospective'):
         ip = configData.get('Prospective')
@@ -238,33 +267,6 @@ def spfcheck(data, instance_dict, configData):  #{{{1
     if ip == None:
         if debugLevel >= 2: syslog.syslog('spfcheck: No client address, exiting')
         return(( None, None, instance_dict ))
-    # Do not check SPF for localhost addresses 
-    skip_check = spfbypass(data, 'skip_addresses', configData)
-    if skip_check[0]:
-        return (('prepend', skip_check[1], instance_dict ))
-    # Whitelist designated IP addresses from SPF checks (e.g. secondary MX or 
-    # known forwarders.
-    ip_whitelist = spfbypass(data, 'Whitelist', configData)
-    if ip_whitelist:
-        if ip_whitelist[0]:
-            return (('prepend', ip_whitelist[1], instance_dict ))
-    # Whitelist designated Domain's sending addresses from SPF checks (e.g. 
-    # known forwarders.
-    domain_whitelist = spfbypass(data, 'Domain_Whitelist', configData)
-    if domain_whitelist:
-        if domain_whitelist[0]:
-            return (('prepend', domain_whitelist[1], instance_dict ))
-    #recipient = data.get('recipient')
-    receiver=socket.gethostname()
-    sender = data.get('sender')
-    helo = data.get('helo_name')
-    if not sender and not helo:
-        if debugLevel >= 2: syslog.syslog('spfcheck: No sender or helo, exiting')
-        return(( None, None, instance_dict ))
-
-    #  start query
-    spfResult = None
-    spfReason = None
     instance = data.get('instance')
     # The following if is only needed for testing.  Postfix 
     # will always provide instance.
@@ -273,14 +275,97 @@ def spfcheck(data, instance_dict, configData):  #{{{1
         instance = str(int(random.random()*100000))
     # This is to prevent multiple headers being prepended
     # for multi-recipient mail.
-    found_instance = instance_dict.has_key(instance)
+    if instance_dict.has_key(instance):
+        found_instance = instance_dict[instance]
+    else:
+        found_instance = []
+    # If this is not the first recipient for the message, we need to know if
+    # there is a previous prepend to make sure we don't prepend more than once.
+    if found_instance:
+        if found_instance[6] != 'prepend':
+            last_action = found_instance[3]
+        else:
+            last_action = found_instance[6]
+    else:
+        last_action = ""
+    #  start query
+    spfResult = None
+    spfReason = None
     '''Data structure for results is a list of:
         [0] SPF result 
         [1] SPF reason
         [2] Identity (HELO/Mail From)
         [3] Action based on local policy
-        [4] Header'''
-    if not found_instance:
+        [4] Header
+        [5] Per user (stored data was based on per user policy)
+        [6] last_action (need to know if we've prepended already)'''
+    if debugLevel >= 4: syslog.syslog('Cached data for this instance: %s' % str(found_instance))
+    if not found_instance or found_instance[5] or peruser:
+        # Do not check SPF for localhost addresses
+        skip_check = spfbypass(data, 'skip_addresses', configData)
+        if skip_check[0]:
+            skip_data = ["N/A", "Skip SPF checks on localhost", "N/A", "prepend", skip_check[1]]
+            if last_action != 'prepend':
+                skip_data.append(peruser)
+                skip_data.append('prepend')
+                if not found_instance or found_instance[5]:
+                    instance_dict[instance] = skip_data
+                return (('prepend', skip_check[1], instance_dict ))
+            else:
+                return(( 'dunno', 'Header already pre-pended', instance_dict ))
+        # Whitelist designated IP addresses from SPF checks (e.g. secondary MX or 
+        # known forwarders.
+        ip_whitelist = spfbypass(data, 'Whitelist', configData)
+        if ip_whitelist:
+            if ip_whitelist[0]:
+                skip_data = ["N/A", "Skip SPF checks for whitelisted IP addresses", "N/A", "prepend", skip_check[1]]
+                if last_action != 'prepend':
+                    skip_data.append(peruser)
+                    skip_data.append('prepend')
+                    if not found_instance or found_instance[5]:
+                        instance_dict[instance] = skip_data
+                if last_action != 'prepend':
+                    return (('prepend', ip_whitelist[1], instance_dict ))
+                else:
+                    return(( 'dunno', 'Header already pre-pended', instance_dict ))
+        # Whitelist designated Domain's sending addresses from SPF checks (e.g. 
+        # known forwarders.
+        if configData.get('Domain_Whitelist'):
+            domain_whitelist = spfbypass(data, 'Domain_Whitelist', configData)
+            if domain_whitelist:
+                if domain_whitelist[0]:
+                    skip_data = ["N/A", "Skip SPF checks for whitelisted domains", "N/A", "prepend", skip_check[1]]
+                    if last_action != 'prepend':
+                        skip_data.append(peruser)
+                        skip_data.append('prepend')
+                        if not found_instance or found_instance[5]:
+                            instance_dict[instance] = skip_data
+                    if last_action != 'prepend':
+                        return (('prepend', domain_whitelist[1], instance_dict ))
+                    else:
+                        return(( 'dunno', 'Header already pre-pended', instance_dict ))
+        # Whitelist designated Domain's sending addresses from SPF checks (e.g.
+        # known forwarders, but based on PTR match
+        if configData.get('Domain_Whitelist_PTR'):
+            domain_whitelist = spfbypass(data, 'Domain_Whitelist_PTR', configData)
+            if domain_whitelist:
+                if domain_whitelist[0]:
+                    skip_data = ["N/A", "Skip SPF checks for whitelisted hosts (by PTR)", "N/A", "prepend", skip_check[1]]
+                    if last_action != 'prepend':
+                        skip_data.append(peruser)
+                        skip_data.append('prepend')
+                        if not found_instance or found_instance[5]:
+                            instance_dict[instance] = skip_data
+                    if last_action != 'prepend':
+                        return (('prepend', domain_whitelist[1], instance_dict ))
+                    else:
+                        return(( 'dunno', 'Header already pre-pended', instance_dict ))
+        receiver=socket.gethostname()
+        sender = data.get('sender')
+        helo = data.get('helo_name')
+        if not sender and not helo:
+            if debugLevel >= 2: syslog.syslog('spfcheck: No sender or helo, exiting')
+            return(( None, None, instance_dict ))
         Mail_From_pass_restriction = configData.get('Mail_From_pass_restriction')
         HELO_pass_restriction = configData.get('HELO_pass_restriction')
         helo_result = ['None',]
@@ -310,7 +395,6 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                             helo_result.append(action)
                     if local['local_helo']:
                         helo_result[1] = 'Receiver policy for SPF ' + helo_result[0]
-
                 if sender == '':
                     header_sender = '<>'
                 else:
@@ -324,23 +408,58 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                     syslog.syslog(logdata)
                 header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[1] +') ' + spfDetail
                 helo_result.append(header)
-                instance_dict[instance] = helo_result
+                helo_result.append(peruser)
+                helo_result.append(helo_result[3])
+                if not found_instance or found_instance[5]:
+                    if found_instance and found_instance[6] == "prepend":
+                        helo_result[6] = "prepend"
+                    instance_dict[instance] = helo_result
                 if HELO_pass_restriction and helo_result[0] == 'Pass':
                     restrict_name = HELO_pass_restriction
                 # Only act on the HELO result if it is authoritative.
                 if helo_result[3] == 'reject':
-                    header = "Message rejected due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
-                    return(( 'reject', header, instance_dict ))
+                    if configData.get('No_Mail'):
+                        # If only rejecting on "v=spf1 -all", we need to know now
+                        q = spf.query(i='127.0.0.1', s='localhost', h='unknown', receiver=socket.gethostname())
+                        record = q.dns_spf(helo)
+                        if record != "v=spf1 -all":
+                            if last_action != 'prepend':
+                                # Prepend instead of reject if it's not a no mail record
+                                helo_result[3] = 'prepend'
+                            else:
+                                return(( 'dunno', 'Header already pre-pended', instance_dict ))
+                    if helo_result[3] == 'reject': # It may not anymore
+                        header = "Message rejected due to: " + helo_result[1] + \
+                            ". Please see http://www.openspf.org/Why?s=helo;id=" \
+                            + helo + ";ip=" + ip + ";r=" + data.get('recipient')
+                        return(( 'reject', header, instance_dict ))
                 if helo_result[3] == 'defer':
-                    header = "Message deferred due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
+                    header = "Message deferred due to: " + helo_result[1] + \
+                        ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + \
+                        ";ip=" + ip + ";r=" + data.get('recipient')
                     return(( 'defer', header, instance_dict ))
         # Second do Mail From Check
         if sender == '':
             if configData.get('HELO_reject') != 'No_Check':
                 if helo_result[3] == 'reject':
-                    header = "Message rejected due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
+                    if configData.get('No_Mail'):
+                        # If only rejecting on "v=spf1 -all", we need to know now
+                        q = spf.query(i='127.0.0.1', s='localhost', h='unknown', receiver=socket.gethostname())
+                        record = q.dns_spf(helo)
+                        if record != "v=spf1 -all":
+                            if last_action != 'prepend':
+                                # Prepend instead of reject if it's not a no mail record
+                                helo_result[3] = 'prepend'
+                            else:
+                                return(( 'dunno', 'Header already pre-pended', instance_dict ))
+                    if helo_result[3] == 'reject': # It may not anymore
+                        header = "Message rejected due to: " + helo_result[1] + \
+                            ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + \
+                            ";ip=" + ip + ";r=" + data.get('recipient')
                 if helo_result[3] == 'defer':
-                    header = "Message deferred due to: " + helo_result[1] + ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + ";ip=" + ip + ";r=" + data.get('recipient')
+                    header = "Message deferred due to: " + helo_result[1] + \
+                        ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + \
+                        ";ip=" + ip + ";r=" + data.get('recipient')
                 if HELO_pass_restriction and helo_result[0] == 'Pass':
                     restrict_name = HELO_pass_restriction
                     return('result_only', restrict_name, instance_dict)
@@ -372,20 +491,71 @@ def spfcheck(data, instance_dict, configData):  #{{{1
                         syslog.syslog(logdata)
                     header = 'Received-SPF: '+ mfrom_result[0] + ' (' + mfrom_result[1] +') ' + spfDetail
                     mfrom_result.append(header)
-                    instance_dict[instance] = mfrom_result
-                if (Mail_From_pass_restriction and mfrom_result[0] == 'Pass') or (HELO_pass_restriction and helo_result[0] == 'Pass'):
+                    mfrom_result.append(peruser)
+                    mfrom_result.append(mfrom_result[3])
+                    if not found_instance or foundinstance[5]:
+                        if found_instance and found_instance[6] == "prepend":
+                            mfrom_result[6] = "prepend"
+                        instance_dict[instance] = mfrom_result
+                if (Mail_From_pass_restriction and mfrom_result[0] == 'Pass') or \
+                   (HELO_pass_restriction and helo_result[0] == 'Pass'):
                     if mfrom_result[0] == 'Pass':
                         restrict_name = Mail_From_pass_restriction
                     return('result_only', restrict_name, instance_dict)
                 # Act on the Mail From result if it is authoritative.
                 if mfrom_result[3] == 'reject':
-                    header = "Message rejected due to: " + mfrom_result[1] + ". Please see http://www.openspf.org/Why?s=mfrom;id=" + sender + ";ip=" + ip + ";r=" + data.get('recipient')
-                    return(( 'reject', header, instance_dict ))
+                    if configData.get('No_Mail'):
+                        # If only rejecting on "v=spf1 -all", we need to know now
+                        q = spf.query(i='127.0.0.1', s='localhost', h='unknown', receiver=socket.gethostname())
+                        record = q.dns_spf(sender)
+                        if record != "v=spf1 -all":
+                            if last_action != 'prepend':
+                                # Prepend instead of reject if it's not a no mail record
+                                mfrom_result[3] = 'prepend'
+                            else:
+                                return(( 'dunno', 'Header already pre-pended', instance_dict ))
+                    if mfrom_result[3] == 'reject': # It may not be anymore
+                        header = "Message rejected due to: " + mfrom_result[1] + \
+                            ". Please see http://www.openspf.org/Why?s=mfrom;id=" + sender + \
+                                ";ip=" + ip + ";r=" + data.get('recipient')
+                        return(( 'reject', header, instance_dict ))
                 if mfrom_result[3] == 'defer':
-                    header = "Message deferred due to: " + mfrom_result[1] + ". Please see http://www.openspf.org/Why?s=mfrom;id=" + sender + ";ip=" + ip + ";r=" + data.get('recipient')
+                    header = "Message deferred due to: " + mfrom_result[1] + \
+                        ". Please see http://www.openspf.org/Why?s=mfrom;id=" + sender + \
+                        ";ip=" + ip + ";r=" + data.get('recipient')
                     return(( 'defer', header, instance_dict ))
                 if mfrom_result[3] != 'dunno' or helo_result[3] =='dunno':
-                    return(( 'prepend', header, instance_dict ))
+                    if last_action != 'prepend':
+                        return(( 'prepend', header, instance_dict ))
+                    else:
+                        return(( 'dunno', 'Header already pre-pended', instance_dict ))
+            else:
+                if configData.get('HELO_reject') != 'No_Check':
+                    if helo_result[3] == 'reject':
+                        if configData.get('No_Mail'):
+                            # If only rejecting on "v=spf1 -all", we need to know now
+                            q = spf.query(i='127.0.0.1', s='localhost', h='unknown', receiver=socket.gethostname())
+                            record = q.dns_spf(helo)
+                            if record != "v=spf1 -all":
+                                if last_action != 'prepend':
+                                    # Prepend instead of reject if it's not a no mail record
+                                    helo_result[3] = 'prepend'
+                                else:
+                                    return(( 'dunno', 'Header already pre-pended', instance_dict ))
+                        if helo_result[3] == 'reject': # It may not anymore
+                            header = "Message rejected due to: " + helo_result[1] + \
+                                ". Please see http://www.openspf.org/Why?s=helo;id=" \
+                                + helo + ";ip=" + ip + ";r=" + data.get('recipient')
+                            return(( 'reject', header, instance_dict ))
+                    if helo_result[3] == 'defer':
+                        header = "Message deferred due to: " + helo_result[1] + \
+                            ". Please see http://www.openspf.org/Why?s=helo;id=" + helo + \
+                            ";ip=" + ip + ";r=" + data.get('recipient')
+                        return(( 'defer', header, instance_dict ))
+                    if last_action != 'prepend':
+                        return(( 'prepend', header, instance_dict ))
+                    else:
+                        return(( 'dunno', 'Header already pre-pended', instance_dict ))
     else:
         cached_instance = instance_dict[instance]
         if cached_instance[3] == 'prepend':
@@ -421,15 +591,20 @@ while 1:
 
     #  end of entry  {{{2
     if not line:
+        peruser = False
         if debugLevel >= 4: syslog.syslog('Found the end of entry')
-        configData = configGlobal
+        configData = dict(configGlobal.items())
+        if configData.get('Per_User'):
+            import policydspfuser
+            configData, peruser = policydspfuser.datacheck(configData, data.get('recipient'))
+            if debugLevel >= 2 and peruser: syslog.syslog('Per user configuration data in use for: %s' \
+                % str(data.get('recipient')))
         if debugLevel >= 3: syslog.syslog('Config: %s' % str(configData))
-
         #  run the checkers  {{{3
         checkerValue = None
         checkerReason = None
         checkerValue, checkerReason, instance_dict = spfcheck(data, 
-                    instance_dict, configData)
+                    instance_dict, configData, peruser)
         if configData.get('defaultSeedOnly') == 0:
             checkerValue = None
             checkerReason = None

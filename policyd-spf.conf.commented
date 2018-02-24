@@ -29,6 +29,10 @@ HELO_reject = SPF_Not_Pass
 #  Mail_From_reject = No_Check - Never check Mail From/Return Path.
 Mail_From_reject = Fail
 
+#  Reject only from domains that send no mail. Options are:
+#  No_Mail = False - Normal SPF record processing (default)
+#  No_Mail = True - Only reject for "v=spf1 -all" records
+
 #  Mail From pass restriction policy.
 #  Mail_From_pass_restriction = mfrom_passed_spf - Apply the given
 #    restriction when the Mail From checking result is Pass.  The given 
@@ -65,8 +69,12 @@ skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0//104,::1//128
 #  Example (default is no whitelist):
 #  Whitelist = 192.168.0.0/31,192.168.1.12
 
-#  Domain_Whitelist: List of domains whose sending IPs should be whitelisted 
-#  from SPF.
+#  Domain_Whitelist: List of domains whose sending IPs (defined by passing
+#  their SPF check should be whitelisted from SPF.
 #  Example (default is no domain whitelist):
 #  Domain_Whitelist = pobox.com,trustedforwarder.org
 
+# Domain_Whitelist_PTR: List of domains to whitelist against SPF checks base
+# on PTR match.
+# Example (default is no PTR whitelist)
+# Domain_Whitelist_PTR = yahoo.com
