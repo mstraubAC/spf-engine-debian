@@ -4,6 +4,22 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.9 (2012-01-10 22:35 -0500)
+  + Add support for optionally generating RFC 5451 authentication results
+    headers
+  + Add new Header_Type configuration option to support generating RFC 4408
+    Received-SPF and/or RFC 5451 Authentication-Results headers (default is
+    Received-SPF)
+  ! Changed license from GPL version 2 to Apache 2.0 with agreement from all
+    copyright holders
+  * Log message to the error facility for all OSErrors
+  * Instead of crashing if per user configuration is missing, continue with
+    global configuration
+  * Use openspf.net instead of openspf.org for Why text in reject/defer
+    messages due to extended openspf.org downtime
+  * Fix install location of standard config file when installed with distutils
+  * Fix example syntax in policyd-spf.peruser.5
+  * Update and clarify inconsistencies in policyd-spf.conf.5
 --- 0.8.1 (2010-11-27 22:41 -0500)
   * Prepend headers even when defaultSeedOnly = 0 (now does what's documented)
   * Fix typos in policyd-spf.conf(5)
