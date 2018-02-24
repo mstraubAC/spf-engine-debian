@@ -29,14 +29,16 @@ import stat
 
 #  default values
 defaultConfigData = {
-        'debugLevel' : 1,
+        'debugLevel' : 5,
         'HELO_reject' : 'SPF_Not_Pass',
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
         'TempError_Defer'  : 'False',
         'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0/104,::1',
         'defaultSeedOnly' : 1,
-        'Header_Type' : 'SPF'
+        'Header_Type' : 'SPF',
+        'Lookup_Time' : 20,
+        'Void_Limit' : 2
         }
 
 
@@ -118,7 +120,9 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
             'Per_User' : str,
             'defaultSeedOnly' : int,
             'Header_Type' : str,
-            'Authserv_Id' : str
+            'Authserv_Id' : str,
+            'Lookup_Time' : int,
+            'Void_Limit'  : int
             }
 
     #  check to see if it's a file

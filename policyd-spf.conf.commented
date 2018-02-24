@@ -79,15 +79,24 @@ skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0/104,::1
 # Example (default is no PTR whitelist)
 # Domain_Whitelist_PTR = yahoo.com
 
-# Type of header to insert to document SPF result. Can be RFC 4408
-# Received-SPF (SPF) or RFC 5451 Authentication Results (AR). It cannot be
-# both.
+# Type of header to insert to document SPF result. Can be Received-SPF (SPF)
+# or Authentication Results (AR). It cannot be both.
 # Examples: (default is Received-SPF):
 # Header_Type = AR
 # Header_Type = SPF
 
 # Every Authentication-Results header field has an authentication identifier
 # field ('Authserv_Id'). This is similar in syntax to a fully-qualified domain
-# name. See policyd-spf.conf.5 and RFC 5451 paragraph 2.3 for details.
+# name. See policyd-spf.conf.5 and RFC 7001 paragraph 2.4 for details.
 # Default is None.  Authserv-Id must be provided if Header_Type 'AR' is used.
 # Authserv_Id = mx.example.com
+
+# RFC 7208 recommends an elapsed time limit for SPF checks of at least 20
+# seconds.  Lookup_Time allows the maximum time (seconds) to be adjusted.  20
+# seconds is the default.
+# Lookup_Time = 20
+
+# RFC 7208 adds a new processing limit called "void lookup limit" (See section
+# 4.6.4).  Default is 2, but it can be adjusted.  Only relevant for pyspf
+# 2.0.9 and later.  Ignored for earlier releases.
+# Void_Limit = 2

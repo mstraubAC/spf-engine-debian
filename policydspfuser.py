@@ -48,7 +48,9 @@ def _readUserConfigFile(path, recipient, configData):
             'Reject_Not_Pass_Domains' : str,
             'defaultSeedOnly' : int,
             'Header_Type' : str,
-            'Authserv-Id' : str
+            'Authserv-Id' : str,
+            'Lookup_Time' : int,
+            'Void_Limit'  : int
             }
 
     #  check to see if it's a file
