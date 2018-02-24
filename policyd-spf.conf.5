@@ -128,9 +128,11 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2016-02-20"
+.TH policy-spf.conf 5
 .SH "NAME"
-policyd-spf (python) \- pure-Python Postfix policy daemon for SPF checking
+policyd-spf
+\-
+policyd-spf python configuration parameters
 .SH "VERSION"
 .IX Header "VERSION"
 2\.0\.0
@@ -175,7 +177,8 @@ on per user settings can be found in policyd-spf.peruser(5).
 
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-
+\X'ps:'\c 
+.br
 .SH "LOGGING"
 .IX Header "LOGGING"
 
@@ -187,7 +190,7 @@ generated through the policy server.  This value can be increased up to 5
 information).
 
 debug level 2 adds a log message if no client address (IP address from which
-the connection was made), Mail From addresss, or HELO/EHLO name is received by
+the connection was made), Mail From address, or HELO/EHLO name is received by
 the policy server, and logs SPF results for each Mail From and HELO check.
 
 debug level 3 generates a log message each time the policy server starts and
@@ -205,7 +208,8 @@ additional internal status details generally of interest only to developers.
 
 If debug level is 0, then the policy server logs errors only.
 
-When set to -1, nothing is logged, not even error messages.  Use with caution.
+When set to -1, nothing is logged once the configuration file has been read
+in, not even error messages.  Use with caution.
 
 Default:
 
@@ -684,8 +688,8 @@ Default
 
 2
 
-.SH "Mock SPF Check To Add Milter Compatiblity Header Field"
-.IX Mock SPF Check To Add Milter Compatiblity Header Field"
+.SH "Mock SPF Check To Add Milter Compatibility Header Field"
+.IX Mock SPF Check To Add Milter Compatibility Header Field"
 In some versions of postfix, for bizarre Sendmail compatibility reasons, the
 first header field added by a policy server is not visible to milters.  To
 make this easy to work around, set the Mock value to true and a fixed header
@@ -747,7 +751,7 @@ Reason_Message = Message {rejectdefer} due to: {spf}. Please see {url}
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 man 1 policyd-spf, man 5 policyd-spf.peruser, python-spf,
-<http://www.openspf.net>, RFC 7208, RFC 7001
+<http://www.openspf.net>, RFC 7208, RFC 7001, RFC 7372
 
 .SH "AUTHORS"
 .IX Header "AUTHORS"
