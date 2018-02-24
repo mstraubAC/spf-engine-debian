@@ -1,9 +1,5 @@
-Object cache
 Make the code support operations as a true Dameon
-Use pyspf to make SPF Received headers
-Python DBM, Berkeley DB, and Python sqlite whitelist management support
-Best Guess
+Python DBM, Berkeley DB, and Python sqlite local policy support
 Local mfrom SPF bypass (per user)
 Per user (rcpt to address) policy
 Per user (rcpt to address) whitelisting
-Domain or address/IP pair reject

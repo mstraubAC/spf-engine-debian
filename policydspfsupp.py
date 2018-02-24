@@ -123,6 +123,7 @@ def readConfigFile(path, configData = None, configGlobal = {}):
             'Whitelist' : str,
             'skip_addresses': str,
             'Domain_Whitelist' : str,
+            'Reject_Not_Pass_Domains' : str,
             'defaultSeedOnly' : int
             }
 

@@ -128,12 +128,12 @@
 .\" ========================================================================
 .\"
 .IX Title "policy-spf.conf 5"
-.TH policy-spf.conf 5 "2008-02-18"
+.TH policy-spf.conf 5 "2008-06-18"
 .SH "NAME"
 python-policyd-spf \- pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
 .IX Header "VERSION"
-0\.6
+0\.7
 
 .SH "USAGE"
 .IX Header "USAGE"
@@ -229,6 +229,12 @@ first in the SMTP dialogue and there is no practical reason to waste resources
 on Mail From checks if the HELO check will already cause the message to be
 rejected.
 
+Softfail - Reject on HELO Softfail or Fail.  Technically this option is not
+fully RFC 4408 compliant since the Mail From identity is mandatory, but HELO/
+EHLO is known first in the SMTP dialogue and there is no practical reason to
+waste resources on Mail From checks if the HELO check will already cause the
+message to be rejected.
+
 Fail - Reject only on HELO Fail.  Technically this option is not fully RFC 4408
 compliant since the Mail From identity is mandatory, but HELO/EHLO is known
 first in the SMTP dialogue and there is no practical reason to waste resources
@@ -260,7 +266,10 @@ contlols by provding a user supplied name of a postfix access
 restriction to be applied to a message when the HELO checking result
 is Pass.  The indicated restriction must be an action as defined for a
 Postfix SMTP server access table access(5) and explained in the
-Postfix RESTRICTION CLASS README.
+Postfix RESTRICTION CLASS README.  Note: A helo pass restriction will
+be the returned result even if the mail from result would cause the message to
+be rejected.
+
 
 Example:
 
@@ -275,7 +284,18 @@ None
 
 Mail From rejection policy options are:
 
-Fail - Reject only on Mail From Fail.
+SPF_Not_Pass - Reject if result not Pass/None/Tempfail. This option
+is not RFC 4408 compliant since the mail with an SPF Neutral result is treated
+differently than mail with no SPF record and Softfail results are not supposed
+to cause mail rejection.  Global use of this option is not recommended. Use
+per-domain if needed (per-domain usage described below).
+
+Softfail - Reject on HELO Softfail or Fail.  Technically this option is not
+fully RFC 4408 compliant since Softfail results are not supposed to cause mail
+rejection.  Global use of this option is not recommended. Use
+per-domain if needed (per-domain usage described below).
+
+Fail (default) - Reject on Mail From Fail.
 
 False - Never reject on Mail From, append header only.  This is useful for 
 post-SMTP spam filters such as SpamAssassin.
@@ -300,18 +320,39 @@ contlols by provding a user supplied name of a postfix access
 restriction to be applied to a message when the HELO checking result
 is Pass.  The indicated restriction must be an action as defined for a
 Postfix SMTP server access table access(5) and explained in the
-Postfix RESTRICTION CLASS README.
+Postfix RESTRICTION CLASS README. Note: A mail from pass restriction will
+be the returned result even if the helo result would cause the message to be
+rejected.
 
 Example:
 
-mail_from_pass_restriction = helo_passed_spf
+mail_from_pass_restriction = mfrom_passed_spf
 
 Default:
 
 None
 
-.SH "PERMANENT ERROR PROCESSING"
-.IX Header "PERMANENT ERROR PROCESSING"
+.SH "Domain Specific Receiver Policy"
+.IX Header "Domain Specific Receiver Policy"
+
+Using this option, a list of domains can be defined for special processing
+when messages do not Pass SPF.  This can be useful for commonly spoofed
+domains that are not yet publishing SPF records with \-all.  Specifically, if
+mail from a domain in this list has a Neutral/Softfail result, it will be
+rejected (as if it had a Fail result).  This option is not supported by RFC
+4408, but if needed, it is better to do it on a per-domain basis rather than
+globally.
+
+Example:
+
+Reject_Not_Pass_Domains = aol.com,hotmail.com
+
+Default:
+
+None
+
+.SH "Permanatent Error Processing"
+.IX Header "Permanatent Error Processing"
 
 Policy for rejecting due to SPF PermError options are:
 
@@ -322,12 +363,16 @@ in senders getting feedback that they have a problem with their SPF record.
 False - Treat PermError the same as no SPF record at all.  This is consistet
 with the pre-RFC usage (the pre-RFC name for this error was "Unknown").
 
+This is a global option that affects both HELO and Mail From scopes when
+checks for that scope are enabled. The only per scope setting that can
+over-ride this is Mail_From/HELO_reject = False/
+
 Default:
 
 PermError_reject = False
 
-.SH "TEMPORARY ERROR PROCESSING"
-.IX Header "TEMPORARY ERROR PROCESSING"
+.SH "Temporary Error Processing"
+.IX Header "Temporary Error Processing"
 
 Policy for deferring messages due to SPF TempError options are:
 
@@ -338,6 +383,10 @@ Sometimes by the time a message is retried the sending IP has made it onto a
 DNS RBL and can then be rejected.  This is not the default because it is
 possible for some DNS errors that are classified as "Temporary" per RFC to be 
 permanent in the sense that they require operator intervention to correct.
+
+This is a global option that affects both HELO and Mail From scopes when
+checks for that scope are enabled. The only per scope setting that can
+over-ride this is Mail_From/HELO_reject = False/
 
 False - Treat TempError the same as no SPF record at all.  This is the default
 to minimize false positive risk.
