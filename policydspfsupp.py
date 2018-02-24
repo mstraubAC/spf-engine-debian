@@ -28,7 +28,9 @@ defaultConfigData = {
         'HELO_reject' : 'SPF_Not_Pass',
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
-        'TempError_Defer'  : 'True'
+        'TempError_Defer'  : 'False',
+        'skip_addresses' : ['127.0.0.0/8', '::ffff:127.0.0.0//104', '::1//128',],
+        'Restriction_class' : 'False'
         }
 
 
@@ -117,7 +119,10 @@ def readConfigFile(path, configData = None, configGlobal = {}):
             'Mail_From_reject' : str,
             'PermError_reject' : str,
             'TempError_Defer' : str,
+            'Restriction_class' : str,
             'Whitelist' : str,
+            'skip_addresses': str,
+            'Domain_Whitelist' : str
             }
 
     #  check to see if it's a file
@@ -152,7 +157,7 @@ def readConfigFile(path, configData = None, configGlobal = {}):
             syslog.syslog('ERROR: Unknown name "%s" in file "%s"' % ( name, path ))
             continue
 
-        if debugLevel >= 4: syslog.syslog('readConfigFile: Found entry "%s=%s"'
+        if debugLevel >= 5: syslog.syslog('readConfigFile: Found entry "%s=%s"'
                 % ( name, value ))
         configData[name] = conversion(value)
     fp.close()

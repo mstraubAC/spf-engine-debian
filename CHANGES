@@ -4,6 +4,23 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 0.5 (2007-10-03 13:39 -0400)
+  + Added man page for configuration file formatting (man 5 policyd-spf.conf) 
+  * Moved explicit logging of the result headers for HELO and Mail From from
+    debug level 1 to debug level 2 (SPF results are already logged at debug
+    level 1)
+  * Moved config file item logging to a new debug level 5.  This should only be
+    needed for development and not for operational use.
+  ! Shifted list of local addresses to skip SPF from hard coded to a config
+    option.
+  * Changed default (no config file) TempError defer to False to match docs and
+    default in config file.
+  ! Refactored Whitelisting/SPF skipping code for reduced size and better
+    extensibility and maintainability.
+  + Added Forwarder Domain SPF Whitelist
+  + Added Restriction Class mode to return only SPF result to Postfix
+  + Return link to SPF "Why" page for reject/defer actions.
+
 --- 0.4.1 (2007-08-13 11:00 -0400)
   * Correct multi-recipient caching to work for multi-recipient rejections
 
