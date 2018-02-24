@@ -24,7 +24,6 @@ import os
 import sys
 import string
 import re
-import urllib
 import stat
 
 
@@ -48,7 +47,7 @@ class ConfigException(Exception):
 
 
 ####################################################################
-def processConfigFile(filename = None, config = None, useSyslog = 1,
+def _processConfigFile(filename = None, config = None, useSyslog = 1,
         useStderr = 0):
     '''Load the specified config file, exit and log errors if it fails,
     otherwise return a config dictionary.'''
@@ -57,7 +56,7 @@ def processConfigFile(filename = None, config = None, useSyslog = 1,
     if config == None: config = policydspfsupp.defaultConfigData
     if filename != None:
         try:
-            readConfigFile(filename, config)
+            _readConfigFile(filename, config)
         except Exception, e:
             if useSyslog:
                 syslog.syslog(e.args[0])
@@ -86,13 +85,13 @@ class ExceptHook:
 
 
 ####################
-def setExceptHook():
+def _setExceptHook():
     sys.excepthook = ExceptHook(useSyslog = 1, useStderr = 1)
 
 
 ###############################################################
 commentRx = re.compile(r'^(.*)#.*$')
-def readConfigFile(path, configData = None, configGlobal = {}):
+def _readConfigFile(path, configData = None, configGlobal = {}):
     '''Reads a configuration file from the specified path, merging it
     with the configuration data specified in configData.  Returns a
     dictionary of name/value pairs based on configData and the values

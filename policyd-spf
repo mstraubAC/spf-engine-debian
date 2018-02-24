@@ -23,7 +23,7 @@
    limitations under the License.
 '''
 
-__version__ = "0.9: JAN 10, 2012"
+__version__ = "1.0: MAR 17, 2012"
 
 testing = True
 
@@ -41,10 +41,10 @@ except:
     pass # authres not needed in default configuration.
 
 syslog.openlog(os.path.basename(sys.argv[0]), syslog.LOG_PID, syslog.LOG_MAIL)
-policydspfsupp.setExceptHook()
+policydspfsupp._setExceptHook()
 
 #############################################
-def cidrmatch(connectip, ipaddrs, n):
+def _cidrmatch(connectip, ipaddrs, n):
     """Match connect IP against a list of other IP addresses. From pyspf."""
 
     try:
@@ -63,7 +63,7 @@ def cidrmatch(connectip, ipaddrs, n):
     except socket.error: pass
     return False
 
-def parse_cidr(cidr_ip):
+def _parse_cidr(cidr_ip):
     """Breaks CIDR notation into a (address,cidr,cidr6) tuple.  The cidr 
        defaults to 32 if not present. Derived from pyspf"""
     RE_DUAL_CIDR = re.compile(r'//(0|[1-9]\d*)$')
@@ -83,7 +83,7 @@ def parse_cidr(cidr_ip):
         return cidr_ip, cidr
     return a[0], cidr6
 #############################################
-def get_resultcodes(configData, scope):
+def _get_resultcodes(configData, scope):
     # Parse config options for SPF results to correct Posftix actions
     actions = {'defer':[], 'reject':[], 'prepend':[]}
     local = {'local_helo': False, 'local_mfrom': False}
@@ -180,7 +180,7 @@ def get_resultcodes(configData, scope):
         actions['prepend'].append(result)
     return(actions, local)
 #############################################
-def spfbypass(data, check_type, configData):
+def _spfbypass(data, check_type, configData):
     if configData.get(check_type):
         if configData.get('Prospective'):
             ip = configData.get('Prospective')
@@ -190,7 +190,7 @@ def spfbypass(data, check_type, configData):
         bypass_list_list = bypass_list.split(',')
         if check_type == 'skip_addresses' or check_type == 'Whitelist':
             for cidr in bypass_list_list:
-                parsed_address = parse_cidr(cidr)
+                parsed_address = _parse_cidr(cidr)
                 good_ip = [parsed_address[0],]
                 cidr_range = parsed_address[1]
                 if not parsed_address[1]:
@@ -203,17 +203,30 @@ def spfbypass(data, check_type, configData):
                         Message = 'ERROR: ' + ip_str + ' in ' + check_type + ' not IP address. Aborting whitelist processing.'
                         if debugLevel: syslog.syslog(Message)
                         return (False, 'None')
-                if cidrmatch(ip, good_ip, int(cidr_range)):
+                if _cidrmatch(ip, good_ip, int(cidr_range)):
                     if check_type == 'skip_addresses':
                         comment = 'SPF check N/A for local connections - '
                     else:
                         comment = 'SPF skipped for whitelisted relay - '
-                    Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
-                        % ( data.get('client_address', '<UNKNOWN>'),
-                            data.get('helo_name', '<UNKNOWN>'),
-                            data.get('sender', '<UNKNOWN>'),
-                            data.get('recipient', '<UNKNOWN>'),
-                            ))
+                    if 'SPF' in configData.get('Header_Type'):
+                        Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                            % ( data.get('client_address', '<UNKNOWN>'),
+                                data.get('helo_name', '<UNKNOWN>'),
+                                data.get('sender', '<UNKNOWN>'),
+                                data.get('recipient', '<UNKNOWN>'),
+                                ))
+                    elif 'AR' in configData.get('Header_Type'):
+                        try:
+                            Header = str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
+                                results = [authres.NoneAuthenticationResult(comment = \
+                                '{0} client-ip={1}; helo={2}; envelope-from={3}; receiver={4}'.format(comment, data.get('client_address', '<UNKNOWN>'),\
+                                    data.get('helo_name', '<UNKNOWN>'), data.get('sender', '<UNKNOWN>'), data.get('recipient', '<UNKNOWN>'))
+                                    )]))
+                        except TypeError as x:
+                            if str(x).startswith('sequence item 2'):
+                                syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
+                                raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
+
                     if debugLevel >= 3: syslog.syslog(Header)
                     return (True, Header)
             return (False, 'None')
@@ -225,12 +238,25 @@ def spfbypass(data, check_type, configData):
                 domain_res[0] = domain_res[0].capitalize()
                 if domain_res[0] == 'Pass':
                     comment = 'SPF skipped for whitelisted relay domain - '
-                    Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
-                        % ( data.get('client_address', '<UNKNOWN>'),
-                            data.get('helo_name', '<UNKNOWN>'),
-                            data.get('sender', '<UNKNOWN>'),
-                            data.get('recipient', '<UNKNOWN>'),
-                            ))
+                    if 'SPF' in configData.get('Header_Type'):
+                        Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                            % ( data.get('client_address', '<UNKNOWN>'),
+                                data.get('helo_name', '<UNKNOWN>'),
+                                data.get('sender', '<UNKNOWN>'),
+                                data.get('recipient', '<UNKNOWN>'),
+                                ))
+                    elif 'AR' in configData.get('Header_Type'):
+                        try:
+                            Header = str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
+                                results = [authres.NoneAuthenticationResult(comment = \
+                                '{0} client-ip={1}; helo={2}; envelope-from={3}; receiver={4}'.format(comment, data.get('client_address', '<UNKNOWN>'),\
+                                    data.get('helo_name', '<UNKNOWN>'), data.get('sender', '<UNKNOWN>'), data.get('recipient', '<UNKNOWN>'))
+                                    )]))
+                        except TypeError as x:
+                            if str(x).startswith('sequence item 2'):
+                                syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
+                                raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
+
                     if debugLevel >= 3: syslog.syslog(Header)
                     return (True, Header)
             return (False, 'None')
@@ -254,17 +280,30 @@ def spfbypass(data, check_type, configData):
                 for domain in bypass_list_list:
                     if (rDNSName.endswith (domain)):
                         comment = 'SPF skipped for PTR whitelisted relay domain - '
-                        Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
-                            % ( data.get('client_address', '<UNKNOWN>'),
-                                data.get('helo_name', '<UNKNOWN>'),
-                                data.get('sender', '<UNKNOWN>'),
-                                data.get('recipient', '<UNKNOWN>'),
-                                ))
+                        if 'SPF' in configData.get('Header_Type'):
+                            Header = ('X-Comment: ' + comment + 'client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
+                                % ( data.get('client_address', '<UNKNOWN>'),
+                                    data.get('helo_name', '<UNKNOWN>'),
+                                    data.get('sender', '<UNKNOWN>'),
+                                    data.get('recipient', '<UNKNOWN>'),
+                                    ))
+                        elif 'AR' in configData.get('Header_Type'):
+                            try:
+                                Header = str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
+                                    results = [authres.NoneAuthenticationResult(comment = \
+                                    '{0} client-ip={1}; helo={2}; envelope-from={3}; receiver={4}'.format(comment, data.get('client_address', '<UNKNOWN>'),\
+                                        data.get('helo_name', '<UNKNOWN>'), data.get('sender', '<UNKNOWN>'), data.get('recipient', '<UNKNOWN>'))
+                                        )]))
+                            except TypeError as x:
+                                if str(x).startswith('sequence item 2'):
+                                    syslog.syslog(syslog.LOG_ERR, 'Authserv_Id not set for authentication results header - invalid configuration.')
+                                    raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
+
                         if debugLevel >= 3: syslog.syslog(Header)
                         return (True, Header)
             return (False, 'None')
 #############################################
-def spfcheck(data, instance_dict, configData, peruser):  #{{{1
+def _spfcheck(data, instance_dict, configData, peruser):  #{{{1
     debugLevel = configData.get('debugLevel', 1)
     if configData.get('Prospective'):
         ip = configData.get('Prospective')
@@ -308,7 +347,7 @@ def spfcheck(data, instance_dict, configData, peruser):  #{{{1
     if debugLevel >= 4: syslog.syslog('Cached data for this instance: %s' % str(found_instance))
     if not found_instance or found_instance[5] or peruser:
         # Do not check SPF for localhost addresses
-        skip_check = spfbypass(data, 'skip_addresses', configData)
+        skip_check = _spfbypass(data, 'skip_addresses', configData)
         if skip_check[0]:
             skip_data = ["N/A", "Skip SPF checks on localhost", "N/A", "prepend", skip_check[1]]
             if last_action != 'prepend':
@@ -321,7 +360,7 @@ def spfcheck(data, instance_dict, configData, peruser):  #{{{1
                 return(( 'dunno', 'Header already pre-pended', instance_dict ))
         # Whitelist designated IP addresses from SPF checks (e.g. secondary MX or 
         # known forwarders.
-        ip_whitelist = spfbypass(data, 'Whitelist', configData)
+        ip_whitelist = _spfbypass(data, 'Whitelist', configData)
         if ip_whitelist:
             if ip_whitelist[0]:
                 skip_data = ["N/A", "Skip SPF checks for whitelisted IP addresses", "N/A", "prepend", skip_check[1]]
@@ -337,7 +376,7 @@ def spfcheck(data, instance_dict, configData, peruser):  #{{{1
         # Whitelist designated Domain's sending addresses from SPF checks (e.g. 
         # known forwarders.
         if configData.get('Domain_Whitelist'):
-            domain_whitelist = spfbypass(data, 'Domain_Whitelist', configData)
+            domain_whitelist = _spfbypass(data, 'Domain_Whitelist', configData)
             if domain_whitelist:
                 if domain_whitelist[0]:
                     skip_data = ["N/A", "Skip SPF checks for whitelisted domains", "N/A", "prepend", skip_check[1]]
@@ -353,7 +392,7 @@ def spfcheck(data, instance_dict, configData, peruser):  #{{{1
         # Whitelist designated Domain's sending addresses from SPF checks (e.g.
         # known forwarders, but based on PTR match
         if configData.get('Domain_Whitelist_PTR'):
-            domain_whitelist = spfbypass(data, 'Domain_Whitelist_PTR', configData)
+            domain_whitelist = _spfbypass(data, 'Domain_Whitelist_PTR', configData)
             if domain_whitelist:
                 if domain_whitelist[0]:
                     skip_data = ["N/A", "Skip SPF checks for whitelisted hosts (by PTR)", "N/A", "prepend", skip_check[1]]
@@ -389,7 +428,7 @@ def spfcheck(data, instance_dict, configData, peruser):  #{{{1
                 helo_result.append('helo') 
                 helo_result[0] = helo_result[0].lower()
                 helo_result[0] = helo_result[0].capitalize()
-                helo_resultpolicy, local = get_resultcodes(configData, 'helo')
+                helo_resultpolicy, local = _get_resultcodes(configData, 'helo')
                 if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
                 if configData.get('HELO_reject') == 'Null' and sender:
@@ -493,7 +532,7 @@ def spfcheck(data, instance_dict, configData, peruser):  #{{{1
                 mfrom_result.append('mailfrom')
                 mfrom_result[0] = mfrom_result[0].lower()
                 mfrom_result[0] = mfrom_result[0].capitalize()
-                mfrom_resultpolicy, local = get_resultcodes(configData, 'mfrom')
+                mfrom_resultpolicy, local = _get_resultcodes(configData, 'mfrom')
                 if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
                 for poss_actions in mfrom_resultpolicy:
@@ -612,7 +651,7 @@ if len(sys.argv) > 1:
         sys.exit(1)
     configFile = sys.argv[1]
 
-configGlobal = policydspfsupp.processConfigFile(filename = configFile)
+configGlobal = policydspfsupp._processConfigFile(filename = configFile)
 
 #  loop reading data  {{{1
 debugLevel = configGlobal.get('debugLevel', 1)
@@ -634,14 +673,14 @@ while 1:
         configData = dict(configGlobal.items())
         if configData.get('Per_User'):
             import policydspfuser
-            configData, peruser = policydspfuser.datacheck(configData, data.get('recipient'))
+            configData, peruser = policydspfuser._datacheck(configData, data.get('recipient'))
             if debugLevel >= 2 and peruser: syslog.syslog('Per user configuration data in use for: %s' \
                 % str(data.get('recipient')))
         if debugLevel >= 3: syslog.syslog('Config: %s' % str(configData))
         #  run the checkers  {{{3
         checkerValue = None
         checkerReason = None
-        checkerValue, checkerReason, instance_dict = spfcheck(data, 
+        checkerValue, checkerReason, instance_dict = _spfcheck(data, 
                     instance_dict, configData, peruser)
         if configData.get('defaultSeedOnly') == 0 and checkerValue != 'prepend':
             checkerValue = None
