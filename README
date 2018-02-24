@@ -1,4 +1,4 @@
-Python Postfix Policy for SPF (python-policy-spf) 1.1.2
+Python Postfix Policy for SPF (python-policy-spf) 1.2
 Python based policy daemon for Postfix SPF checking
 Tumgreyspf source
  Copyright © 2004-2005, Sean Reifschneider, tummy.com, ltd.
@@ -39,11 +39,18 @@ using your normal distribution packaging tools):
 3.  python setup.py build
 4.  As root python setup.py install
 
-It requires Python (python2.6, python2.7, or python3.2+) and the pyspf
-(python-spf) library version 2.0 or higher.  If pyspf not available through
-your packaging system, it can be downloaded from:
+It requires Python (python2.6, python2.7, or python3.2+), the pyspf
+(python-spf) library version 2.0 or higher, and (for Python versions before
+python3.3, the ipaddr module - for python3.3 and later the built-in ipaddress
+module is used).  If pyspf not available through your packaging system, it can
+be downloaded from:
 
 http://sourceforge.net/projects/pymilter/
+
+If ipaddr not available through your packaging system, it can be downloaded
+from:
+
+http://code.google.com/p/ipaddr-py/downloads/list
 
 To use the optional RFC 5451 Authentication-Results header, the authres module
 is also needed.  It can be downloaded from pypi or from:

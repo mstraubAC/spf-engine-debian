@@ -34,7 +34,7 @@ defaultConfigData = {
         'Mail_From_reject' : 'Fail',
         'PermError_reject' : 'False',
         'TempError_Defer'  : 'False',
-        'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0//104,::1//128',
+        'skip_addresses' : '127.0.0.0/8,::ffff:127.0.0.0/104,::1',
         'defaultSeedOnly' : 1,
         'Header_Type' : 'SPF'
         }
