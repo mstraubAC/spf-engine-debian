@@ -18,7 +18,6 @@
 
 import syslog
 import re
-import string
 import os
 
 ###############################################################

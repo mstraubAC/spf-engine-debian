@@ -22,7 +22,6 @@
 import syslog
 import os
 import sys
-import string
 import re
 import stat
 
