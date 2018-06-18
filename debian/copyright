@@ -2,14 +2,15 @@ This package was debianized by Scott Kitterman <scott@kitterman.com> on
 Wed January 17, 2007 19:04:29 -0500.
 
 It was downloaded from http://www.openspf.net/Software
+The source is currently found at https://launchpad.net/spf-engine
 
 Copyright Holder: 
-Copyright © 2007-2015 Scott Kitterman <scott@kitterman.com>
+Copyright © 2007-2018 Scott Kitterman <scott@kitterman.com>
 Portions Copyright  © 2004-2005, Sean Reifschneider, tummy.com, ltd.
 <jafo@tummy.com>
 Portions Copyright © 2003-2004 Meng Weng Wong <mengwong@pobox.com>
 
-License:
+Licenses:
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -27,6 +28,22 @@ On Debian systems, the complete text of the Apache License, Version 2.0 can be
 found here:
   /usr/share/common-licenses/Apache-2.0
 
-The Debian packaging is © 2007-2012, Scott Kitterman <scott@kitterman.com>
-and is licensed under the Apache-2.0 license.  See above.
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+On Debian systems, the complete text of the GPL 2 can be found here:
+  /usr/share/common-licenses/GPL-2
+
+The Debian packaging is © 2007-2018, Scott Kitterman <scott@kitterman.com>
+and is licensed under the same terms as the package.  See above.
 
