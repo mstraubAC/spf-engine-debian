@@ -14,6 +14,7 @@ spf-engine (2.1.0-1) unstable; urgency=medium
   * Add build-depends on python3-setuptools
   * Bump standards-version to 4.1.4 without further change
   * Switch to source format 3 vice quilt patches
+  * Use pybuild for build system
 
  -- Scott Kitterman <scott@kitterman.com>  Sun, 17 Jun 2018 20:47:10 -0400
 
