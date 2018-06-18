@@ -4,6 +4,12 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 2.1.0 (2018-06-17)
+  ! Rename to SPF_Engine due to plan to add a milter front end in addition to
+    current policy service front end
+  ! Switched to use of setuptools and entry points (because its the future)
+  ! Refactored common policy code into __init__.py
+
 --- 2.0.2 (2017-12-14)
   * Fix treatment of No_Mail configuration parameter so that specifying
     No_Mail = False (the default) does not cause incorrect results (Thanks to

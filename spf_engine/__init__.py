@@ -10,6 +10,8 @@
 #  pypolicyd-spf
 #  Copyright © 2007-16, Scott Kitterman <scott@kitterman.com>
 '''
+   This code is dual licensed:
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -21,12 +23,24 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+   and
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 
-__version__ = "2.0.2"
-__date__ = "2017-12-14"
-
-testing = True
+__version__ = "2.1.0"
 
 import syslog
 import os
@@ -37,10 +51,9 @@ import ipaddress # needs python3.3, python2 backport doesn't work
 # import random - Only needed for testing, so imported in line if needed.
 
 import spf
-# import authres - not needed in default configuration, imported if needed in
-# main program loop.
+import authres
 
-import policydspfsupp
+import spf_engine.policydspfsupp
 # import policydspfuser - Only imported if per-user settings are activated for
 # efficiency.
 
@@ -52,7 +65,7 @@ if int(micro) < 9:
     raise ImportError("At least pyspf 2.0.9 is required.")
 
 syslog.openlog(os.path.basename(sys.argv[0]), syslog.LOG_PID, syslog.LOG_MAIL)
-policydspfsupp._setExceptHook()
+spf_engine.policydspfsupp._setExceptHook()
 
 #############################################
 def _cidrmatch(ip, netwrk):
@@ -83,8 +96,9 @@ def _get_rdns_lookup(ip):
         components = address.exploded.split(':')
         return '.'.join('.'.join(list(quad)) for quad in components)[::-1] + '.ip6.arpa'
 #############################################
-def _get_resultcodes(configData, scope):
+def _get_resultcodes(data, configData, scope):
     # Parse config options for SPF results to correct Posftix actions
+    debugLevel = configData.get('debugLevel', 1)
     actions = {'defer':[], 'reject':[], 'prepend':[]}
     local = {'local_helo': False, 'local_mfrom': False}
     unused_results = ['Pass', 'None', 'Neutral', 'Softfail', 'Fail', 'Temperror', 'Permerror'] 
@@ -186,6 +200,7 @@ def _get_resultcodes(configData, scope):
     return(actions, local)
 #############################################
 def _spfbypass(data, check_type, configData):
+    debugLevel = configData.get('debugLevel', 1)
     if configData.get(check_type):
         if configData.get('Prospective'):
             ip = configData.get('Prospective')
@@ -347,7 +362,7 @@ def _spfbypass(data, check_type, configData):
                         return (True, Header)
             return (False, 'None')
 #############################################
-def _rejectmessage(result, type, info, ip, recipient):
+def _rejectmessage(result, type, info, ip, recipient, configData):
     if result[3] == 'reject':
         rejectdefer = "rejected"
     elif result[3] == 'defer':
@@ -364,6 +379,11 @@ def _rejectmessage(result, type, info, ip, recipient):
 #############################################
 def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{{1
     debugLevel = configData.get('debugLevel', 1)
+    if not peruser:
+        Void_Limit = configData.get('Void_Limit')
+    else:
+        Void_Limit = peruserconfigData.get('Void_Limit')
+    spf.MAX_VOID_LOOKUPS = Void_Limit
     if configData.get('Prospective'):
         ip = configData.get('Prospective')
     else:
@@ -532,9 +552,9 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
             else:
                 isheloerror = False
             if not peruser:
-                helo_resultpolicy, local = _get_resultcodes(configData, 'helo')
+                helo_resultpolicy, local = _get_resultcodes(data, configData, 'helo')
             else:
-                helo_resultpolicy, local = _get_resultcodes(peruserconfigData, 'helo')
+                helo_resultpolicy, local = _get_resultcodes(data, peruserconfigData, 'helo')
             if debugLevel >= 2:
                 syslog.syslog('spfcheck: pyspf result: "%s"' % str(helo_result))
             if HELO_reject == 'Null' and sender:
@@ -595,7 +615,7 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                             else:
                                 return(( 'dunno', 'Header already pre-pended', instance_dict, None))
                 if helo_result[3] in ('reject', 'defer'): # It may not be reject anymore
-                    header = _rejectmessage(helo_result, 'helo', helo, ip, data.get('recipient'))
+                    header = _rejectmessage(helo_result, 'helo', helo, ip, data.get('recipient'), configData)
                     helo_result.append(header)
                     helo_result.append(helo_result[3])
                     if not peruser:
@@ -630,9 +650,9 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                 else:
                     ismfromerror = False
                 if not peruser:
-                    mfrom_resultpolicy, local = _get_resultcodes(configData, 'mfrom')
+                    mfrom_resultpolicy, local = _get_resultcodes(data, configData, 'mfrom')
                 else:
-                    mfrom_resultpolicy, local = _get_resultcodes(peruserconfigData, 'mfrom')
+                    mfrom_resultpolicy, local = _get_resultcodes(data, peruserconfigData, 'mfrom')
                 if debugLevel >= 2:
                     syslog.syslog('spfcheck: pyspf result: "%s"' % str(mfrom_result))
                 for poss_actions in mfrom_resultpolicy:
@@ -695,7 +715,7 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                                 else:
                                     return(( 'dunno', 'Header already pre-pended', instance_dict, None ))
                     if mfrom_result[3] in ('reject', 'defer'): # It may not be reject anymore
-                        header = _rejectmessage(mfrom_result, 'mfrom', sender, ip, data.get('recipient'))
+                        header = _rejectmessage(mfrom_result, 'mfrom', sender, ip, data.get('recipient'), configData)
                         mfrom_result.append(header)
                         mfrom_result.append(mfrom_result[3])
                         if not peruser:
@@ -720,7 +740,7 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                                 else:
                                     return(( 'dunno', 'Header already pre-pended', instance_dict, None ))
                     if helo_result[3] in ('reject', 'defer'): # It may not anymore
-                        header = _rejectmessage(helo_result, 'helo', helo, ip, data.get('recipient'))
+                        header = _rejectmessage(helo_result, 'helo', helo, ip, data.get('recipient'), configData)
                         if helo_result[3] == 'reject': # It may not anymore
                             return(( 'reject', header, instance_dict, isheloerror ))
                         if helo_result[3] == 'defer':
@@ -737,157 +757,3 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
             return(( cached_instance[3], cached_instance[4], instance_dict, None ))
     return(( 'None', 'None', instance_dict, None ))
 
-###################################################
-#  load config file  {{{1
-#  Default location:
-configFile = '/etc/python-policyd-spf/policyd-spf.conf'
-if len(sys.argv) > 1:
-    if sys.argv[1] in ( '-?', '--help', '-h' ):
-        print('usage: policyd-spf [<configfilename>]')
-        sys.exit(1)
-    configFile = sys.argv[1]
-
-configGlobal = policydspfsupp._processConfigFile(filename = configFile)
-
-if configGlobal.get('Header_Type') == 'AR':
-    try:
-        import authres
-    except ImportError:
-        syslog.syslog(syslog.LOG_ERR,'ERROR: Configured for Authentication Results header type, but authres module missing')
-        raise ImportError("Configured for Authentication Results, but authres missing..")
-
-#  loop reading data  {{{1
-debugLevel = configGlobal.get('debugLevel', 1)
-if debugLevel >= 3: syslog.syslog('Starting')
-instance_dict = {'0':'init',}
-instance_dict.clear()
-data = {}
-lineRx = re.compile(r'^\s*([^=\s]+)\s*=(.*)$')
-while 1:
-    # Python readline assumes ascii here, but sometimes it's not
-    lineraw = sys.stdin.buffer.readline()
-    line = lineraw.decode('UTF-8',errors='replace')
-    if not line: break
-    line = line.rstrip()
-    if debugLevel >= 4: syslog.syslog('Read line: "%s"' % line)
-
-    #  end of entry  {{{2
-    if not line:
-        peruser = False
-        peruserconfigData = []
-        rejectAction = ''
-        deferAction = ''
-        if debugLevel >= 4: syslog.syslog('Found the end of entry')
-        configData = dict(list(configGlobal.items()))
-        if configData.get('defaultSeedOnly') is not None:
-            syslog.syslog(syslog.LOG_ERR,'WARNING: Deprecated Config Option defaultSeedOnly in use in: {0}'.format(configFile ))
-
-        if configData.get('Authserv_Id') == 'HOSTNAME':
-                configData['Authserv_Id'] = socket.gethostname()
-        if configData.get('Mock'):
-            sys.stdout.write('action=dunno mock header field that should be ignored\n\n')
-            continue
-        if not data.get('recipient'):
-            data['recipient'] = 'none'
-        if configData.get('Per_User'):
-            import policydspfuser
-            peruserconfigData, peruser = policydspfuser._datacheck(configData, data.get('recipient'))
-            if debugLevel >= 2 and peruser: syslog.syslog('Per user configuration data in use for: %s' \
-                % str(data.get('recipient')))
-        if configData.get('Hide_Receiver') != 'No':
-            data['recipient'] = '<UNKNOWN>'
-        if not peruser:
-            Void_Limit = configData.get('Void_Limit')
-        else:
-            Void_Limit = peruserconfigData.get('Void_Limit')
-        spf.MAX_VOID_LOOKUPS = Void_Limit
-        if debugLevel >= 3: syslog.syslog('Config: %s' % str(configData))
-        #  run the checkers  {{{3
-        checkerValue = None
-        checkerReason = None
-        checkerValue, checkerReason, instance_dict, iserror = _spfcheck(data, 
-                    instance_dict, configData, peruser, peruserconfigData)
-
-        if not peruser:
-            TestOnly = configData.get('defaultSeedOnly')
-            TestOnly = configData.get('TestOnly')
-        else:
-            TestOnly = peruserconfigData.get('defaultSeedOnly')
-            TestOnly = peruserconfigData.get('TestOnly')
-        if TestOnly == 0 and checkerValue != 'prepend':
-            checkerValue = None
-            checkerReason = None
-
-        if configData.get('SPF_Enhanced_Status_Codes') == 'No':
-            rejectAction = '550'
-            deferAction = 'defer_if_permit'
-        else:
-            if iserror:
-                rejectAction = '550 5.7.24'
-                deferAction = 'defer_if_permit 4.7.24'
-            else:
-                rejectAction = '550 5.7.23'
-                deferAction = 'defer_if_permit 4.7.24'
-
-        #  handle results  {{{3
-        if debugLevel >= 3: syslog.syslog('Action: {0}: Text: {1} Reject action: {2}'.format(checkerValue, checkerReason, rejectAction))
-        if checkerValue == 'reject':
-            if debugLevel >= 1: syslog.syslog('{0} {1}'.format(rejectAction, checkerReason))
-            sys.stdout.write('action={0} {1}\n\n'.format(rejectAction, checkerReason))
-
-        elif checkerValue == 'prepend':
-            if configData.get('Prospective'):
-                sys.stdout.write('action=dunno\n\n')
-            else:
-                if configData.get('Header_Type') != 'None':
-                    if debugLevel >= 1: syslog.syslog('prepend {0}'.format(checkerReason))
-                    try:
-                        sys.stdout.write('action=prepend %s\n\n' % checkerReason)
-                    except UnicodeEncodeError:
-                        sys.stdout.write('action=prepend %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
-                else:
-                    if debugLevel >= 1: syslog.syslog('Header field not prepended: {0}'.format(checkerReason))
-                    sys.stdout.write('action=dunno\n\n')
-
-        elif checkerValue == 'defer':
-            if debugLevel >= 1: syslog.syslog('{0} {1}'.format(deferAction, checkerReason))
-            try:
-                sys.stdout.write('action={0} {1}\n\n'.format(deferAction, checkerReason))
-            except UnicodeEncodeError:
-                sys.stdout.write('action={0} {1}\n\n'.format(deferAction, str(checkerReason.encode("UTF-8"))[1:].strip("'")))
-
-        elif checkerValue == 'warn':
-            try:
-                sys.stdout.write('action=warn %s\n\n' % checkerReason)
-            except UnicodeEncodeError:
-                sys.stdout.write('action=warn %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
-
-        elif checkerValue == 'result_only':
-            if debugLevel >= 1: syslog.syslog('result_only {0}'.format(checkerReason))
-            try:
-                sys.stdout.write('action=%s\n\n' % checkerReason)
-            except UnicodeEncodeError:
-                sys.stdout.write('action=%s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
-
-        else:
-            sys.stdout.write('action=dunno\n\n')
-
-        #  end of record  {{{3
-        sys.stdout.flush()
-        data = {}
-        continue
-
-    #  parse line  {{{2
-    m = lineRx.match(line)
-    if not m: 
-        if debugLevel >= 0: syslog.syslog('ERROR: Could not match line "%s"' % line)
-        continue
-
-    #  save the string  {{{2
-    key = m.group(1)
-    value = m.group(2)
-    if key not in [ 'protocol_state', 'protocol_name', 'queue_id' ]:
-        value = value.lower()
-    data[key] = value
-
-if debugLevel >= 3: syslog.syslog('Normal exit')

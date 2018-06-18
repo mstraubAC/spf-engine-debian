@@ -60,8 +60,8 @@ def _processConfigFile(filename = None, config = None, useSyslog = 1,
     '''Load the specified config file, exit and log errors if it fails,
     otherwise return a config dictionary.'''
 
-    import policydspfsupp
-    if config == None: config = policydspfsupp.defaultConfigData
+    import spf_engine.policydspfsupp
+    if config == None: config = spf_engine.policydspfsupp.defaultConfigData
     if filename != None:
         try:
             _readConfigFile(filename, config)
@@ -76,21 +76,19 @@ def _processConfigFile(filename = None, config = None, useSyslog = 1,
 
 #################
 class ExceptHook:
-   def __init__(self, useSyslog = 1, useStderr = 0):
-      self.useSyslog = useSyslog
-      self.useStderr = useStderr
-   
-   def __call__(self, etype, evalue, etb):
-      import traceback
-      tb = traceback.format_exception(*(etype, evalue, etb))
-      tb = list([a.rstrip('\n') for a in tb])
-      tb = '\n'.join([c for c in tb])
-      for line in tb.split('\n'):
-         if self.useSyslog:
-            syslog.syslog(line)
-         if self.useStderr:
-            sys.stderr.write(line + '\n')
+    def __init__(self, useSyslog = 1, useStderr = 0):
+        self.useSyslog = useSyslog
+        self.useStderr = useStderr
 
+    def __call__(self, etype, evalue, etb):
+        import traceback
+        import sys
+        tb = traceback.format_exception(*(etype, evalue, etb))
+        for line in tb:
+            if self.useSyslog:
+                syslog.syslog(line)
+            if self.useStderr:
+                sys.stderr.write(line)
 
 ####################
 def _setExceptHook():
