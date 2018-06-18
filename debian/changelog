@@ -1,9 +1,16 @@
-pypolicyd-spf (2.0.2-2) UNRELEASED; urgency=medium
+spf-engine (2.0.2-2) UNRELEASED; urgency=medium
 
+  [ Ondřej Nový ]
   * d/changelog: Remove trailing whitespaces
   * d/control: Remove ancient X-Python3-Version field
 
- -- Ondřej Nový <onovy@debian.org>  Thu, 01 Mar 2018 08:43:55 +0100
+  [ Scott Kitterman ]
+  * Rename source to match new upstream name, update:
+    - debian/watch
+    - debian/control: source name, homepage, Vcs-*
+    - debian/changelog
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 17 Jun 2018 20:29:04 -0400
 
 pypolicyd-spf (2.0.2-1) unstable; urgency=medium
 
