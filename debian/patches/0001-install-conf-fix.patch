@@ -1,23 +1,21 @@
+From: Scott Kitterman <scott@kitterman.com>
+Date: Sun, 17 Jun 2018 20:32:41 -0400
+Subject: install-conf-fix
+
 This patch is to integrate with the package namespace for Debian and derived
 distributions.  It has not gone, and does not need to go, upstream.
-Index: pypolicyd-spf-2.0.0/policyd-spf
-===================================================================
---- pypolicyd-spf-2.0.0.orig/policyd-spf	2016-12-02 01:23:29.363567669 -0500
-+++ pypolicyd-spf-2.0.0/policyd-spf	2016-12-02 01:23:29.355567669 -0500
-@@ -738,7 +738,7 @@
- ###################################################
- #  load config file  {{{1
- #  Default location:
--configFile = '/etc/python-policyd-spf/policyd-spf.conf'
-+configFile = '/etc/postfix-policyd-spf-python/policyd-spf.conf'
- if len(sys.argv) > 1:
-     if sys.argv[1] in ( '-?', '--help', '-h' ):
-         print('usage: policyd-spf [<configfilename>]')
-Index: pypolicyd-spf-2.0.0/policyd-spf.1
-===================================================================
---- pypolicyd-spf-2.0.0.orig/policyd-spf.1	2016-12-02 01:23:29.363567669 -0500
-+++ pypolicyd-spf-2.0.0/policyd-spf.1	2016-12-02 01:26:49.483572313 -0500
-@@ -145,12 +145,13 @@
+---
+ policyd-spf.1             | 23 +++++++++++------------
+ policyd-spf.conf.5        |  4 ++--
+ setup.py                  |  7 +++----
+ spf_engine/policyd_spf.py |  2 +-
+ 4 files changed, 17 insertions(+), 19 deletions(-)
+
+diff --git a/policyd-spf.1 b/policyd-spf.1
+index 62d5992..0bc8bda 100644
+--- a/policyd-spf.1
++++ b/policyd-spf.1
+@@ -147,12 +147,13 @@ $ policyd-spf (Start using installed config file)
  
  $ policyd-spf \-h (Display usage message)
  
@@ -36,7 +34,7 @@ Index: pypolicyd-spf-2.0.0/policyd-spf.1
  
  Additionally, whitelisting certain IP addresses or IP addresses used by listed
  domains from SPF checks is supported.  Skipping SPF checks for local submission
-@@ -254,15 +255,13 @@
+@@ -256,15 +257,13 @@ followed by a empty line:
   1. Add the following to /etc/postfix/master.cf:
  
          policyd-spf  unix  -       n       n       -       0       spawn
@@ -57,11 +55,11 @@ Index: pypolicyd-spf-2.0.0/policyd-spf.1
  
   2. Configure the Postfix policy service in /etc/postfix/main.cf:
  
-Index: pypolicyd-spf-2.0.0/policyd-spf.conf.5
-===================================================================
---- pypolicyd-spf-2.0.0.orig/policyd-spf.conf.5	2016-12-02 01:23:29.363567669 -0500
-+++ pypolicyd-spf-2.0.0/policyd-spf.conf.5	2016-12-02 01:23:29.355567669 -0500
-@@ -138,7 +138,7 @@
+diff --git a/policyd-spf.conf.5 b/policyd-spf.conf.5
+index a33e2e2..118044d 100644
+--- a/policyd-spf.conf.5
++++ b/policyd-spf.conf.5
+@@ -140,7 +140,7 @@ policyd-spf python configuration parameters
  .SH "USAGE"
  .IX Header "USAGE"
  Usage:
@@ -70,7 +68,7 @@ Index: pypolicyd-spf-2.0.0/policyd-spf.conf.5
  
  .SH "OTHER DOCUMENTATION"
  .IX Header "OTHER DOCUMENTATION"
-@@ -166,7 +166,7 @@
+@@ -168,7 +168,7 @@ file.
  
  Configuration options are described here and in the configuration file 
  provided with the package.  The provided setup.py installs this configuration 
@@ -79,20 +77,34 @@ Index: pypolicyd-spf-2.0.0/policyd-spf.conf.5
  
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
-Index: pypolicyd-spf-2.0.0/setup.py
-===================================================================
---- pypolicyd-spf-2.0.0.orig/setup.py	2016-12-02 01:23:29.363567669 -0500
-+++ pypolicyd-spf-2.0.0/setup.py	2016-12-02 01:23:29.355567669 -0500
-@@ -15,9 +15,9 @@
-       scripts = ['policyd-spf'],
-       data_files=[(os.path.join('share', 'man', 'man1'),
-           ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
--          ['policyd-spf.conf.5']), (os.path.join('/etc', 'python-policyd-spf'),
--          ['policyd-spf.conf']), (os.path.join('share', 'man', 'man5'),
--          ['policyd-spf.peruser.5'])],
-+          ['policyd-spf.conf.5']), (os.path.join('../etc',
-+          'postfix-policyd-spf-python'), ['policyd-spf.conf']),
-+          (os.path.join('share', 'man', 'man5'), ['policyd-spf.peruser.5'])],
-       classifiers = [
+diff --git a/setup.py b/setup.py
+index b2df571..6ee78da 100755
+--- a/setup.py
++++ b/setup.py
+@@ -19,10 +19,9 @@ setup(name='spf-engine',
+         ]},
+     data_files=[(os.path.join('share', 'man', 'man1'),
+         ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
+-        ['policyd-spf.conf.5']), (os.path.join('etc', 'python-policyd-spf'),
+-        ['policyd-spf.conf']), (os.path.join('share', 'man', 'man5'),
+-        ['policyd-spf.peruser.5'])],
+-    install_requires = 'pyspf',
++        ['policyd-spf.conf.5']), (os.path.join('../etc',
++        'postfix-policyd-spf-python'), ['policyd-spf.conf']),
++        (os.path.join('share', 'man', 'man5'), ['policyd-spf.peruser.5'])],
+     classifiers = [
          'Development Status :: 5 - Production/Stable',
          'Environment :: No Input/Output (Daemon)',
+diff --git a/spf_engine/policyd_spf.py b/spf_engine/policyd_spf.py
+index fda3b8c..62accc5 100644
+--- a/spf_engine/policyd_spf.py
++++ b/spf_engine/policyd_spf.py
+@@ -46,7 +46,7 @@ def main():
+ 
+     #  load config file  {{{1
+     #  Default location:
+-    configFile = '/etc/python-policyd-spf/policyd-spf.conf'
++    configFile = '/etc/postfix-policyd-spf-python/policyd-spf.conf'
+     if len(sys.argv) > 1:
+         if sys.argv[1] in ( '-?', '--help', '-h' ):
+             print('usage: policyd-spf [<configfilename>]')
