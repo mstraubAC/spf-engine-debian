@@ -12,8 +12,9 @@ spf-engine (2.1.0-1) unstable; urgency=medium
   * New upstream release
   * Rebase and restructure patches for new file layout
   * Add build-depends on python3-setuptools
+  * Bump standards-version to 4.1.4 without further change
 
- -- Scott Kitterman <scott@kitterman.com>  Sun, 17 Jun 2018 20:42:56 -0400
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 17 Jun 2018 20:44:52 -0400
 
 pypolicyd-spf (2.0.2-1) unstable; urgency=medium
 
