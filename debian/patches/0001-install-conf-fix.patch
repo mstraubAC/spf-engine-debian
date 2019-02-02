@@ -7,9 +7,9 @@ distributions.  It has not gone, and does not need to go, upstream.
 ---
  policyd-spf.1             | 23 +++++++++++------------
  policyd-spf.conf.5        |  4 ++--
- setup.py                  |  7 +++----
+ setup.py                  |  9 +++++----
  spf_engine/policyd_spf.py |  2 +-
- 4 files changed, 17 insertions(+), 19 deletions(-)
+ 4 files changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/policyd-spf.1 b/policyd-spf.1
 index 62d5992..0bc8bda 100644
@@ -78,25 +78,27 @@ index a33e2e2..118044d 100644
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
 diff --git a/setup.py b/setup.py
-index b2df571..6ee78da 100755
+index 1fba001..e6f9a6a 100755
 --- a/setup.py
 +++ b/setup.py
-@@ -19,10 +19,9 @@ setup(name='spf-engine',
-         ]},
+@@ -25,10 +25,11 @@ setup(name='spf-engine',
+     include_package_data=True,
      data_files=[(os.path.join('share', 'man', 'man1'),
          ['policyd-spf.1']), (os.path.join('share', 'man', 'man5'),
 -        ['policyd-spf.conf.5']), (os.path.join('etc', 'python-policyd-spf'),
 -        ['policyd-spf.conf']), (os.path.join('share', 'man', 'man5'),
--        ['policyd-spf.peruser.5'])],
--    install_requires = 'pyspf',
+-        ['policyd-spf.peruser.5']), (os.path.join('lib', 'systemd', 'system'),
+-        ['system/pyspf-milter.service']),(os.path.join('etc', 'init.d'),
 +        ['policyd-spf.conf.5']), (os.path.join('../etc',
 +        'postfix-policyd-spf-python'), ['policyd-spf.conf']),
-+        (os.path.join('share', 'man', 'man5'), ['policyd-spf.peruser.5'])],
++        (os.path.join('share', 'man', 'man5'),['policyd-spf.peruser.5']),
++        (os.path.join('../lib', 'systemd', 'system'),
++        ['system/pyspf-milter.service']),(os.path.join('../etc', 'init.d'),
+         ['system/pyspf-milter']) ],
      classifiers = [
          'Development Status :: 5 - Production/Stable',
-         'Environment :: No Input/Output (Daemon)',
 diff --git a/spf_engine/policyd_spf.py b/spf_engine/policyd_spf.py
-index fda3b8c..62accc5 100644
+index c78c8b6..c08c1e8 100644
 --- a/spf_engine/policyd_spf.py
 +++ b/spf_engine/policyd_spf.py
 @@ -46,7 +46,7 @@ def main():
