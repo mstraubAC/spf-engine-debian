@@ -1,1 +1,2 @@
-build/usr/lib/python3/dist-packages/spf_engine usr/lib/python3/dist-packages/spf_engine
+build/usr/lib/python3/dist-packages/spf_engine usr/lib/python3/dist-packages
+build/usr/lib/python3/dist-packages/spf_engine-*.egg-info/ usr/lib/python3/dist-packages

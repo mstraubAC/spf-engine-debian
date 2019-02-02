@@ -1,4 +1,4 @@
-spf-engine (2.9.0-1) UNRELEASED; urgency=medium
+spf-engine (2.9.0-1) unstable; urgency=medium
 
   * New upstream release
   * Add new binary package pyspf-milter to support the new milter interface

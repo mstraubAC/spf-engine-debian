@@ -1,2 +1,2 @@
-policyd-spf.conf etc/postfix-policyd-spf-python/policyd-spf.conf
-build/usr/bin/policyd-spf usr/bin/policyd-spf
+policyd-spf.conf etc/postfix-policyd-spf-python
+build/usr/bin/policyd-spf usr/bin

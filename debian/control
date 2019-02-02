@@ -31,6 +31,7 @@ Description: Modern milter for SPF checking
  http://www.openspf.net/.  It has been updated to support RFC 7208.
 
 Package: python3-spf-engine
+Section: python
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), python3-authres
 Description: Sender Policy Framework (SPF) processing module
