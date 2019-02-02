@@ -4,6 +4,12 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 2.9.0 (2019-02-01)
+  + Initial alpha release with pyspf-milter added
+  * Use HOSTNAME for Authserv_Id lookup function from dkimpy-milter for both
+    pyspf-milter and policyd-spf
+  * Fixed url in setup to point to the spf-engine project
+
 --- 2.1.0 (2018-06-17)
   ! Rename to SPF_Engine due to plan to add a milter front end in addition to
     current policy service front end
