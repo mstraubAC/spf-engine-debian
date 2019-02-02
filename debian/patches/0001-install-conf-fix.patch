@@ -5,11 +5,13 @@ Subject: install-conf-fix
 This patch is to integrate with the package namespace for Debian and derived
 distributions.  It has not gone, and does not need to go, upstream.
 ---
- policyd-spf.1             | 23 +++++++++++------------
- policyd-spf.conf.5        |  4 ++--
- setup.py                  |  9 +++++----
- spf_engine/policyd_spf.py |  2 +-
- 4 files changed, 19 insertions(+), 19 deletions(-)
+ policyd-spf.1               | 23 +++++++++++------------
+ policyd-spf.conf.5          |  4 ++--
+ setup.py                    |  9 +++++----
+ spf_engine/policyd_spf.py   |  2 +-
+ system/pyspf-milter         |  2 +-
+ system/pyspf-milter.service |  2 +-
+ 6 files changed, 21 insertions(+), 21 deletions(-)
 
 diff --git a/policyd-spf.1 b/policyd-spf.1
 index 62d5992..0bc8bda 100644
@@ -110,3 +112,29 @@ index c78c8b6..c08c1e8 100644
      if len(sys.argv) > 1:
          if sys.argv[1] in ( '-?', '--help', '-h' ):
              print('usage: policyd-spf [<configfilename>]')
+diff --git a/system/pyspf-milter b/system/pyspf-milter
+index a64cb6d..ae7d4ca 100755
+--- a/system/pyspf-milter
++++ b/system/pyspf-milter
+@@ -18,7 +18,7 @@
+ # Short-Description: pyspf-milter
+ # Description:       Python SPF Milter for Sendmail and Postfix
+ ### END INIT INFO
+-prefix="/usr/local"
++prefix="/usr"
+ exec_prefix=${prefix}
+ sysconfdir="/etc/pyspf-milter"
+ bindir="${exec_prefix}/bin/"
+diff --git a/system/pyspf-milter.service b/system/pyspf-milter.service
+index 7de9d26..6a2ce4a 100644
+--- a/system/pyspf-milter.service
++++ b/system/pyspf-milter.service
+@@ -6,7 +6,7 @@ After=network.target
+ [Service]
+ Type=simple
+ PIDFile=/var/run/pyspf-milter/pyspf-milter.pid
+-ExecStart=/usr/local/bin/pyspf-milter /usr/local/etc/pyspf-milter.conf 
++ExecStart=/usr/bin/pyspf-milter 
+ 
+ [Install]
+ WantedBy=multi-user.target
