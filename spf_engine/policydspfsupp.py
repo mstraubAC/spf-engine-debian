@@ -24,6 +24,7 @@ import os
 import sys
 import re
 import stat
+import socket
 
 
 #  default values
@@ -44,7 +45,15 @@ defaultConfigData = {
         'Void_Limit' : 2,
         'Reason_Message' : 'Message {rejectdefer} due to: {spf}. Please see {url}',
         'No_Mail' : False,
-        'Mock' : False
+        'Mock' : False,
+	# For milter front end
+        'Socket': 'local:/var/run/pyspf-milter/pyspf-milter.sock',
+        'PidFile': '/var/run/pyspf-milter/pyspf-milter.pid',
+        'UserID': 'pyspf-milter',
+        'UMask': 7,
+        'InternalHosts': '127.0.0.1',
+        'IntHosts': False,
+        'MacroListVerify': '',
         }
 
 
@@ -95,6 +104,12 @@ def _setExceptHook():
     sys.excepthook = ExceptHook(useSyslog = 1, useStderr = 1)
 
 
+def _make_authserv_id(as_id):
+    """Determine Authserv_Id if needed"""
+    if as_id == 'HOSTNAME':
+        as_id = socket.gethostname()
+    return as_id
+
 ###############################################################
 commentRx = re.compile(r'^(.*)#.*$')
 def _readConfigFile(path, configData = None, configGlobal = {}):
@@ -133,8 +148,17 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
             'Whitelist_Lookup_Time': int,
             'Void_Limit'  : int,
             'Reason_Message' : str,
-            'Mock' : bool
+            'Mock' : bool,
+            # For milter front end
+            'Socket': str,
+            'PidFile': str,
+            'UserID': str,
+            'UMask': 'int',
+            'InternalHosts': str,
+            'IntHosts': 'bool',
+            'MacroListVerify': str,
             }
+
 
     #  check to see if it's a file
     try:
@@ -178,6 +202,12 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
                 % ( name, value ))
         configData[name] = conversion(value)
     fp.close()
+    try:
+        if debugLevel >= 5: syslog.syslog('Authserv_Id before: {0}'.format(configData['Authserv_Id']))
+        configData['Authserv_Id'] = _make_authserv_id(configData['Authserv_Id'])
+        if debugLevel >= 5: syslog.syslog('Authserv_Id after: {0}'.format(configData['Authserv_Id']))
+    except:
+        pass
     
     return(configData)
 

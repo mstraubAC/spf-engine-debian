@@ -24,7 +24,7 @@
 '''
 
 def main():
-    __version__ = "2.1.0"
+    __version__ = "2.9.0"
 
     import syslog
     import os
@@ -81,8 +81,6 @@ def main():
             if configData.get('defaultSeedOnly') is not None:
                 syslog.syslog(syslog.LOG_ERR,'WARNING: Deprecated Config Option defaultSeedOnly in use in: {0}'.format(configFile ))
 
-            if configData.get('Authserv_Id') == 'HOSTNAME':
-                configData['Authserv_Id'] = socket.gethostname()
             if configData.get('Mock'):
                 sys.stdout.write('action=dunno mock header field that should be ignored\n\n')
                 continue

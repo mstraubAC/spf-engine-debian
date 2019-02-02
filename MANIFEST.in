@@ -10,3 +10,4 @@ include policyd-spf.conf.commented
 include policyd-spf.1
 include policyd-spf.conf.5
 include policyd-spf.peruser.5
+include system/*
