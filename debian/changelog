@@ -5,8 +5,9 @@ spf-engine (2.9.0-1) unstable; urgency=medium
   * Add new binary package for python3-spf-engine for the common code
   * Refactor debian/rules, etc for multiple binary package
   * Update debian/copyright
+  * Bump standards-version to 4.3.0 without further change
 
- -- Scott Kitterman <scott@kitterman.com>  Fri, 01 Feb 2019 21:04:27 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Fri, 01 Feb 2019 21:04:51 -0500
 
 spf-engine (2.1.0-1) unstable; urgency=medium
 
