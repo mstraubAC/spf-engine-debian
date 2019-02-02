@@ -9,6 +9,10 @@ Copyright © 2007-2018 Scott Kitterman <scott@kitterman.com>
 Portions Copyright  © 2004-2005, Sean Reifschneider, tummy.com, ltd.
 <jafo@tummy.com>
 Portions Copyright © 2003-2004 Meng Weng Wong <mengwong@pobox.com>
+spf_engine/util.py: Copyright (C) 2016  NigelB and Copyright (C) 2018 Scott
+Kitterman
+spf_engine/milter_spf.py:# Copyright 2007 Business Management Systems, Inc.
+and Copyright 2018,2019 Scott Kitterman
 
 Licenses:
 
