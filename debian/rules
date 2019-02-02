@@ -1,12 +1,14 @@
 #!/usr/bin/make -f
 
+export PYBUILD_NAME=spf-engine
+
 %:
 	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_auto_build:
 
 override_dh_auto_install:
-	dh_auto_install
+	python3 setup.py install --single-version-externally-managed --record=/dev/null --install-layout=deb  --root=build
 	# Install logcheck filter
 	dh_install debian/postfix-policyd-spf-python.logcheck etc/logcheck/ignore.d.server/
 	mv $(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/postfix-policyd-spf-python.logcheck \

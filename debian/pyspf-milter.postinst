@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "configure" ]; then
+	if ! id -u pyspf-milter >/dev/null 2>&1; then
+		adduser --quiet --system --group --no-create-home --home /nonexistent pyspf-milter
+	elif [ -n "$2" ]; then
+		addgroup --quiet --system pyspf-milter
+		usermod -g pyspf-milter pyspf-milter
+	fi
+fi
+
+#DEBHELPER#
+
+exit 0
+

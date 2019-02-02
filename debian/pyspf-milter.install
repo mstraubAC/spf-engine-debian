@@ -1,0 +1,3 @@
+system/pyspf-milter etc/init.d/pyspf-milter
+system/pyspf-milter.service lib/systemd/system/pyspf-milter.service
+build/usr/bin/pyspf-milter /usr/bin/pyspf-milter
