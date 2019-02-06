@@ -34,6 +34,8 @@ Package: python3-spf-engine
 Section: python
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), python3-authres
+Breaks: postfix-policyd-spf-python (<< 2.9.0)
+Replaces: postfix-policyd-spf-python (<< 2.9.0)
 Description: Sender Policy Framework (SPF) processing module
  spf-engine provides the core processing for postfix-policyd-spf-python and
  pyspf-milter.  It is not meant to be installed independently.
