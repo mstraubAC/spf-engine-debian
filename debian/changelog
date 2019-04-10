@@ -1,4 +1,4 @@
-spf-engine (2.9.0-3) UNRELEASED; urgency=medium
+spf-engine (2.9.0-3) unstable; urgency=medium
 
   * Install pyspf-milter config file in /etc/pyspf-milter/pyspf-milter.conf
     and update the service file so it is used (Closes: #926752)
