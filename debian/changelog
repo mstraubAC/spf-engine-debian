@@ -1,3 +1,11 @@
+spf-engine (2.9.0-4) unstable; urgency=medium
+
+  * Fix missing depends on python3-pkg-resources:
+    - For postfix-policyd-spf-python (Closes: #928487)
+    - For pyspf-milter (Closes: #928488)
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 05 May 2019 18:07:33 -0400
+
 spf-engine (2.9.0-3) unstable; urgency=medium
 
   * Install pyspf-milter config file in /etc/pyspf-milter/pyspf-milter.conf

@@ -11,7 +11,7 @@ Vcs-Browser: https://salsa.debian.org/python-team/applications/spf-engine
 
 Package: postfix-policyd-spf-python
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix, adduser, python3-authres, python3-spf-engine
+Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix, adduser, python3-authres, python3-spf-engine, python3-pkg-resources
 Description: Postfix policy server for SPF checking
  postfix-policyd-spf-python is a full featured Postfix policy engine for
  SPF checking. It includes a variety of whitelisting mechanisms and policy
@@ -22,7 +22,7 @@ Description: Postfix policy server for SPF checking
 
 Package: pyspf-milter
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix|sendmail, adduser, python3-authres, python3-milter, python3-spf-engine
+Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix|sendmail, adduser, python3-authres, python3-milter, python3-spf-engine, python3-pkg-resources
 Description: Modern milter for SPF checking
  pyspf-milter is a full featured milter for SPF checking. It includes a
  variety of whitelisting mechanisms and policy options to enable it to
