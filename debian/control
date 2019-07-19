@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.debian.org>
 Build-Depends: debhelper (>= 9.20160709~), dh-python, python3, python3-setuptools
-Standards-Version: 4.3.0
+Standards-Version: 4.4.0
 Homepage: https://launchpad.net/spf-engine
 Vcs-Git: https://salsa.debian.org/python-team/applications/spf-engine.git
 Vcs-Browser: https://salsa.debian.org/python-team/applications/spf-engine

@@ -1,3 +1,9 @@
+spf-engine (2.9.0-5) UNRELEASED; urgency=medium
+
+  * Bump Standards-Version to 4.4.0.
+
+ -- Ondřej Nový <onovy@debian.org>  Sat, 20 Jul 2019 00:39:18 +0200
+
 spf-engine (2.9.0-4) unstable; urgency=medium
 
   * Fix missing depends on python3-pkg-resources:
