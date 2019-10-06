@@ -1,8 +1,13 @@
 spf-engine (2.9.0-5) UNRELEASED; urgency=medium
 
+  [ Ondřej Nový ]
   * Bump Standards-Version to 4.4.0.
 
- -- Ondřej Nový <onovy@debian.org>  Sat, 20 Jul 2019 00:39:18 +0200
+  [ Scott Kitterman ]
+  * Put upstream provided init file where dh_installinit expects to find it
+    so it is properly registered on install
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 06 Oct 2019 12:04:49 -0400
 
 spf-engine (2.9.0-4) unstable; urgency=medium
 

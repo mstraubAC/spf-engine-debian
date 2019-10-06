@@ -13,8 +13,11 @@ override_dh_auto_install:
 	dh_install debian/postfix-policyd-spf-python.logcheck etc/logcheck/ignore.d.server/
 	mv $(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/postfix-policyd-spf-python.logcheck \
 	$(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/postfix-policyd-spf-python
+	cp system/pyspf-milter debian/pyspf-milter.init
+	mkdir -p debian/pyspf-milter/etc
+
 
 override_dh_auto_clean:
 	python3 $(CURDIR)/setup.py clean
 	rm -rf $(CURDIR)/build
-
+	rm -f debian/pyspf-milter.init
