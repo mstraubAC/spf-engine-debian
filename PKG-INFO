@@ -1,6 +1,6 @@
-Metadata-Version: 1.1
+Metadata-Version: 2.1
 Name: spf-engine
-Version: 2.9.0
+Version: 2.9.1
 Summary: SPF processing for Postfix (and Sendmail)
 Home-page: https://launchpad.net/spf-engine
 Author: Scott Kitterman
@@ -18,3 +18,4 @@ Classifier: Operating System :: POSIX
 Classifier: Programming Language :: Python :: 3
 Classifier: Topic :: Communications :: Email :: Mail Transport Agents
 Classifier: Topic :: Communications :: Email :: Filters
+Provides-Extra: milter

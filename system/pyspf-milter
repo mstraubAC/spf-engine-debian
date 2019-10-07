@@ -20,9 +20,9 @@
 ### END INIT INFO
 prefix="/usr/local"
 exec_prefix=${prefix}
-sysconfdir="/etc/pyspf-milter"
+sysconfdir="/usr/local/etc"
 bindir="${exec_prefix}/bin/"
-RUNDIR="/var/run/pyspf-milter"
+RUNDIR="/run/pyspf-milter"
 DAEMON=${bindir}/pyspf-milter
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:
 NAME=pyspf-milter
@@ -35,8 +35,8 @@ test -x $DAEMON || exit 0
 
 # Include pyspf-python defaults if available
 # Typically not used
-if [ -f /etc/default/pyspf-milter ] ; then
-	. /etc/default/pyspf-milter
+if [ -f $sysconfdir/default/$NAME ] ; then
+	. $sysconfdir/default/$NAME
 fi
 
 set -e
@@ -67,14 +67,14 @@ case "$1" in
 			fi
 		fi
 	fi
-
-        start-stop-daemon --start --quiet --pidfile $RUNDIR/$NAME.pid --startas \
-                $DAEMON $sysconfdir/$NAME.conf --name $NAME --test > /dev/null \
+        start-stop-daemon --start --background --quiet --pidfile \
+                $RUNDIR/$NAME.pid --exec $DAEMON $sysconfdir/$NAME.conf
 	echo "$NAME."
 	;;
   stop)
 	echo -n "Stopping $DESC: "
 	if [ -f $RUNDIR/$NAME.pid ]; then
+		chown root:root $RUNDIR/$NAME.pid
 		start-stop-daemon --stop --pidfile $RUNDIR/$NAME.pid 
 		rm $RUNDIR/$NAME.pid
 		#echo $SOCKET
@@ -87,6 +87,7 @@ case "$1" in
   force-reload)
         echo -n "Force reloading $DESC: "
         if [ -f $RUNDIR/$NAME.pid ]; then
+                chown root:root $RUNDIR/$NAME.pid
                 start-stop-daemon --stop --pidfile $RUNDIR/$NAME.pid
                 rm $RUNDIR/$NAME.pid
                 #echo $SOCKET
@@ -95,7 +96,7 @@ case "$1" in
                 fi
         fi
         sleep 1
-        start-stop-daemon --start --chuid $USER --background --quiet --pidfile \
+        start-stop-daemon --start --background --quiet --pidfile \
                 $RUNDIR/$NAME.pid --exec $DAEMON $sysconfdir/$NAME.conf
         echo "$NAME."
         ;;
@@ -103,6 +104,7 @@ case "$1" in
         echo "Restarting $DESC: "
         echo -n "Stopping $DESC: "
         if [ -f $RUNDIR/$NAME.pid ]; then
+                chown root:root $RUNDIR/$NAME.pid
                 start-stop-daemon --stop --pidfile $RUNDIR/$NAME.pid
                 rm $RUNDIR/$NAME.pid
                 #echo $SOCKET
@@ -113,12 +115,12 @@ case "$1" in
         echo "$NAME."
 	sleep 1
         echo -n "Starting $DESC: "
-        start-stop-daemon --start --chuid $USER --background --quiet --pidfile \
+        start-stop-daemon --start --background --quiet --pidfile \
                 $RUNDIR/$NAME.pid --exec $DAEMON $sysconfdir/$NAME.conf
         echo "$NAME."
 	;;
   status)
-        status_of_proc -p /var/run/dkimpy-milter/dkimpy-milter.pid /usr/local/bin/dkimpy-milter dkimpy-milter
+        status_of_proc -p $RUNDIR/$NAME.pid $DAEMON $NAME
         ;;
 
   *)

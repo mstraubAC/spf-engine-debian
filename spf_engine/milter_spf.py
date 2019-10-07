@@ -40,7 +40,7 @@ from spf_engine.util import write_pid
 from spf_engine.util import own_socketfile
 from spf_engine.util import fold
 
-__version__ = "2.9.0"
+__version__ = "2.9.1"
 FWS = re.compile(r'\r?\n[ \t]+')
 
 
