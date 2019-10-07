@@ -1,9 +1,12 @@
 spf-engine (2.9.1-0+deb10u1) UNRELEASED; urgency=medium
+=======
 
   * New upstream bugfix release
   * Put upstream provided init file where dh_installinit expects to find it
     so it is properly registered on install
   * Update debian/watch so limit itself to version 2.9.x updates for buster
+  * Update debian/patches/0001-install-conf-fix.patch for missed change needed
+    in sysv init
 
  -- Scott Kitterman <scott@kitterman.com>  Mon, 14 Oct 2019 18:53:05 -0400
 

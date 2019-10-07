@@ -9,9 +9,9 @@ distributions.  It has not gone, and does not need to go, upstream.
  policyd-spf.conf.5          |  4 ++--
  setup.py                    |  9 +++++----
  spf_engine/policyd_spf.py   |  2 +-
- system/pyspf-milter         |  2 +-
+ system/pyspf-milter         |  4 ++--
  system/pyspf-milter.service |  2 +-
- 6 files changed, 21 insertions(+), 21 deletions(-)
+ 6 files changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/policyd-spf.1 b/policyd-spf.1
 index e7b43fc..c189543 100644
@@ -113,18 +113,21 @@ index 8fb77b2..d0536d6 100644
          if sys.argv[1] in ( '-?', '--help', '-h' ):
              print('usage: policyd-spf [<configfilename>]')
 diff --git a/system/pyspf-milter b/system/pyspf-milter
-index c299c4d..98cb2bc 100644
+index c299c4d..eaa9cee 100644
 --- a/system/pyspf-milter
 +++ b/system/pyspf-milter
-@@ -18,7 +18,7 @@
+@@ -18,9 +18,9 @@
  # Short-Description: pyspf-milter
  # Description:       Python SPF Milter for Sendmail and Postfix
  ### END INIT INFO
 -prefix="/usr/local"
 +prefix="/usr"
  exec_prefix=${prefix}
- sysconfdir="/usr/local/etc"
+-sysconfdir="/usr/local/etc"
++sysconfdir="/etc"
  bindir="${exec_prefix}/bin/"
+ RUNDIR="/run/pyspf-milter"
+ DAEMON=${bindir}/pyspf-milter
 diff --git a/system/pyspf-milter.service b/system/pyspf-milter.service
 index 4ab8922..b8794c8 100644
 --- a/system/pyspf-milter.service
