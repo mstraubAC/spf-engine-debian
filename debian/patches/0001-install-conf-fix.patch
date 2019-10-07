@@ -9,15 +9,15 @@ distributions.  It has not gone, and does not need to go, upstream.
  policyd-spf.conf.5          |  4 ++--
  setup.py                    |  9 +++++----
  spf_engine/policyd_spf.py   |  2 +-
- system/pyspf-milter         |  2 +-
+ system/pyspf-milter         |  4 ++--
  system/pyspf-milter.service |  2 +-
- 6 files changed, 21 insertions(+), 21 deletions(-)
+ 6 files changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/policyd-spf.1 b/policyd-spf.1
-index 62d5992..0bc8bda 100644
+index e7b43fc..c189543 100644
 --- a/policyd-spf.1
 +++ b/policyd-spf.1
-@@ -147,12 +147,13 @@ $ policyd-spf (Start using installed config file)
+@@ -144,12 +144,13 @@ $ policyd-spf (Start using installed config file)
  
  $ policyd-spf \-h (Display usage message)
  
@@ -36,7 +36,7 @@ index 62d5992..0bc8bda 100644
  
  Additionally, whitelisting certain IP addresses or IP addresses used by listed
  domains from SPF checks is supported.  Skipping SPF checks for local submission
-@@ -256,15 +257,13 @@ followed by a empty line:
+@@ -247,15 +248,13 @@ followed by a empty line:
   1. Add the following to /etc/postfix/master.cf:
  
          policyd-spf  unix  -       n       n       -       0       spawn
@@ -58,19 +58,19 @@ index 62d5992..0bc8bda 100644
   2. Configure the Postfix policy service in /etc/postfix/main.cf:
  
 diff --git a/policyd-spf.conf.5 b/policyd-spf.conf.5
-index a33e2e2..118044d 100644
+index 362e79d..a5cb92c 100644
 --- a/policyd-spf.conf.5
 +++ b/policyd-spf.conf.5
-@@ -140,7 +140,7 @@ policyd-spf python configuration parameters
+@@ -137,7 +137,7 @@ policyd-spf python configuration parameters
+ 
  .SH "USAGE"
- .IX Header "USAGE"
  Usage:
 -  policyd-spf [/etc/policyd-spf/policyd-spf.conf]
 +  policyd-spf [/etc/postfix-policyd-spf-python/policyd-spf.conf]
  
  .SH "OTHER DOCUMENTATION"
- .IX Header "OTHER DOCUMENTATION"
-@@ -168,7 +168,7 @@ file.
+ This documentation assumes you have read Postfix's README_FILES/
+@@ -162,7 +162,7 @@ file.
  
  Configuration options are described here and in the configuration file 
  provided with the package.  The provided setup.py installs this configuration 
@@ -80,7 +80,7 @@ index a33e2e2..118044d 100644
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
 diff --git a/setup.py b/setup.py
-index 1fba001..e6f9a6a 100755
+index 159135e..c856745 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -25,10 +25,11 @@ setup(name='spf-engine',
@@ -100,7 +100,7 @@ index 1fba001..e6f9a6a 100755
      classifiers = [
          'Development Status :: 5 - Production/Stable',
 diff --git a/spf_engine/policyd_spf.py b/spf_engine/policyd_spf.py
-index c78c8b6..c08c1e8 100644
+index 8fb77b2..d0536d6 100644
 --- a/spf_engine/policyd_spf.py
 +++ b/spf_engine/policyd_spf.py
 @@ -46,7 +46,7 @@ def main():
@@ -113,26 +113,29 @@ index c78c8b6..c08c1e8 100644
          if sys.argv[1] in ( '-?', '--help', '-h' ):
              print('usage: policyd-spf [<configfilename>]')
 diff --git a/system/pyspf-milter b/system/pyspf-milter
-index a64cb6d..ae7d4ca 100755
+index c299c4d..eaa9cee 100644
 --- a/system/pyspf-milter
 +++ b/system/pyspf-milter
-@@ -18,7 +18,7 @@
+@@ -18,9 +18,9 @@
  # Short-Description: pyspf-milter
  # Description:       Python SPF Milter for Sendmail and Postfix
  ### END INIT INFO
 -prefix="/usr/local"
 +prefix="/usr"
  exec_prefix=${prefix}
- sysconfdir="/etc/pyspf-milter"
+-sysconfdir="/usr/local/etc"
++sysconfdir="/etc"
  bindir="${exec_prefix}/bin/"
+ RUNDIR="/run/pyspf-milter"
+ DAEMON=${bindir}/pyspf-milter
 diff --git a/system/pyspf-milter.service b/system/pyspf-milter.service
-index 7de9d26..6a2ce4a 100644
+index 4ab8922..b8794c8 100644
 --- a/system/pyspf-milter.service
 +++ b/system/pyspf-milter.service
 @@ -6,7 +6,7 @@ After=network.target
  [Service]
  Type=simple
- PIDFile=/var/run/pyspf-milter/pyspf-milter.pid
+ PIDFile=/run/pyspf-milter/pyspf-milter.pid
 -ExecStart=/usr/local/bin/pyspf-milter /usr/local/etc/pyspf-milter.conf 
 +ExecStart=/usr/bin/pyspf-milter /etc/pyspf-milter/pyspf-milter.conf
  

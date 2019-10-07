@@ -1,4 +1,4 @@
-spf-engine (2.9.1-1) UNRELEASED; urgency=medium
+spf-engine (2.9.1-1) unstable; urgency=medium
 
   [ Ondřej Nový ]
   * Bump Standards-Version to 4.4.0.
@@ -7,7 +7,8 @@ spf-engine (2.9.1-1) UNRELEASED; urgency=medium
   * New upstream release
   * Put upstream provided init file where dh_installinit expects to find it
     so it is properly registered on install
-  * 
+  * Update debian/patches/0001-install-conf-fix.patch for missed change needed
+    in sysv init
 
  -- Scott Kitterman <scott@kitterman.com>  Sun, 06 Oct 2019 20:44:25 -0400
 
