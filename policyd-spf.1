@@ -127,18 +127,15 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "policy-spf 1"
 .TH POLICYD-SPF 1
 .SH "NAME"
 policyd-spf
 \-
 pure-Python Postfix policy daemon for SPF checking
 .SH "VERSION"
-.IX Header "VERSION"
 2\.0\.0
 
 .SH "USAGE"
-.IX Header "USAGE"
 
 NOTE: Depending on the packaging and distribution, the exact path to the
 executable may vary.
@@ -160,7 +157,6 @@ or trusted relays is also provided.  The sample configuration file and
 policyd-spf.conf(5) shows the format to use.
 
 .SH "OTHER DOCUMENTATION"
-.IX Header "OTHER DOCUMENTATION"
 This documentation assumes you have read Postfix's README_FILES/
 SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
 (SPF).  See RFC 7208 for details.
@@ -171,7 +167,6 @@ man 5 policyd-spf.peruser provides documentation on setting up and using
 different configuration options on a per user (mail reciepient) basis.
 
 .SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
 
 python-policyd-spf is a Postfix SMTPd policy daemon for SPF checking.
 It is implemented in pure Python and uses the pyspf module.  The SPF
@@ -179,7 +174,6 @@ web site is http://www.openspf.org/.  The Postfix configuration must be
 changed to check SPF.  
 
 .SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
 
 Logging is sent to syslogd.
 
@@ -212,7 +206,6 @@ of local policy and should be adjusted to meet the requirements of site
 administrators.  See policyd-spf.conf(5) for configuration file details.
 
 .SH "LOGGING"
-.IX Header "LOGGING"
 
 Policyd-spf will log messages to syslog about it's activities.  The "debugLevel"
 value in "policyd-spf.conf" can be increased to get additional information to
@@ -222,7 +215,6 @@ Postfix also.  For logging by this policy server, look for "policyd-spf" in your
 mail log files.
 
 .SH "TESTING THE POLICY DAEMON"
-.IX Header "TESTING THE POLICY DAEMON"
 Testing the policy daemon
 
 To test the policy daemon by hand, execute:
@@ -251,7 +243,6 @@ followed by a empty line:
     [empty line]
 
 .SH "POSTFIX INTEGRATION"
-.IX Header "POSTFIX INTEGRATION"
 
  1. Add the following to /etc/postfix/master.cf:
 
@@ -282,7 +273,6 @@ followed by a empty line:
  3. Reload Postfix.
 
 .SH "PERFORMANCE CONSIDERATIONS"
-.IX Header "PERFORMANCE CONSIDERATIONS"
 
 The time to complete DNS lookups associated with SPF checks is the most
 significant factor in policy server performance.  Use of a capable local
@@ -316,12 +306,10 @@ can be lowered.  If such result are common (more than 1% of mail), then the
 value should be raised.
 
 .SH "SEE ALSO"
-.IX Header "SEE ALSO"
 policyd-spf.conf(5), policyd-spf.peruser(5), python-spf,
 <http://www.openspf.org>, RFC 7208
 
 .SH "AUTHORS"
-.IX Header "AUTHORS"
 This version of \fBpolicyd-spf (python)\fR was written by Copyright © 2007-2016
 Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf,
 written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>. Portions of

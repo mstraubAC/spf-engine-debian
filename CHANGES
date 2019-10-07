@@ -4,6 +4,14 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 2.9.1 (2019-10-06)
+  * Use /run instead of /var/run
+  * Fix-up sysv init so it works
+  * Catch pyspf tracebacks so at least we don't die (thanks to Adi Pircalabu
+    for both the report and the suggested fix) (LP: #1842005)
+  * Correct over-writing of SPF identity by SPF reason for HELO checks and the
+    reverse for Mail From (LP: #1822685)
+
 --- 2.9.0 (2019-02-01)
   + Initial alpha release with pyspf-milter added
   * Use HOSTNAME for Authserv_Id lookup function from dkimpy-milter for both

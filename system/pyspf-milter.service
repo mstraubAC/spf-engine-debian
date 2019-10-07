@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Type=simple
-PIDFile=/var/run/pyspf-milter/pyspf-milter.pid
+PIDFile=/run/pyspf-milter/pyspf-milter.pid
 ExecStart=/usr/local/bin/pyspf-milter /usr/local/etc/pyspf-milter.conf 
 
 [Install]

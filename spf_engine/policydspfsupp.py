@@ -47,8 +47,8 @@ defaultConfigData = {
         'No_Mail' : False,
         'Mock' : False,
 	# For milter front end
-        'Socket': 'local:/var/run/pyspf-milter/pyspf-milter.sock',
-        'PidFile': '/var/run/pyspf-milter/pyspf-milter.pid',
+        'Socket': 'local:/run/pyspf-milter/pyspf-milter.sock',
+        'PidFile': '/run/pyspf-milter/pyspf-milter.pid',
         'UserID': 'pyspf-milter',
         'UMask': 7,
         'InternalHosts': '127.0.0.1',
