@@ -1,5 +1,5 @@
 pyspf
 
 [milter]
-pymilter
 authres
+pymilter

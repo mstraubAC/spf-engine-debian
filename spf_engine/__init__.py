@@ -542,7 +542,13 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
         if HELO_reject != 'No_Check':
             helo_fake_sender = 'postmaster@' + helo
             heloquery = spf.query(i=ip, s=helo_fake_sender, h=helo, querytime=configData.get('Lookup_Time'))
-            res = heloquery.check()
+            try:
+                res = heloquery.check()
+            except Exception as e:
+                e = sys.exc_info()
+                exceptionmessage = "Exception: %s, locals: %s" %(e, locals())
+                syslog.syslog("Ouch, caught exc: %s" %exceptionmessage)
+                return(( 'dunno', exceptionmessage, instance_dict, None))
             helo_result = [res[0], res[2]]
             helo_result.append('helo') 
             helo_result[0] = helo_result[0].lower()
@@ -565,13 +571,13 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                         action = poss_actions
                         helo_result.append(action)
                 if local['local_helo']:
-                    helo_result[2] = 'Receiver policy for SPF ' + helo_result[0]
+                    helo_result[1] = 'Receiver policy for SPF ' + helo_result[0]
             if sender == '':
                 header_sender = '<>'
             else:
                 header_sender = sender
             if helo_result[0] == 'None':
-                helo_result[2] = "no SPF record"
+                helo_result[1] = "no SPF record"
             spfDetail = ('identity=%s; client-ip=%s; helo=%s; envelope-from=%s; receiver=%s '
                 % (helo_result[2], ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))
             if debugLevel >= 2:
@@ -586,11 +592,11 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                     raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
                 header += str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
                     results = [authres.SPFAuthenticationResult(result = helo_result[0],
-                    result_comment = helo_result[2],
+                    result_comment = helo_result[1],
                     smtp_helo = helo, smtp_helo_comment =
                     'client-ip={0}; helo={1}; envelope-from={2}; receiver={3}'.format(ip, helo, header_sender, data.get('recipient', '<UNKNOWN>')))]))
             else:
-                header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[2] +') ' + spfDetail
+                header = 'Received-SPF: '+ helo_result[0] + ' (' + helo_result[1] +') ' + spfDetail
             if helo_result[3] != 'reject' and helo_result[3] != 'defer':
                 helo_result.append(header)
                 helo_result.append(helo_result[3])
@@ -640,7 +646,13 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
         else:
             if Mail_From_reject != 'No_Check':
                 mfromquery = spf.query(i=ip, s=sender, h=helo, querytime=configData.get('Lookup_Time'))
-                mres = mfromquery.check()
+                try:
+                    mres = mfromquery.check()
+                except Exception as e:
+                    e = sys.exc_info()
+                    exceptionmessage = "Exception: %s, locals: %s" %(e, locals())
+                    syslog.syslog("Ouch, caught exc: %s" %exceptionmessage)
+                    return(( 'dunno', exceptionmessage, instance_dict, None))
                 mfrom_result = [mres[0], mres[2]]
                 mfrom_result.append('mailfrom')
                 mfrom_result[0] = mfrom_result[0].lower()
@@ -679,7 +691,7 @@ def _spfcheck(data, instance_dict, configData, peruser, peruserconfigData):  #{{
                             raise SyntaxError('Authserv_Id not set for authentication results header - invalid configuration.')
                         header += str(authres.AuthenticationResultsHeader(authserv_id = configData.get('Authserv_Id'),
                             results = [authres.SPFAuthenticationResult(result = mfrom_result[0],
-                            result_comment = mfrom_result[2],
+                            result_comment = mfrom_result[1],
                             smtp_mailfrom = spf.split_email(sender,'example.com')[1], smtp_mailfrom_comment =
                             'client-ip={0}; helo={1}; envelope-from={2}; receiver={3}'.format(ip, helo, sender, data.get('recipient', '<UNKNOWN>')))]))
                     else:

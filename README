@@ -95,9 +95,8 @@ pip install dkimpy_milter.
 
 Both a systemd unit file and a sysv init file are provided.  Both make
 assumptions about defaults being used, e.g. if a non-standard pidfile name is
-used, they will need to be updated.  The sysv init file is Debian specific and
-untested, since the developers are not using sysv init.  Feedback/patches
-welcome.
+used, they will need to be updated.  The sysv init file uses start-stop-deamon
+from Debian.  It is not portable to systems without that available.
 
 The pyspf-milter drops priviledges after setup to the user/group specified in
 UserID.  During initial setup, this system user needs to be manually created.
@@ -105,7 +104,7 @@ As an example, using the default dkimpy-user on Debian, the command would be:
 
 [sudo] adduser --system --no-create-home --quiet --disabled-password \
                --disabled-login --shell /bin/false --group \
-               --home /var/run/pyspf-milter pyspf-milter
+               --home /run/pyspf-milter pyspf-milter
 
 Since /var/run or /run is sometimes on a tempfs, if the PID file directory is
 missing, the milter will create it on startup.
@@ -127,7 +126,7 @@ Configuration is very similar to opendkim, but needs some adjustment for
 dkimpy-milter. Here's an example configuration line to include in your
 sendmail.mc:
 
-INPUT_MAIL_FILTER(`pyspf-milter', `S=local:/var/run/pyspf-milter/pyspf-milter.sock')dnl
+INPUT_MAIL_FILTER(`pyspf-milter', `S=local:/run/pyspf-milter/pyspf-milter.sock')dnl
 
 Changing the sendmail.mc file requires a Make (to compile it into sendmail.cf)
 and a restart of sendmail.  Note that S= needs to match the value of Socket in

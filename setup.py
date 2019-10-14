@@ -5,7 +5,7 @@ import sys
 DESC = """SPF (Sender Policy Framework) processing engine for Postfix policy server and Milter implemented in Python."""
 
 setup(name='spf-engine',
-    version='2.9.0',
+    version='2.9.1',
     description='SPF processing for Postfix (and Sendmail)',
     long_description=DESC,
     author='Scott Kitterman',

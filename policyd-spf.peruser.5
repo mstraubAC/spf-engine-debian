@@ -127,23 +127,19 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "policy-spf.peruser 5"
 .TH policy-spf.peruser 5
 .SH "NAME"
 policyd-spf
 \-
 policyd-spf python per-user configuration
 .SH "VERSION"
-.IX Header "VERSION"
 2\.0\.0
 
 .SH "USAGE"
-.IX Header "USAGE"
 Usage:
   policyd-spf [/etc/policyd-spf/policyd-spf.conf]
 
 .SH "OTHER DOCUMENTATION"
-.IX Header "OTHER DOCUMENTATION"
 This documentation assumes you have read Postfix's README_FILES/
 SMTPD_POLICY_README and are generally familiar with Sender Policy Framework
 (SPF).  See RFC 7208 for details.
@@ -153,7 +149,6 @@ package.
 
 See man 5 policyd-spf.conf for configuration file information.
 .SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
 
 python-policyd-spf operates with a default installed configuration file and 
 set of default configuration options that are used if the configuration file
@@ -168,7 +163,6 @@ file.  If there is sufficient interest, other data storage methods may be
 supported in the future.
 
 .SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
 
 Use of per-user configuration is defined in the application configuration
 file with the setting "Per_User".  The value of the setting gives the type and
@@ -194,11 +188,9 @@ also available, but may have performance implications since the entire
 user table has to be traversed for each message recipient.
 
 .SH "OPTIONS"
-.IX Header "OPTIONS"
 \X'ps:'\c
 .br
 .SH "Text Per-User Configuration File"
-.IX Header "Text"
 
 The text file option is useful for testing and when only a small number of
 users require per-user configurations.  It is specified in the main
@@ -229,12 +221,10 @@ If the specified per user configuration file is missing, an error is logged
 and the global configuration is used instead.
 
 .SH "SEE ALSO"
-.IX Header "SEE ALSO"
 man 1 policyd-spf, man 5 policyd-spf.conf, python-spf,
 <http://www.openspf.org>, RFC 7208
 
 .SH "AUTHORS"
-.IX Header "AUTHORS"
 This version of \fBpolicyd-spf\fR was written by Copyright © 2007-2016,
 Scott Kitterman <scott@kitterman.com>.  It is derived from Tumgreyspf,
 written by Sean Reifschneider, tummy.com, ltd <jafo@tummy.com>.
