@@ -40,7 +40,7 @@ from spf_engine.util import write_pid
 from spf_engine.util import own_socketfile
 from spf_engine.util import fold
 
-__version__ = "2.9.1"
+__version__ = "2.9.2"
 FWS = re.compile(r'\r?\n[ \t]+')
 
 
@@ -231,9 +231,8 @@ def main():
     syslog.syslog('pyspf-milter started:{0} user:{1}'
                   .format(pid, milterconfig.get('UserID')))
     sys.stdout.flush()
-    Milter.runmilter(miltername, socketname, 240)
-    own_socketfile(milterconfig)
     drop_privileges(milterconfig)
+    Milter.runmilter(miltername, socketname, 240)
 
 if __name__ == "__main__":
     main()

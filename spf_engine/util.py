@@ -124,13 +124,3 @@ def write_pid(milterconfig):
     return pid
 
 
-def own_socketfile(milterconfig):
-    """If socket is Unix socket, chown to UserID before dropping privileges"""
-    import os
-    user, group = user_group(milterconfig.get('UserID'))
-    if milterconfig.get('Socket')[:1] == '/':
-        os.chown(milterconfig.get('Socket')[1:], user, group)
-    if milterconfig.get('Socket')[:6] == "local:":
-        os.chown(milterconfig.get('Socket')[6:], user, group)
-
-
