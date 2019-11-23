@@ -1,8 +1,12 @@
-spf-engine (2.9.1-2) UNRELEASED; urgency=medium
+spf-engine (2.9.2-1) unstable; urgency=medium
 
+  [ Ondřej Nový ]
   * Bump Standards-Version to 4.4.1.
 
- -- Ondřej Nový <onovy@debian.org>  Fri, 18 Oct 2019 16:04:31 +0200
+  [ Scott Kitterman ]
+  * New upstream release
+
+ -- Scott Kitterman <scott@kitterman.com>  Fri, 22 Nov 2019 19:41:13 -0500
 
 spf-engine (2.9.1-1) unstable; urgency=medium
 

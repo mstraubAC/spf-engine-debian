@@ -58,7 +58,7 @@ index e7b43fc..c189543 100644
   2. Configure the Postfix policy service in /etc/postfix/main.cf:
  
 diff --git a/policyd-spf.conf.5 b/policyd-spf.conf.5
-index 362e79d..a5cb92c 100644
+index b40060f..993d992 100644
 --- a/policyd-spf.conf.5
 +++ b/policyd-spf.conf.5
 @@ -137,7 +137,7 @@ policyd-spf python configuration parameters
@@ -80,7 +80,7 @@ index 362e79d..a5cb92c 100644
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
 diff --git a/setup.py b/setup.py
-index 159135e..c856745 100644
+index ed45d67..d97a1b3 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -25,10 +25,11 @@ setup(name='spf-engine',
@@ -100,7 +100,7 @@ index 159135e..c856745 100644
      classifiers = [
          'Development Status :: 5 - Production/Stable',
 diff --git a/spf_engine/policyd_spf.py b/spf_engine/policyd_spf.py
-index 8fb77b2..d0536d6 100644
+index d3e3a94..7f764ca 100644
 --- a/spf_engine/policyd_spf.py
 +++ b/spf_engine/policyd_spf.py
 @@ -46,7 +46,7 @@ def main():
