@@ -5,8 +5,10 @@ spf-engine (2.9.2-1) unstable; urgency=medium
 
   [ Scott Kitterman ]
   * New upstream release
+  * Update d/watch and add upstream signing key to check GPG signature when
+    new versions are downloaded
 
- -- Scott Kitterman <scott@kitterman.com>  Fri, 22 Nov 2019 19:41:13 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Fri, 22 Nov 2019 19:42:45 -0500
 
 spf-engine (2.9.1-1) unstable; urgency=medium
 
