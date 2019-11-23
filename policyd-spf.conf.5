@@ -212,7 +212,8 @@ debugLevel = 1
 The policy server can operate in a test only mode. This allows you to see the
 potential impact of SPF checking in your mail logs without rejecting mail.
 Headers are prepended in messages, but message delivery is not affected. This
-mode is not enabled by default.  To enable it, set TestOnly = 0.  
+mode is not enabled by default.  To enable it, set TestOnly = 0.  If you want
+test operation with no header added, also set Header_Type = None. 
 
 Note: This option was previously named defaultSeedOnly.  This is still
 accepted, but logs an error.
