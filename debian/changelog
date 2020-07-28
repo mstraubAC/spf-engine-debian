@@ -1,3 +1,9 @@
+spf-engine (2.9.2-2) UNRELEASED; urgency=low
+
+  * Trim trailing whitespace.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Tue, 28 Jul 2020 04:39:12 -0000
+
 spf-engine (2.9.2-1) unstable; urgency=medium
 
   [ Ondřej Nový ]
@@ -474,4 +480,3 @@ pypolicyd-spf (0.3-1) unstable; urgency=low
     (Closes: #419887)
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 18 Apr 2007 10:11:36 -0400
-
