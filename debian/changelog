@@ -1,3 +1,12 @@
+spf-engine (2.9.2-2) UNRELEASED; urgency=low
+
+  * Trim trailing whitespace.
+  * Bump debhelper from deprecated 9 to 12.
+  * Set debhelper-compat version in Build-Depends.
+  * Fix day-of-week for changelog entry 0.4-3.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Tue, 28 Jul 2020 04:39:12 -0000
+
 spf-engine (2.9.2-1) unstable; urgency=medium
 
   [ Ondřej Nový ]
@@ -447,7 +456,7 @@ pypolicyd-spf (0.4-3) unstable; urgency=low
     - Change config file mv to install in debian/rules with correct path.
     - Change dh_installdirs path to relative rather than absolute.
 
- -- Scott Kitterman <scott@kitterman.com>  Sun, 21 Jul 2007 11:32:58 -0400
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 21 Jul 2007 11:32:58 -0400
 
 pypolicyd-spf (0.4-2) unstable; urgency=low
 
@@ -474,4 +483,3 @@ pypolicyd-spf (0.3-1) unstable; urgency=low
     (Closes: #419887)
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 18 Apr 2007 10:11:36 -0400
-
