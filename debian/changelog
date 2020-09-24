@@ -1,9 +1,14 @@
 spf-engine (2.9.2-2) UNRELEASED; urgency=low
 
+  [ Debian Janitor ]
   * Trim trailing whitespace.
   * Bump debhelper from deprecated 9 to 12.
   * Set debhelper-compat version in Build-Depends.
   * Fix day-of-week for changelog entry 0.4-3.
+
+  [ Ondřej Nový ]
+  * d/control: Update Vcs-* fields with new Debian Python Team Salsa
+    layout.
 
  -- Debian Janitor <janitor@jelmer.uk>  Tue, 28 Jul 2020 04:39:12 -0000
 

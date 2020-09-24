@@ -6,8 +6,8 @@ Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.deb
 Build-Depends: debhelper-compat (= 12), dh-python, python3, python3-setuptools
 Standards-Version: 4.4.1
 Homepage: https://launchpad.net/spf-engine
-Vcs-Git: https://salsa.debian.org/python-team/applications/spf-engine.git
-Vcs-Browser: https://salsa.debian.org/python-team/applications/spf-engine
+Vcs-Git: https://salsa.debian.org/python-team/packages/spf-engine.git
+Vcs-Browser: https://salsa.debian.org/python-team/packages/spf-engine
 
 Package: postfix-policyd-spf-python
 Architecture: all
