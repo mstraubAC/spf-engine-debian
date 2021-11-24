@@ -1,3 +1,11 @@
+spf-engine (2.9.2-3) UNRELEASED; urgency=medium
+
+  * postfix-policyd-spf-python and pyspf-milter require the python3-spf-engine
+    be the same version as they are, add binary:Version constraints to the
+    depends for both (Closes: #951134)
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 24 Nov 2021 16:13:55 -0500
+
 spf-engine (2.9.2-2) unstable; urgency=low
 
   [ Debian Janitor ]
