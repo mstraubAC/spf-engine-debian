@@ -22,6 +22,7 @@ Description: Postfix policy server for SPF checking
 
 Package: pyspf-milter
 Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix|sendmail, adduser, python3-authres, python3-milter, python3-spf-engine (= ${binary:Version}), python3-pkg-resources
 Description: Modern milter for SPF checking
  pyspf-milter is a full featured milter for SPF checking. It includes a
