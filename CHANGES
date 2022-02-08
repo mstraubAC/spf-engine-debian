@@ -4,7 +4,19 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
---- 2.9.2 (1019-11-22)
+--- 2.9.3 (2022-02-07)
+  * Add mention in policyd-spf.conf (5) in the Lookup_Time and Whitelist_
+    Lookup_Time entries that errors will occur if the policy server timeout
+    limits exceed Postfix's smtpd_policy_service_timeout.  This is only
+    relevant to the policy server interface.
+  * Add more information about setting policyd-spf_time_limit to 
+    policyd-spf.1.  This is only relevant to the policy server interface.
+  * Fixup test suite since earthlink.com and some others have SPF records now
+    (LP #1930132).
+  * Remove stray leftover import of own_socketfile so milter variant will
+    start (LP: #1856391), (Debian #1005110).
+
+--- 2.9.2 (2019-11-22)
   * Add mention in policyd-spf.conf (5) in the TestOnly entry that to get both
     TestOnly behavior and no header field appended, Header_Type = None also
     needs to be set (LP: #1849994)

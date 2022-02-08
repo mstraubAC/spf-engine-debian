@@ -266,6 +266,9 @@ followed by a empty line:
             ...
         policyd-spf_time_limit = 3600
 
+        policyd-spf_time_limit is an instance of transport_time_limit.  See
+        SMTPD_POLICY_README or postconf (5) transport_time_limit for details.
+
     NOTE:  Specify check_policy_service AFTER reject_unauth_destination or
            else your system can become an open relay.
 
