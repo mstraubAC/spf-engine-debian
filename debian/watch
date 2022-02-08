@@ -1,4 +1,4 @@
-version=3
+version=4
 opts=pgpmode=auto \
 https://launchpad.net/spf-engine/+download https://launchpad.net/spf-engine/.*/.*/spf-engine-(.*)\.tar\.gz
 

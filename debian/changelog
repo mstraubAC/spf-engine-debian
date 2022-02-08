@@ -6,6 +6,7 @@ spf-engine (2.9.3-1) unstable; urgency=medium
   * New upstream release (Closes: #1005110)
   * Remove long obsolete debian NEWS file
   * Add misc:Pre-Depends to pyspf-milter
+  * Bump watch file to version 4
 
  -- Scott Kitterman <scott@kitterman.com>  Mon, 07 Feb 2022 23:14:25 -0500
 
