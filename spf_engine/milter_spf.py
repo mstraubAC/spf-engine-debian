@@ -37,10 +37,9 @@ import spf_engine.policydspfsupp as config
 from spf_engine.util import drop_privileges
 from spf_engine.policydspfsupp import _setExceptHook
 from spf_engine.util import write_pid
-from spf_engine.util import own_socketfile
 from spf_engine.util import fold
 
-__version__ = "2.9.2"
+__version__ = "2.9.3"
 FWS = re.compile(r'\r?\n[ \t]+')
 
 

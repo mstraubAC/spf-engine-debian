@@ -618,6 +618,12 @@ HELO/EHLO checks, so if both are performed, the lookups may take up to twice
 Lookup_Time (plus any additional time required for whitelisting related DNS
 lookups).
 
+It is important that the combination of Lookup_Time(s) and applicable
+Whitelist_Lookup_Time(s) be less than the smtpd_policy_service_timeout defined
+for the service (default 100 seconds).  Since HELO and Mail From time limits
+are independent, smtpd_policy_service_timeout needs to be at least double the
+time allowed for the SPF policy server per entity type.
+
 Example:
 
 Lookup_Time = 20
@@ -637,6 +643,12 @@ parameter.  It defaults to 10 seconds and is applied independently to each
 whitelisting method in use (e.g. if both a Domain_Whitelist_PTR and
 HELO_Whitelist are defined, together they may take up to 20 seconds).  This is
 in addition to the time allowed for SPF Lookup_Time.
+
+It is important that the combination of Lookup_Time(s) and applicable
+Whitelist_Lookup_Time(s) be less than the smtpd_policy_service_timeout defined
+for the service (default 100 seconds).  Since HELO and Mail From time limits
+are independent, smtpd_policy_service_timeout needs to be at least double the
+time allowed for the SPF policy server per entity type.
 
 Example:
 
