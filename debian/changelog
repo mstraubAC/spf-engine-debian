@@ -1,3 +1,9 @@
+spf-engine (2.9.3-2) UNRELEASED; urgency=medium
+
+  * Bump debhelper from old 12 to 13.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sun, 31 Jul 2022 16:43:31 -0000
+
 spf-engine (2.9.3-1) unstable; urgency=medium
 
   * postfix-policyd-spf-python and pyspf-milter require the python3-spf-engine
