@@ -9,12 +9,12 @@ distributions.  It has not gone, and does not need to go, upstream.
  policyd-spf.conf.5          |  4 ++--
  setup.py                    |  9 +++++----
  spf_engine/policyd_spf.py   |  2 +-
- system/pyspf-milter         |  4 ++--
+ system/pyspf-milter         |  6 +++---
  system/pyspf-milter.service |  2 +-
- 6 files changed, 22 insertions(+), 22 deletions(-)
+ 6 files changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/policyd-spf.1 b/policyd-spf.1
-index e7b43fc..c189543 100644
+index d641b99..fb5ecd4 100644
 --- a/policyd-spf.1
 +++ b/policyd-spf.1
 @@ -144,12 +144,13 @@ $ policyd-spf (Start using installed config file)
@@ -58,7 +58,7 @@ index e7b43fc..c189543 100644
   2. Configure the Postfix policy service in /etc/postfix/main.cf:
  
 diff --git a/policyd-spf.conf.5 b/policyd-spf.conf.5
-index b40060f..993d992 100644
+index 51c8d19..16a80db 100644
 --- a/policyd-spf.conf.5
 +++ b/policyd-spf.conf.5
 @@ -137,7 +137,7 @@ policyd-spf python configuration parameters
@@ -80,7 +80,7 @@ index b40060f..993d992 100644
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
 diff --git a/setup.py b/setup.py
-index ed45d67..d97a1b3 100644
+index 6bbdc92..393d511 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -25,10 +25,11 @@ setup(name='spf-engine',
@@ -100,7 +100,7 @@ index ed45d67..d97a1b3 100644
      classifiers = [
          'Development Status :: 5 - Production/Stable',
 diff --git a/spf_engine/policyd_spf.py b/spf_engine/policyd_spf.py
-index d3e3a94..7f764ca 100644
+index 16e6e88..870c162 100644
 --- a/spf_engine/policyd_spf.py
 +++ b/spf_engine/policyd_spf.py
 @@ -46,7 +46,7 @@ def main():
@@ -113,7 +113,7 @@ index d3e3a94..7f764ca 100644
          if sys.argv[1] in ( '-?', '--help', '-h' ):
              print('usage: policyd-spf [<configfilename>]')
 diff --git a/system/pyspf-milter b/system/pyspf-milter
-index c299c4d..eaa9cee 100644
+index c299c4d..0b32afd 100644
 --- a/system/pyspf-milter
 +++ b/system/pyspf-milter
 @@ -18,9 +18,9 @@
@@ -128,6 +128,15 @@ index c299c4d..eaa9cee 100644
  bindir="${exec_prefix}/bin/"
  RUNDIR="/run/pyspf-milter"
  DAEMON=${bindir}/pyspf-milter
+@@ -68,7 +68,7 @@ case "$1" in
+ 		fi
+ 	fi
+         start-stop-daemon --start --background --quiet --pidfile \
+-                $RUNDIR/$NAME.pid --exec $DAEMON $sysconfdir/$NAME.conf
++                $RUNDIR/$NAME.pid --exec $DAEMON $sysconfdir/$NAME/$NAME.conf
+ 	echo "$NAME."
+ 	;;
+   stop)
 diff --git a/system/pyspf-milter.service b/system/pyspf-milter.service
 index 4ab8922..b8794c8 100644
 --- a/system/pyspf-milter.service
