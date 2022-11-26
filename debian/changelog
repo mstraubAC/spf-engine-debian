@@ -1,3 +1,10 @@
+spf-engine (2.9.2-1+deb11u1) bullseye; urgency=medium
+
+  * Add d/p/0002-fix-leftover-import.patch from upstream to fix pyspf-milter
+    failing to start due to an invalid import statement (Closes: #1008828)
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 26 Nov 2022 14:10:35 -0500
+
 spf-engine (2.9.2-1) unstable; urgency=medium
 
   [ Ondřej Nový ]

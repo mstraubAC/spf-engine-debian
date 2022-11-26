@@ -1,0 +1,23 @@
+From: Scott Kitterman <scott@kitterman.com>
+Date: Sat, 26 Nov 2022 14:04:57 -0500
+Subject: fix leftover import
+ Backport from 2.9.3
+Origin: upstream
+Bug-Debian: http://bugs.debian.org/1008828
+
+---
+ spf_engine/milter_spf.py | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/spf_engine/milter_spf.py b/spf_engine/milter_spf.py
+index 077b75b..eecf4f1 100644
+--- a/spf_engine/milter_spf.py
++++ b/spf_engine/milter_spf.py
+@@ -37,7 +37,6 @@ import spf_engine.policydspfsupp as config
+ from spf_engine.util import drop_privileges
+ from spf_engine.policydspfsupp import _setExceptHook
+ from spf_engine.util import write_pid
+-from spf_engine.util import own_socketfile
+ from spf_engine.util import fold
+ 
+ __version__ = "2.9.2"
