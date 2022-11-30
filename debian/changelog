@@ -12,6 +12,8 @@ spf-engine (3.0.0-1) UNRELEASED; urgency=medium
   * Update d/rules for new upstream file locations and to use more dh_auto_*
   * Add debian/py3dist-overrides so dh-python can find 'pyspf'
   * Update .install, .docs, and .manpages files for new upstream locations
+  * Move python related Build-Depends to Build-Depends-Indep since they are no
+    longer required for clean and the packages are all arch: all
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
 
