@@ -4,6 +4,7 @@ spf-engine (3.0.0-1) UNRELEASED; urgency=medium
   * Replace python3-setuptools with flit and pybuild-plugin-pyproject in
     build-depends and use pyproject.toml dependencies instead of manually
     specifying
+  * Remove obsolete Breaks/Replaces
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
 
