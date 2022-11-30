@@ -25,6 +25,7 @@ import sys
 import re
 import stat
 import socket
+import spf_engine.config as config
 
 
 #  default values
@@ -38,7 +39,7 @@ defaultConfigData = {
         'TestOnly' : 1,
         'SPF_Enhanced_Status_Codes' : 'Yes',
         'Header_Type' : 'SPF',
-        'Hide_Receiver' : 'Yes',
+        'Hide_Receiver' : 'No',
         'Authserv_Id' : 'HOSTNAME',
         'Lookup_Time' : 20,
         'Whitelist_Lookup_Time' : 10,
@@ -46,6 +47,7 @@ defaultConfigData = {
         'Reason_Message' : 'Message {rejectdefer} due to: {spf}. Please see {url}',
         'No_Mail' : False,
         'Mock' : False,
+        'Queue_ID' : True,
 	# For milter front end
         'Socket': 'local:/run/pyspf-milter/pyspf-milter.sock',
         'PidFile': '/run/pyspf-milter/pyspf-milter.pid',
@@ -53,7 +55,7 @@ defaultConfigData = {
         'UMask': 7,
         'InternalHosts': '127.0.0.1',
         'IntHosts': False,
-        'MacroListVerify': '',
+        'MacroList': '',
         }
 
 
@@ -153,10 +155,10 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
             'Socket': str,
             'PidFile': str,
             'UserID': str,
-            'UMask': 'int',
+            'UMask': int,
             'InternalHosts': str,
-            'IntHosts': 'bool',
-            'MacroListVerify': str,
+            'IntHosts': bool,
+            'MacroList': 'dataset',
             }
 
 
@@ -200,7 +202,10 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
 
         if debugLevel >= 5: syslog.syslog('readConfigFile: Found entry "%s=%s"'
                 % ( name, value ))
-        configData[name] = conversion(value)
+        if conversion == 'dataset':
+            configData[name] = config._dataset_to_list(value)
+        else:
+            configData[name] = conversion(value)
     fp.close()
     try:
         if debugLevel >= 5: syslog.syslog('Authserv_Id before: {0}'.format(configData['Authserv_Id']))
