@@ -1,3 +1,9 @@
+spf-engine (3.0.0-1) UNRELEASED; urgency=medium
+
+  * New upstream release (Closes: #1006283, #1019193)
+
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
+
 spf-engine (2.9.3-2) unstable; urgency=medium
 
   [ Debian Janitor ]
