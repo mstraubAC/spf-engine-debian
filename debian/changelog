@@ -14,6 +14,7 @@ spf-engine (3.0.0-1) UNRELEASED; urgency=medium
   * Update .install, .docs, and .manpages files for new upstream locations
   * Move python related Build-Depends to Build-Depends-Indep since they are no
     longer required for clean and the packages are all arch: all
+  * Add Bug-Database information to debian/upstream/metadata
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
 
