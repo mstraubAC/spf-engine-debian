@@ -24,7 +24,7 @@
 '''
 
 def main():
-    __version__ = "2.9.3"
+    __version__ = "2.9.4"
 
     import syslog
     import os
@@ -91,8 +91,10 @@ def main():
                 peruserconfigData, peruser = spf_engine.policydspfuser._datacheck(configData, data.get('recipient'))
                 if debugLevel >= 2 and peruser: syslog.syslog('Per user configuration data in use for: %s' \
                     % str(data.get('recipient')))
-            if configData.get('Hide_Receiver') != 'No':
+            elif configData.get('Hide_Receiver') != 'No':
                 data['recipient'] = '<UNKNOWN>'
+            elif data.get('recipient') != 'none':
+                data['recipient'] = data.get('recipient').split('@')[1]
             if debugLevel >= 3: syslog.syslog('Config: %s' % str(configData))
             #  run the checkers  {{{3
             checkerValue = None
@@ -125,7 +127,12 @@ def main():
             #  handle results  {{{3
             if debugLevel >= 3: syslog.syslog('Action: {0}: Text: {1} Reject action: {2}'.format(checkerValue, checkerReason, rejectAction))
             if checkerValue == 'reject':
-                if debugLevel >= 1: syslog.syslog('{0} {1}'.format(rejectAction, checkerReason))
+                if debugLevel >= 1:
+                    if configData.get('QueueID') and str(data.get('queue_id')) != 'None':
+                        queueID = str(data.get('queue_id')) + ': '
+                    else:
+                        queueID = ''
+                    syslog.syslog('{0}{1} {2}'.format(queueID, rejectAction, checkerReason))
                 sys.stdout.write('action={0} {1}\n\n'.format(rejectAction, checkerReason))
 
             elif checkerValue == 'prepend':
@@ -133,17 +140,32 @@ def main():
                     sys.stdout.write('action=dunno\n\n')
                 else:
                     if configData.get('Header_Type') != 'None':
-                        if debugLevel >= 1: syslog.syslog('prepend {0}'.format(checkerReason))
+                        if debugLevel >= 1:
+                            if configData.get('QueueID') and str(data.get('queue_id')) != 'None':
+                                queueID = str(data.get('queue_id')) + ': '
+                            else:
+                                queueID = ''
+                            syslog.syslog('{0}prepend {1}'.format(queueID, checkerReason))
                         try:
                             sys.stdout.write('action=prepend %s\n\n' % checkerReason)
                         except UnicodeEncodeError:
                             sys.stdout.write('action=prepend %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
                     else:
-                        if debugLevel >= 1: syslog.syslog('Header field not prepended: {0}'.format(checkerReason))
+                        if debugLevel >= 1:
+                            if configData.get('QueueID') and str(data.get('queue_id')) != 'None':
+                                queueID = str(data.get('queue_id')) + ': '
+                            else:
+                                queueID = ''
+                            syslog.syslog('{0}Header field not prepended: {1}'.format(queueID, checkerReason))
                         sys.stdout.write('action=dunno\n\n')
 
             elif checkerValue == 'defer':
-                if debugLevel >= 1: syslog.syslog('{0} {1}'.format(deferAction, checkerReason))
+                if debugLevel >= 1:
+                    if configData.get('QueueID') and str(data.get('queue_id')) != 'None':
+                        queueID = str(data.get('queue_id')) + ': '
+                    else:
+                        queueID = ''
+                    syslog.syslog('{0}{1} {2}'.format(queueID, deferAction, checkerReason))
                 try:
                     sys.stdout.write('action={0} {1}\n\n'.format(deferAction, checkerReason))
                 except UnicodeEncodeError:
@@ -156,7 +178,12 @@ def main():
                     sys.stdout.write('action=warn %s\n\n' % str(checkerReason.encode("UTF-8"))[1:].strip("'"))
 
             elif checkerValue == 'result_only':
-                if debugLevel >= 1: syslog.syslog('result_only {0}'.format(checkerReason))
+                if debugLevel >= 1:
+                    if configData.get('QueueID') and str(data.get('queue_id')) != 'None':
+                        queueID = str(data.get('queue_id')) + ': '
+                    else:
+                        queueID = ''
+                    syslog.syslog('{0}result_only {1}'.format(queueID, checkerReason))
                 try:
                     sys.stdout.write('action=%s\n\n' % checkerReason)
                 except UnicodeEncodeError:

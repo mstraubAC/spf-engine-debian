@@ -20,12 +20,12 @@
 ### END INIT INFO
 prefix="/usr/local"
 exec_prefix=${prefix}
-sysconfdir="/usr/local/etc"
+NAME=pyspf-milter
+sysconfdir="$prefix/etc/$NAME"
 bindir="${exec_prefix}/bin/"
 RUNDIR="/run/pyspf-milter"
 DAEMON=${bindir}/pyspf-milter
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:
-NAME=pyspf-milter
 DESC="Python SPF Milter"
 USER=pyspf-milter
 GROUP=pyspf-milter

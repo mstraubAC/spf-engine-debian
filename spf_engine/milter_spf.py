@@ -39,7 +39,7 @@ from spf_engine.policydspfsupp import _setExceptHook
 from spf_engine.util import write_pid
 from spf_engine.util import fold
 
-__version__ = "2.9.3"
+__version__ = "3.0.0"
 FWS = re.compile(r'\r?\n[ \t]+')
 
 
@@ -84,6 +84,8 @@ class spfMilter(Milter.Base):
                 if ((len(macro.split('|')) == 1 and macroresult) or macroresult
                         in macro.split('|')[1:]):
                     self.external_connection = True
+                else:
+                    self.internal_connection = True
         if self.internal_connection:
             connecttype = 'INTERNAL'
         else:
@@ -96,9 +98,12 @@ class spfMilter(Milter.Base):
     # multiple messages can be received on a single connection
     # envfrom (MAIL FROM in the SMTP protocol) seems to mark the start
     # of each message.
-    def envfrom(self, f, *str):
+    def envfrom(self, f, *stri):
+        # This gets rid of any non-UTF-8 in the localpart.
+        # FIXME: Not great for l macro, not sure what we can do.
+        f = str(bytes(f, encoding='utf-8', errors='replace'))[2:-1]
         if milterconfig.get('debugLevel') >= 2:
-            syslog.syslog("mail from: {0} {1}".format(f, str))
+            syslog.syslog("mail from: {0} {1}".format(f, stri))
         self.mailfrom = f
         t = parse_addr(f)
         if len(t) == 2:

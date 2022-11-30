@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 PIDFile=/run/pyspf-milter/pyspf-milter.pid
-ExecStart=/usr/local/bin/pyspf-milter /usr/local/etc/pyspf-milter.conf 
+ExecStart=/usr/local/bin/pyspf-milter /usr/local/etc/pyspf-milter/pyspf-milter.conf 
 
 [Install]
 WantedBy=multi-user.target

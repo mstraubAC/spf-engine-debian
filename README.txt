@@ -47,17 +47,11 @@ This is an external policy checker for the postfix mail server.  It will use
 pyspf to check SPF records to determine if email should be rejected or
 deferred by your server.
 
-To install from the tar.gz (if this software has been packaged for your
-distribution, the packaged version is recommended and should be installed
-using your normal distribution packaging tools):
-
-1.  Extract the package from the tarball (tar -xvvzf ...)
-2.  Enter the package directory (cd ...)
-3.  As root:
-python3 setup.py install --single-version-externally-managed --record=/dev/null
-
 It requires Python3 (python3.3+) - as of version 2.0.0, python2 is no longer
 supported, the pyspf (python-spf) library version 2.0.9 or higher, and authres.  
+
+As of version 3.0.0, it uses flit to build/install.  It requires at least flit
+3.8.0.
 
 Nothing is configured by default, so this will not interact with Postfix until
 it has been set up.
@@ -67,23 +61,11 @@ server.
 
 See man 5 policyd-spf.conf for configuration file information.
 
-The milter is new and not well tested/mature.
+The milter is relatively new and less well tested/mature.  If used with
+pymilter version 1.0.5 or later, it will work for messages where the local
+part of the Mail From is not valid UTF-8, but the "l" macro will not work.
 
-This package includes a default configuration file and man pages.  For those
-to be installed when installing using setup.py, the following incantation is
-required because setuptools developers decided not being able to do this by
-default is a feature:
-
-python3 setup.py install --single-version-externally-managed --record=/dev/null
-
-For users of Debian Stable (Debian 9, Codename Squueze), all dependencies are
-available in either the main or backports repositories:
-
-[sudo] apt install python-milter python-nacl python-ipaddress python-dnspython
-[sudo] apt install -t stretch-backports python-authres python-dkim
-
-The preferred method of installation is from PyPi using pip (if distribution
-packages are not available):
+This package includes a default configuration file and man pages. 
 
 [sudo] pip install pyspf_milter
 
@@ -91,7 +73,7 @@ Using pip will cause required packages to be installed via easy_install if they
 have not been previously installed.  Because pymilter is a compiled Python
 extension, the system will need appropriate development packages and
 an C compiler.  Alternately, install it from dsitribution/OS packages and then
-pip install dkimpy_milter.
+pip install pyspf_milter.
 
 Both a systemd unit file and a sysv init file are provided.  Both make
 assumptions about defaults being used, e.g. if a non-standard pidfile name is

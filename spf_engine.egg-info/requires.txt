@@ -1,5 +1,0 @@
-pyspf
-
-[milter]
-authres
-pymilter

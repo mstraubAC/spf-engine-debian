@@ -4,6 +4,28 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 3.0.0
+  ! Replaced setuptools with flit for building/installing (packagers: this
+    require changes)
+    + Modern PEP 517/PEP 621 based build interface (requires flit 3.8)
+    + Dependencies now specified
+    + Distributed as both sdist and wheel
+  * Use capitalized qtype for spf.DNSLookup calls (Fixes HELO_Whitelist test
+    failues)
+  ! Changed recipient tracking to only use recipient host name (per RFC 7208)
+    in the policy server if per user processing is not being used and as a
+    result, changed Hide_Receiver default to No since it will no longer have
+    user specific personal information in most cases (LP: #1822679)
+  + Added new option QueueID to include Postfix queue ID for normal policy
+    server logging when configured for post-queue operations (LP: #1963816)
+  * Fixed type definitions for UMask and IntHosts (LP: #1939598)
+  * Fix milter macro types so they can be found (LP: #1986753)
+  + Ship default pyspf-milter.conf in tarball
+  + Add pyspf.milter.8 man page for milter interface documentation
+  * Correct pyspf-milter.conf location in init script
+  * Fix failures with non-UTF-8 Mail From addresses in the milter (also
+    requires pymilter 1.0.5 or later)
+
 --- 2.9.3 (2022-02-07)
   * Add mention in policyd-spf.conf (5) in the Lookup_Time and Whitelist_
     Lookup_Time entries that errors will occur if the policy server timeout

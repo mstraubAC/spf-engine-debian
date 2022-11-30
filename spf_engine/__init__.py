@@ -40,7 +40,7 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 '''
 
-__version__ = "2.9.0"
+__version__ = "3.0.0"
 
 import syslog
 import os
@@ -276,7 +276,7 @@ def _spfbypass(data, check_type, configData):
             if debugLevel >= 4: syslog.syslog ("PTR Domain Whitelist enabled.")
             try:
                 # Try a reverse DNS lookup first and try and match against the domain list that way
-                rDNSResults = spf.DNSLookup (_get_rdns_lookup(ip), 'ptr', timeout=configData.get('Whitelist_Lookup_Time'))
+                rDNSResults = spf.DNSLookup (_get_rdns_lookup(ip), 'PTR', timeout=configData.get('Whitelist_Lookup_Time'))
                 if (len (rDNSResults) > 0):
                     rDNSName = rDNSResults [0][1]
                 else:
@@ -322,14 +322,14 @@ def _spfbypass(data, check_type, configData):
                         if isinstance(connectip,ipaddress.IPv4Address):
                             if debugLevel >= 5: syslog.syslog ("HELO Domain Whitelist domain: {0} is IPv4: {1}.".format(domain,connectip))
                             # DNS A lookup for IPv4 first: If A doesn't match connect IP, then skip
-                            DNSAResults = spf.DNSLookup (domain, 'a', timeout=configData.get('Whitelist_Lookup_Time'))
+                            DNSAResults = spf.DNSLookup (domain, 'A', timeout=configData.get('Whitelist_Lookup_Time'))
                             if (len (DNSAResults) > 0):
                                 for answer in DNSAResults:
                                     answerlist.append(answer[1])
                         if isinstance(connectip,ipaddress.IPv6Address):
                             if debugLevel >= 5: syslog.syslog ("HELO Domain Whitelist domain: {0} is IPv6: {1}.".format(domain,connectip))
                             # DNS AAAA lookup for IPv6
-                            DNSAAAAResults = spf.DNSLookup (domain, 'aaaa', timeout=configData.get('Whitelist_Lookup_Time'))
+                            DNSAAAAResults = spf.DNSLookup (domain, 'AAAA', timeout=configData.get('Whitelist_Lookup_Time'))
                             if (len (DNSAAAAResults) > 0):
                                 for answer in DNSAAAAResults:
                                     answerlist.append(answer[1])

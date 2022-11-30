@@ -562,20 +562,21 @@ SPF
 .SH "HIDE RCPT TO IN RESULTS HEADER"
 
 Both Received-SPF and Authentication-Results (AR) header fields include the
-receiving (RCPT TO) address.  In this application, it will always be the first
-recipient sent by the sending MTA, even if that recipient is a BCC recipient.
-This is unavoidable as the Postfix policy interface does not provide any
-indication that if the recipient is BCC or not (this information is not
-available in until after SMTP DATA in the body of the message).  This presents
-a possible avenue for a privacy breach.
+receiving (RCPT TO) host.  In this application, it will always be the host of
+the first recipient sent by the sending MTA, even if that recipient is a BCC
+recipient.  This is unavoidable as the Postfix policy interface does not
+provide any indication that if the recipient is BCC or not (this information
+is not available in until after SMTP DATA in the body of the message).  This
+presented a possible avenue for a privacy breach, but in version 3.0 it was
+modified to be only the host name and not the full address.
 
-In order to avoid this, Hide_Receiver is set to Yes by default in the
-interest of maximizing privacy.  This setting will replace the actual
-recipient with <UNKNOWN> both in header fields and SMTP responses.  The latter
-may make it more difficult for senders to troubleshoot issues with their SPF
-deployments.  As an implementation detail, currently specifying any value
-other than No will result in the recipient being hidden, but that may change
-in the future.
+Hide_Receiver can set to Yes interest of maximizing privacy.  If per user
+processing is not in use, this setting will replace the actual host name with
+<UNKNOWN> both in header fields and SMTP responses.  The latter may make it
+more difficult for senders to troubleshoot issues with their SPF deployments.
+As an implementation detail, currently specifying any value other than No will
+result in the recipient being hidden, but that may change in the future.  If
+per user processing is in use, this setting has no effect.
 
 Examples:
 
@@ -585,7 +586,7 @@ Hide_Receiver = No
 
 Default:
 
-True
+No
 
 .SH "Authentications Results Authentication Identifier"
 
@@ -709,6 +710,21 @@ Mock = True
 Default
 
 False
+
+.SH "Log Queue ID"
+Include Postfix Queue ID in policy server log messages.  This option only
+applies to log level 0 or 1 messages that are unique to the policy server
+interface when configured for post-queue processing.  Not used for milter or
+common code logging.  Included to assist with correlating logging with
+specific Postfix message processing.
+
+Example:
+
+QueueID = True
+
+Default
+
+True
 
 .SH "Reason Message"
 
