@@ -8,6 +8,7 @@ spf-engine (3.0.0-1) UNRELEASED; urgency=medium
   * Replace d/p/0001-install-conf-fix.patch with d/p/
     0001-debian-install-locations.patch which reflects upstream package
     restructure
+  * Delete debian/pyspf-milter.conf, provided upstream now
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
 
