@@ -10,6 +10,7 @@ spf-engine (3.0.0-1) UNRELEASED; urgency=medium
     restructure
   * Delete debian/pyspf-milter.conf, provided upstream now
   * Update d/rules for new upstream file locations and to use more dh_auto_*
+  * Add debian/py3dist-overrides so dh-python can find 'pyspf'
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
 
