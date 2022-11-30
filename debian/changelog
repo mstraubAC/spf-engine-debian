@@ -1,4 +1,4 @@
-spf-engine (3.0.0-1) UNRELEASED; urgency=medium
+spf-engine (3.0.0-1) unstable; urgency=medium
 
   * New upstream release (Closes: #1006283, #1019193)
   * Replace python3-setuptools with flit and pybuild-plugin-pyproject in
@@ -16,7 +16,7 @@ spf-engine (3.0.0-1) UNRELEASED; urgency=medium
     longer required for clean and the packages are all arch: all
   * Add Bug-Database information to debian/upstream/metadata
 
- -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 10:20:20 -0500
 
 spf-engine (2.9.3-2) unstable; urgency=medium
 
