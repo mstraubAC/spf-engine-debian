@@ -1,4 +1,4 @@
-system/pyspf-milter etc/init.d/
-system/pyspf-milter.service lib/systemd/system/
-debian/pyspf-milter.conf etc/pyspf-milter
-build/usr/bin/pyspf-milter /usr/bin
+data/local/etc/init.d etc/
+data/local/lib/systemd/system//pyspf-milter.service lib/systemd/system/
+data/local/etc/pyspf-milter/pyspf-milter.conf etc/pyspf-milter
+.pybuild/cpython3_3.*_spf-engine/build/scripts-3.*/pyspf-milter /usr/bin

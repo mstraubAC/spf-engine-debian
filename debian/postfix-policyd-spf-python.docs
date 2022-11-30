@@ -1,2 +1,2 @@
-README.per_user_whitelisting
-policyd-spf.conf.commented
+data/share/doc/python-policyd-spf/README.per_user_whitelisting
+data/local/etc/python-policyd-spf/policyd-spf.conf.commented
