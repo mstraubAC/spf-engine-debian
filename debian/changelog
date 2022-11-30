@@ -1,6 +1,9 @@
 spf-engine (3.0.0-1) UNRELEASED; urgency=medium
 
   * New upstream release (Closes: #1006283, #1019193)
+  * Replace python3-setuptools with flit and pybuild-plugin-pyproject in
+    build-depends and use pyproject.toml dependencies instead of manually
+    specifying
 
  -- Scott Kitterman <scott@kitterman.com>  Wed, 30 Nov 2022 08:32:57 -0500
 

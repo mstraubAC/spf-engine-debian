@@ -3,7 +3,7 @@ Section: mail
 Priority: optional
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Uploaders: Debian Python Team <team+python@tracker.debian.org>
-Build-Depends: debhelper-compat (= 13), dh-python, python3, python3-setuptools
+Build-Depends: debhelper-compat (= 13), dh-python, python3, flit (>= 3.8), pybuild-plugin-pyproject
 Standards-Version: 4.6.1
 Homepage: https://launchpad.net/spf-engine
 Vcs-Git: https://salsa.debian.org/python-team/packages/spf-engine.git
@@ -11,7 +11,7 @@ Vcs-Browser: https://salsa.debian.org/python-team/packages/spf-engine
 
 Package: postfix-policyd-spf-python
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix, adduser, python3-authres, python3-spf-engine (= ${binary:Version}), python3-pkg-resources
+Depends: ${python3:Depends}, ${misc:Depends}, postfix, adduser, python3-spf-engine (= ${binary:Version}), python3-pkg-resources
 Description: Postfix policy server for SPF checking
  postfix-policyd-spf-python is a full featured Postfix policy engine for
  SPF checking. It includes a variety of whitelisting mechanisms and policy
@@ -23,7 +23,7 @@ Description: Postfix policy server for SPF checking
 Package: pyspf-milter
 Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), postfix|sendmail, adduser, python3-authres, python3-milter, python3-spf-engine (= ${binary:Version}), python3-pkg-resources
+Depends: ${python3:Depends}, ${misc:Depends}, postfix|sendmail, adduser, python3-milter, python3-spf-engine (= ${binary:Version}), python3-pkg-resources
 Description: Modern milter for SPF checking
  pyspf-milter is a full featured milter for SPF checking. It includes a
  variety of whitelisting mechanisms and policy options to enable it to
@@ -34,7 +34,7 @@ Description: Modern milter for SPF checking
 Package: python3-spf-engine
 Section: python
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, python3-spf (>= 2.0.9), python3-authres
+Depends: ${python3:Depends}, ${misc:Depends}
 Breaks: postfix-policyd-spf-python (<< 2.9.0)
 Replaces: postfix-policyd-spf-python (<< 2.9.0)
 Description: Sender Policy Framework (SPF) processing module
