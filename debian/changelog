@@ -1,6 +1,9 @@
 spf-engine (3.0.1-2) UNRELEASED; urgency=medium
 
   * Install logcheck file using .install file instead of using dh_install
+  * Delete debian/python3-spf-engine.install, not needed with pyproject
+    plugin, remove dh_python3 override that was only needed because of the
+    .install file
 
  -- Scott Kitterman <scott@kitterman.com>  Thu, 08 Dec 2022 13:20:00 -0500
 

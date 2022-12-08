@@ -15,11 +15,6 @@ override_dh_auto_install:
 	cp .pybuild/cpython3_3.*_spf-engine/data/etc/init.d/pyspf-milter debian/pyspf-milter.init
 	mkdir -p debian/pyspf-milter/etc
 
-override_dh_python3:
-	# Remove extra license file
-	rm  debian/python3-spf-engine/usr/lib/python3/dist-packages/spf_engine-*.dist-info/COPYING
-	dh_python3
-
 override_dh_auto_test:
 
 override_dh_auto_clean:
