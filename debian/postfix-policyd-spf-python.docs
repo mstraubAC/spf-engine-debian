@@ -1,2 +1,2 @@
-data/share/doc/python-policyd-spf/README.per_user_whitelisting
-data/local/etc/python-policyd-spf/policyd-spf.conf.commented
+.pybuild/cpython3_3.*_spf-engine/data/share/doc/python-policyd-spf/README.per_user_whitelisting
+.pybuild/cpython3_3.*_spf-engine/data/etc/python-policyd-spf/policyd-spf.conf.commented

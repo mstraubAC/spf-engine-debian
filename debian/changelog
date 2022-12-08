@@ -1,4 +1,4 @@
-spf-engine (3.0.1-1) UNRELEASED; urgency=medium
+spf-engine (3.0.1-1) unstable; urgency=medium
 
   * New upstream release
     - Refresh patches
@@ -7,8 +7,10 @@ spf-engine (3.0.1-1) UNRELEASED; urgency=medium
   * Update .install files for new script installation location
   * Move dh-python from Build-Depends-Indep to Build-Depends since it is at
     least theoretically needed for clean
+  * Update .install, .docs, and .manpages files for new upstream locations and
+    use only files from the build instead of the upstream source
 
- -- Scott Kitterman <scott@kitterman.com>  Thu, 08 Dec 2022 10:10:48 -0500
+ -- Scott Kitterman <scott@kitterman.com>  Thu, 08 Dec 2022 10:57:56 -0500
 
 spf-engine (3.0.0-1) unstable; urgency=medium
 

@@ -9,13 +9,14 @@ override_dh_auto_install:
 	dh_auto_install
 	# Remove stuff from package install we install by hand
 	rm -rf debian/python3-spf-engine/usr/bin
-	rm -rf debian/python3-spf-engine/usr/lib/python3.*/dist-packages/share
-	rm -rf debian/python3-spf-engine/usr/lib/python3.*/dist-packages/local
+	rm -rf debian/python3-spf-engine/usr/share
+	rm -rf debian/python3-spf-engine/usr/lib/systemd
+	rm -rf debian/python3-spf-engine/usr/etc
 	# Install logcheck filter
 	dh_install debian/postfix-policyd-spf-python.logcheck etc/logcheck/ignore.d.server/
 	mv $(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/postfix-policyd-spf-python.logcheck \
 	$(CURDIR)/debian/postfix-policyd-spf-python/etc/logcheck/ignore.d.server/postfix-policyd-spf-python
-	cp data/local/etc/init.d/pyspf-milter debian/pyspf-milter.init
+	cp .pybuild/cpython3_3.*_spf-engine/data/etc/init.d/pyspf-milter debian/pyspf-milter.init
 	mkdir -p debian/pyspf-milter/etc
 
 override_dh_auto_test:
