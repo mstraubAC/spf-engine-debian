@@ -9,6 +9,7 @@ spf-engine (3.0.1-1) unstable; urgency=medium
     least theoretically needed for clean
   * Update .install, .docs, and .manpages files for new upstream locations and
     use only files from the build instead of the upstream source
+  * Remove extra license file
 
  -- Scott Kitterman <scott@kitterman.com>  Thu, 08 Dec 2022 10:57:56 -0500
 
