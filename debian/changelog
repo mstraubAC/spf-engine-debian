@@ -2,6 +2,8 @@ spf-engine (3.0.1-1) UNRELEASED; urgency=medium
 
   * New upstream release
     - Refresh patches
+  * Set minimum dh-python version to 5.20221205~ due to changes in script
+    installation paths in the pyproject plugin
 
  -- Scott Kitterman <scott@kitterman.com>  Thu, 08 Dec 2022 10:10:48 -0500
 

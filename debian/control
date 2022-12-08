@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Scott Kitterman <scott@kitterman.com>
 Uploaders: Debian Python Team <team+python@tracker.debian.org>
 Build-Depends: debhelper-compat (= 13)
-Build-Depends-Indep: dh-python, python3, flit (>= 3.8), pybuild-plugin-pyproject
+Build-Depends-Indep: dh-python (>= 5.20221205~), python3, flit (>= 3.8), pybuild-plugin-pyproject
 Standards-Version: 4.6.1
 Homepage: https://launchpad.net/spf-engine
 Vcs-Git: https://salsa.debian.org/python-team/packages/spf-engine.git
