@@ -1,21 +1,22 @@
 From: Scott Kitterman <scott@kitterman.com>
 Date: Wed, 30 Nov 2022 09:07:21 -0500
 Subject: Debian install locations
+
 Origin: vendor
 Forwarded: not-needed
 ---
- data/local/etc/init.d/pyspf-milter                 |  4 ++--
- data/local/lib/systemd/system/pyspf-milter.service |  2 +-
- data/share/man/man1/policyd-spf.1                  | 21 ++++++++++-----------
- data/share/man/man5/policyd-spf.conf.5             |  5 ++---
- spf_engine/milter_spf.py                           |  2 +-
- spf_engine/policyd_spf.py                          |  2 +-
- 6 files changed, 17 insertions(+), 19 deletions(-)
+ data/etc/init.d/pyspf-milter                 |  4 ++--
+ data/lib/systemd/system/pyspf-milter.service |  2 +-
+ data/share/man/man1/policyd-spf.1            | 12 ++++++------
+ data/share/man/man5/policyd-spf.conf.5       |  6 ++----
+ spf_engine/milter_spf.py                     |  2 +-
+ spf_engine/policyd_spf.py                    |  2 +-
+ 6 files changed, 13 insertions(+), 15 deletions(-)
 
-diff --git a/data/local/etc/init.d/pyspf-milter b/data/local/etc/init.d/pyspf-milter
+diff --git a/data/etc/init.d/pyspf-milter b/data/etc/init.d/pyspf-milter
 index 7ef838a..80d9ce8 100644
---- a/data/local/etc/init.d/pyspf-milter
-+++ b/data/local/etc/init.d/pyspf-milter
+--- a/data/etc/init.d/pyspf-milter
++++ b/data/etc/init.d/pyspf-milter
 @@ -18,10 +18,10 @@
  # Short-Description: pyspf-milter
  # Description:       Python SPF Milter for Sendmail and Postfix
@@ -29,10 +30,10 @@ index 7ef838a..80d9ce8 100644
  bindir="${exec_prefix}/bin/"
  RUNDIR="/run/pyspf-milter"
  DAEMON=${bindir}/pyspf-milter
-diff --git a/data/local/lib/systemd/system/pyspf-milter.service b/data/local/lib/systemd/system/pyspf-milter.service
+diff --git a/data/lib/systemd/system/pyspf-milter.service b/data/lib/systemd/system/pyspf-milter.service
 index c8859f3..b8794c8 100644
---- a/data/local/lib/systemd/system/pyspf-milter.service
-+++ b/data/local/lib/systemd/system/pyspf-milter.service
+--- a/data/lib/systemd/system/pyspf-milter.service
++++ b/data/lib/systemd/system/pyspf-milter.service
 @@ -6,7 +6,7 @@ After=network.target
  [Service]
  Type=simple
@@ -43,10 +44,10 @@ index c8859f3..b8794c8 100644
  [Install]
  WantedBy=multi-user.target
 diff --git a/data/share/man/man1/policyd-spf.1 b/data/share/man/man1/policyd-spf.1
-index d641b99..06007b1 100644
+index cf9b3aa..ef55761 100644
 --- a/data/share/man/man1/policyd-spf.1
 +++ b/data/share/man/man1/policyd-spf.1
-@@ -144,12 +144,13 @@ $ policyd-spf (Start using installed config file)
+@@ -144,13 +144,13 @@ $ policyd-spf (Start using installed config file)
  
  $ policyd-spf \-h (Display usage message)
  
@@ -56,37 +57,18 @@ index d641b99..06007b1 100644
  
 -Configuration options are described in the sample configuration file provided
 -with the package (policyd-spf.conf.commented) and in policyd-spf.conf(5).  The
--provided setup.py installs an uncommented configuration file in 
--/etc/policyd-spf/.
+-the configuration file provided with the package can generally be found in 
+-/usr/local/etc/policyd-spf/, but installation location varies depending on
+-installtion method.
 +Configuration options are described in the sample configuration file installed
 +in /usr/share/doc/postfix-policyd-spf-python (policyd-spf.conf.commented) and
-+in policyd-spf.conf(5).  The provided setup.py installs an uncommented
-+configuration file in /etc/postfix-policyd-spf-python/.
++in policyd-spf.conf(5).  The configuration file in installed in
++/etc/postfix-policyd-spf-python/.
  
  Additionally, whitelisting certain IP addresses or IP addresses used by listed
  domains from SPF checks is supported.  Skipping SPF checks for local submission
-@@ -247,15 +248,13 @@ followed by a empty line:
-  1. Add the following to /etc/postfix/master.cf:
- 
-         policyd-spf  unix  -       n       n       -       0       spawn
--            user=nobody argv=/usr/bin/policyd-spf
-+            user=policyd-spf argv=/usr/bin/policyd-spf
- 
-     NOTE: Check the path to both the installed Python 3 interpreter and
-           policyd-spf.  These vary from system to system.  To use non-default
--          settings, you must also add the config file (see above and 
--          policyd-spf.conf(5) for details).  If you run other services with
--          user nobody, create a dedicated user for this policy server and use
--          that instead.  Python and Python 3 versions prior to 3.3 are not
--          supported.
-+          settings, you must also add the config file (see above and
-+          policyd-spf.conf(5) for details).  Python and Python 3 versions
-+          prior to 3.3 are not supported.
- 
-  2. Configure the Postfix policy service in /etc/postfix/main.cf:
- 
 diff --git a/data/share/man/man5/policyd-spf.conf.5 b/data/share/man/man5/policyd-spf.conf.5
-index 1590ccb..f749596 100644
+index a1a0403..f749596 100644
 --- a/data/share/man/man5/policyd-spf.conf.5
 +++ b/data/share/man/man5/policyd-spf.conf.5
 @@ -137,7 +137,7 @@ policyd-spf python configuration parameters
@@ -98,21 +80,22 @@ index 1590ccb..f749596 100644
  
  .SH "OTHER DOCUMENTATION"
  This documentation assumes you have read Postfix's README_FILES/
-@@ -161,8 +161,7 @@ file.
+@@ -161,9 +161,7 @@ file.
  .SH "DESCRIPTION"
  
  Configuration options are described here and in the configuration file 
--provided with the package.  The provided setup.py installs this configuration 
--file in /etc/policyd-spf/.
+-provided with the package.  This file can generally be found in
+-/usr/local/etc/policyd-spf/, but installation location varies depending on
+-installtion method.
 +provided with the package.
  
  Additionally, whitelisting certain IP addresses from SPF checks is supported.
  This man page and the sample configuration file show the format to use.
 diff --git a/spf_engine/milter_spf.py b/spf_engine/milter_spf.py
-index bbcc95a..c5fa8dc 100644
+index 79f0881..8e259fd 100644
 --- a/spf_engine/milter_spf.py
 +++ b/spf_engine/milter_spf.py
-@@ -212,7 +212,7 @@ class spfMilter(Milter.Base):
+@@ -211,7 +211,7 @@ class spfMilter(Milter.Base):
  def main():
      # Ugh, but there's no easy way around this.
      global milterconfig
