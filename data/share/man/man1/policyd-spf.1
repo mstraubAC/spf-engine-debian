@@ -148,8 +148,9 @@ $ policyd-spf /etc/policyd-spf/policyd-spf.conf (Config file name to use)
 
 Configuration options are described in the sample configuration file provided
 with the package (policyd-spf.conf.commented) and in policyd-spf.conf(5).  The
-provided setup.py installs an uncommented configuration file in 
-/etc/policyd-spf/.
+the configuration file provided with the package can generally be found in 
+/usr/local/etc/policyd-spf/, but installation location varies depending on
+installtion method.
 
 Additionally, whitelisting certain IP addresses or IP addresses used by listed
 domains from SPF checks is supported.  Skipping SPF checks for local submission
@@ -247,15 +248,13 @@ followed by a empty line:
  1. Add the following to /etc/postfix/master.cf:
 
         policyd-spf  unix  -       n       n       -       0       spawn
-            user=nobody argv=/usr/bin/policyd-spf
+            user=policyd-spf argv=/usr/bin/policyd-spf
 
     NOTE: Check the path to both the installed Python 3 interpreter and
           policyd-spf.  These vary from system to system.  To use non-default
-          settings, you must also add the config file (see above and 
-          policyd-spf.conf(5) for details).  If you run other services with
-          user nobody, create a dedicated user for this policy server and use
-          that instead.  Python and Python 3 versions prior to 3.3 are not
-          supported.
+          settings, you must also add the config file (see above and
+          policyd-spf.conf(5) for details).  Python and Python 3 versions
+          prior to 3.3 are not supported.
 
  2. Configure the Postfix policy service in /etc/postfix/main.cf:
 
