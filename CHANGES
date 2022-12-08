@@ -4,7 +4,12 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
---- 3.0.0
+--- 3.0.1 (2022-12-08)
+  * Documentation cleanup
+  ! Moved data files, removing /local component of paths, since it led to
+    inappropriate installation paths with some pip options
+
+--- 3.0.0 (2022-11-30)
   ! Replaced setuptools with flit for building/installing (packagers: this
     require changes)
     + Modern PEP 517/PEP 621 based build interface (requires flit 3.8)

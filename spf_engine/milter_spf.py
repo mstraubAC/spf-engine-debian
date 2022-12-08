@@ -39,7 +39,6 @@ from spf_engine.policydspfsupp import _setExceptHook
 from spf_engine.util import write_pid
 from spf_engine.util import fold
 
-__version__ = "3.0.0"
 FWS = re.compile(r'\r?\n[ \t]+')
 
 
