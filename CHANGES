@@ -4,6 +4,12 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 3.0.2 (2022-12-16)
+  * Document limits of Hide_Receiver option when using the milter interface
+  * Fix parsing of multiple value comma separated datasets
+  * Fix InternalHosts configuration file parsing and data type conversions
+  * Add documentation of milter only options to policyd-spf.conf (5)
+
 --- 3.0.1 (2022-12-08)
   * Documentation cleanup
   ! Moved data files, removing /local component of paths, since it led to

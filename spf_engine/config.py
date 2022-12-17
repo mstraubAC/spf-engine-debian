@@ -30,6 +30,7 @@ import sys
 import stat
 import socket
 import ipaddress
+import spf_engine.policydspfsupp as policydspfsupp
 
 class HostsDataset(object):
     '''Hold a group of host related dataset objects'''
@@ -58,16 +59,14 @@ class HostsDataset(object):
                 self.item = item[1:]
                 self.negative = True
             try:
-                self.item = ipaddress.ip_address(str(self.item, "utf-8"))
+                self.item = ipaddress.ip_address(self.item)
                 if isinstance(self.item, ipaddress.IPv4Address):
                     self.isipv4 = True
                 elif isinstance(self.item, ipaddress.IPv6Address):
                     self.isipv6 = True
             except ValueError as e:
                 try:
-                    self.item = ipaddress.ip_network(str
-                                                     (self.item, "utf-8"),
-                                                     strict=False)
+                    self.item = ipaddress.ip_network(self.item)
                     if isinstance(self.item, ipaddress.IPv4Network):
                         self.isipv4cidr = True
                     elif isinstance(self.item, ipaddress.IPv6Network):
@@ -78,12 +77,12 @@ class HostsDataset(object):
                     elif len(self.item.split('.')) > 1:  # It has a '.' in it
                         self.ishostname = True
                     else:
-                        raise ConfigException('Unknown dataset item: {0}'
+                        raise policydspfsupp.ConfigException('Unknown dataset item: {0}'
                                               .format(item))
 
     def match(self, connectip):
         '''Check if the connect IP is part of the dataset'''
-        source = ipaddress.ip_address(str(connectip, "utf-8"))
+        source = ipaddress.ip_address(connectip)
         for item in self.dataset:
             if item.isdomain or item.ishostname:
                 result = self.matchname(source)   # Match host/domains first
@@ -133,13 +132,13 @@ class HostsDataset(object):
             if isinstance(source, ipaddress.IPv4Address):
                 ips = s.dns(name, 'A')
                 for ip in ips:
-                    ip = ipaddress.IPv4Address(str(ip, 'UTF-8'))
+                    ip = ipaddress.IPv4Address(ip)
                     if ip == source:
                         results.append(name)
             if isinstance(source, ipaddress.IPv6Address):
                 ips = s.dns(name, 'AAAA')
                 for ip in ips:
-                    ip = ipaddress.IPv6Address(str(ip, 'UTF-8'))
+                    ip = ipaddress.IPv6Address(ip)
                 if ip == source:
                     results.append(name)
         return results
@@ -236,10 +235,16 @@ def _dataset_to_list(dataset):
                 return dsd
         # If it's a str and csl, it has one value and we return a list
         if dataset[:4] == 'csl:':
-            return [dataset[4:].strip().strip(',')]
+            datalist = dataset[4:].split(',')
+            for item in datalist:
+                datalist[datalist.index(item)] = item.strip().strip(',')
+            return datalist
         else:
-            return [dataset.strip().strip(',')]
+            datalist = dataset.split(',')
+            for item in datalist:
+                datalist[datalist.index(item)] = item.strip().strip(',')
+            return datalist
         if dataset[-3:] == '.db' or dataset[:3] == 'db:':
             #  This is a Sleepycat (Oracle) DB  dataset, which we dont support
-            raise dkim.ParameterError('Unsupported dataset db datase: {0}'
+            raise policydspfsupp.ConfigException('Unsupported dataset db datase: {0}'
                                       .format(type(dataset)))

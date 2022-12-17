@@ -53,7 +53,7 @@ defaultConfigData = {
         'PidFile': '/run/pyspf-milter/pyspf-milter.pid',
         'UserID': 'pyspf-milter',
         'UMask': 7,
-        'InternalHosts': '127.0.0.1',
+        'InternalHosts': ['127.0.0.1'],
         'IntHosts': False,
         'MacroList': '',
         }
@@ -156,7 +156,7 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
             'PidFile': str,
             'UserID': str,
             'UMask': int,
-            'InternalHosts': str,
+            'InternalHosts': 'dataset',
             'IntHosts': bool,
             'MacroList': 'dataset',
             }
@@ -208,6 +208,10 @@ def _readConfigFile(path, configData = None, configGlobal = {}):
             configData[name] = conversion(value)
     fp.close()
     try:
+        try:
+            configData['IntHosts'] = config.HostsDataset(configData['InternalHosts'])
+        except Exception as e:
+            syslog.syslog("Could not make HostDataset from InternalHosts: {}".format(e))
         if debugLevel >= 5: syslog.syslog('Authserv_Id before: {0}'.format(configData['Authserv_Id']))
         configData['Authserv_Id'] = _make_authserv_id(configData['Authserv_Id'])
         if debugLevel >= 5: syslog.syslog('Authserv_Id after: {0}'.format(configData['Authserv_Id']))
