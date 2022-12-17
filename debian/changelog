@@ -6,6 +6,7 @@ spf-engine (3.0.2-1) unstable; urgency=medium
     .install file
   * New upstream release (Closes: #1026025)
     - Refresh patches
+  * Bump standards-version to 4.6.2 without further change
 
  -- Scott Kitterman <scott@kitterman.com>  Sat, 17 Dec 2022 00:27:12 -0500
 
