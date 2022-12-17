@@ -8,10 +8,10 @@ Forwarded: not-needed
  data/etc/init.d/pyspf-milter                 |  4 ++--
  data/lib/systemd/system/pyspf-milter.service |  2 +-
  data/share/man/man1/policyd-spf.1            | 12 ++++++------
- data/share/man/man5/policyd-spf.conf.5       |  6 ++----
+ data/share/man/man5/policyd-spf.conf.5       |  2 +-
  spf_engine/milter_spf.py                     |  2 +-
  spf_engine/policyd_spf.py                    |  2 +-
- 6 files changed, 13 insertions(+), 15 deletions(-)
+ 6 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/data/etc/init.d/pyspf-milter b/data/etc/init.d/pyspf-milter
 index 7ef838a..80d9ce8 100644
@@ -68,7 +68,7 @@ index cf9b3aa..ef55761 100644
  Additionally, whitelisting certain IP addresses or IP addresses used by listed
  domains from SPF checks is supported.  Skipping SPF checks for local submission
 diff --git a/data/share/man/man5/policyd-spf.conf.5 b/data/share/man/man5/policyd-spf.conf.5
-index a1a0403..f749596 100644
+index 47f40d9..0e5a945 100644
 --- a/data/share/man/man5/policyd-spf.conf.5
 +++ b/data/share/man/man5/policyd-spf.conf.5
 @@ -137,7 +137,7 @@ policyd-spf python configuration parameters
@@ -80,17 +80,6 @@ index a1a0403..f749596 100644
  
  .SH "OTHER DOCUMENTATION"
  This documentation assumes you have read Postfix's README_FILES/
-@@ -161,9 +161,7 @@ file.
- .SH "DESCRIPTION"
- 
- Configuration options are described here and in the configuration file 
--provided with the package.  This file can generally be found in
--/usr/local/etc/policyd-spf/, but installation location varies depending on
--installtion method.
-+provided with the package.
- 
- Additionally, whitelisting certain IP addresses from SPF checks is supported.
- This man page and the sample configuration file show the format to use.
 diff --git a/spf_engine/milter_spf.py b/spf_engine/milter_spf.py
 index 79f0881..8e259fd 100644
 --- a/spf_engine/milter_spf.py
