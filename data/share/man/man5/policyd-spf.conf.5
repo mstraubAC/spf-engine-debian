@@ -133,7 +133,7 @@ policyd-spf
 \-
 policyd-spf python configuration parameters
 .SH "VERSION"
-2\.0\.0
+3\.0\.2
 
 .SH "USAGE"
 Usage:
@@ -152,27 +152,24 @@ different configuration options on a per user (mail reciepient) basis.
 
 .SH "SYNOPSIS"
 
-python-policyd-spf operates with a default installed configuration file and 
-set of default configuration options that are used if the configuration file
-cannot be found.  These options can be changed by changing the installed 
-configuration files or through giving a path to an alternate configuration 
-file.
+spf-engine provides both a Postfix policy server front end and a milter front
+end that can be used with any mail server which supports the milter protocol.
+Most options apply to both policy server and milter usage.  Options specific
+to the milter are listed at the end.  The package operates with a default
+installed configuration file and set of default configuration options that are
+used if the configuration file cannot be found.  These options can be changed
+by changing the installed configuration files or through giving a path to an
+alternate configuration file.
 
 .SH "DESCRIPTION"
-
-Configuration options are described here and in the configuration file 
-provided with the package.  This file can generally be found in
-/usr/local/etc/policyd-spf/, but installation location varies depending on
-installtion method.
 
 Additionally, whitelisting certain IP addresses from SPF checks is supported.
 This man page and the sample configuration file show the format to use.
 These options can be adjusted on a per user (mail recipient) basis.  Details
-on per user settings can be found in policyd-spf.peruser(5).
+on per user settings can be found in policyd-spf.peruser(5).  Per user
+settings are applicable only to the policy server.
 
 .SH "OPTIONS"
-\X'ps:'\c 
-.br
 .SH "LOGGING"
 
 "debugLevel" controls the amount of information logged by the policy server.
@@ -563,13 +560,14 @@ SPF
 .SH "HIDE RCPT TO IN RESULTS HEADER"
 
 Both Received-SPF and Authentication-Results (AR) header fields include the
-receiving (RCPT TO) host.  In this application, it will always be the host of
-the first recipient sent by the sending MTA, even if that recipient is a BCC
-recipient.  This is unavoidable as the Postfix policy interface does not
-provide any indication that if the recipient is BCC or not (this information
-is not available in until after SMTP DATA in the body of the message).  This
-presented a possible avenue for a privacy breach, but in version 3.0 it was
-modified to be only the host name and not the full address.
+receiving (RCPT TO) host, if available.  In this application, it will always
+be the host of the first recipient sent by the sending MTA, even if that
+recipient is a BCC recipient.  This is unavoidable as neither the Postfix
+policy interface nor the milter interface provides any indication if the
+recipient is BCC or not (this information is not available in until after
+SMTP DATA in the body of the message).  This presented a possible avenue for
+a privacy breach, but in version 3.0 it was modified to be only the host name
+and not the full address.
 
 Hide_Receiver can set to Yes interest of maximizing privacy.  If per user
 processing is not in use, this setting will replace the actual host name with
@@ -578,6 +576,10 @@ more difficult for senders to troubleshoot issues with their SPF deployments.
 As an implementation detail, currently specifying any value other than No will
 result in the recipient being hidden, but that may change in the future.  If
 per user processing is in use, this setting has no effect.
+
+For the milter interface, checks are always done at the Mail From stage in the
+SMTP protocol, so receiver data is never available.  When using the milter,
+this setting has no effect.
 
 Examples:
 
@@ -748,6 +750,107 @@ Reason_Message = Message {rejectdefer} due to: {spf}.
 Default:
 
 Reason_Message = Message {rejectdefer} due to: {spf}. Please see {url}
+
+.SH "MILTER ONLY OPTIONS"
+
+.TP
+.I Socket (string)
+Specifies the socket that should be established by the filter to receive
+connections from
+.I postfix(1)
+in order to provide service.
+.I socketspec
+is in one of two forms:
+.I local:path,
+which creates a UNIX domain socket at the specified
+.I path,
+or
+.I inet:port[@host]
+or
+.I inet6:port[@host]
+which creates a TCP socket on the specified
+.I port
+and in the specified protocol family.  If the
+.I host
+is not given as either a hostname or an IP address, the socket will be
+listening on all interfaces.  A literal IP address must be enclosed in
+square brackets.  This option is mandatory in the configuration file.
+
+.TP
+.I PidFile (string)
+Specifies the path to a file that should be created at process start
+containing the process ID.  If not specified, no such file will be created.
+
+.TP
+.I UserID (string)
+Attempts to become the specified userid before starting operations.
+The value is of the form
+.I userid[:group].
+The process will be assigned all of the groups and primary group ID of
+the named
+.I userid
+unless an alternate
+.I group
+is specified.
+
+.TP
+.I UMask (integer)
+Requests a specific permissions mask to be used for file creation.
+This only really applies to creation of the socket when
+.I Socket
+specifies a UNIX domain socket, and to the
+.I PidFile
+(if any); temporary files are created by the
+.I mkstemp(3)
+function that enforces a specific file mode on creation regardless
+of the process umask.  See
+.I umask(2)
+for more information.
+
+.TP
+.I InternalHosts (dataset)
+Identifies a set internal hosts whose mail should be signed rather
+than verified.  The set should contain on each line a hostname, domain name
+(e.g. ".example.com"), IP address, an IPv6 address (including an IPv4 mapped
+address), or a CIDR-style IP specification (e.g. "192.168.1.0/24").  An entry
+beginning with a bang ("!") character means "not", allowing exclusions of
+specific hosts that are otherwise members of larger sets.  Host and domain
+names are matched first, then the IP or IPv6 address depending on the
+connection type.  More precise entries are preferred over less precise ones,
+i.e. "192.168.1.1" will match before "!192.168.1.0/24".  The text form of IPv6
+addresses will be forced to lowercase when queried (RFC5952), so the contents
+of this data set should also use lowercase.  The IP address portion of an
+entry may optionally contain square brackets; both forms (with and without)
+will be checked.  If not specified, the default of "127.0.0.1" is applied.
+Naturally, providing a value here overrides the default, so if mail from
+127.0.0.1 should be signed, the list provided here should include that
+address explicitly.
+
+.TP
+.I MacroList (dataset)
+Defines a set of MTA-provided
+.I macros
+that should be checked to see if the sender has been determined to be a
+local user and therefore whether or not the message checked.  If a
+.I value
+is specified matching a macro name in the data set, the value of the macro
+must match a value specified (matching is case-sensitive), otherwise the
+macro must be defined but may contain any value.  The set is empty by
+default, meaning macros are not considered when making the verify decision.
+The general format of the value is
+.I value1[|value2[|...]];
+if one or more value is defined then the macro must be set to one of the
+listed values, otherwise the macro must be set but can contain any
+value.
+
+In order for the macro and its value to be available to the filter for
+checking, the MTA must send it during the protocol exchange.  This is either
+accomplished via manual configuration of the MTA to send the desired macros
+or, for MTA/filter combinations that support the feature, the filter can
+request those macros that are of interest.  The latter is a feature negotiated
+at the time the filter receives a connection from the MTA and its availability
+depends upon the version of milter used to compile the filter and the version
+of the MTA making the connection.
 
 .SH "SEE ALSO"
 man 1 policyd-spf, man 5 policyd-spf.peruser, python-spf,
