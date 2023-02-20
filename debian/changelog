@@ -1,3 +1,9 @@
+spf-engine (3.0.3-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 19 Feb 2023 20:13:27 -0500
+
 spf-engine (3.0.2-1) unstable; urgency=medium
 
   * Install logcheck file using .install file instead of using dh_install
