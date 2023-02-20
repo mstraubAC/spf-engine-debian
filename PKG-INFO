@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: spf-engine
-Version: 3.0.2
+Version: 3.0.3
 Summary: SPF (Sender Policy Framework) processing engine for Postfix policy server and Milter implemented in Python.
 Keywords: Postfix,Sendmail,milter,spf,email
 Author-email: Scott Kitterman <scott@kitterman.com>

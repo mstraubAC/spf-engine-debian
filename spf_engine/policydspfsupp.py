@@ -47,7 +47,7 @@ defaultConfigData = {
         'Reason_Message' : 'Message {rejectdefer} due to: {spf}. Please see {url}',
         'No_Mail' : False,
         'Mock' : False,
-        'Queue_ID' : True,
+        'QueueID' : True,
 	# For milter front end
         'Socket': 'local:/run/pyspf-milter/pyspf-milter.sock',
         'PidFile': '/run/pyspf-milter/pyspf-milter.pid',

@@ -4,6 +4,10 @@
 #   ! = Changed something significant, or removed a feature
 #   * = Fixed a bug, or made a minor improvement
 
+--- 3.0.3 (2023-02-19)
+  * Fix reference to QueueID in policydspfsupp.py (LP: #2007123), thanks to
+    Wolfgang Karall-Ahlborn for the bug and the fix
+
 --- 3.0.2 (2022-12-16)
   * Document limits of Hide_Receiver option when using the milter interface
   * Fix parsing of multiple value comma separated datasets
