@@ -94,7 +94,10 @@ def main():
             elif configData.get('Hide_Receiver') != 'No':
                 data['recipient'] = '<UNKNOWN>'
             elif data.get('recipient') != 'none':
-                data['recipient'] = data.get('recipient').split('@')[1]
+                try:
+                    data['recipient'] = data.get('recipient').split('@')[1]
+                except IndexError:
+                    pass # local recipients may not be fully qualified, so no "@".
             if debugLevel >= 3: syslog.syslog('Config: %s' % str(configData))
             #  run the checkers  {{{3
             checkerValue = None
