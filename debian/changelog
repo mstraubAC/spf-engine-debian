@@ -1,8 +1,8 @@
-spf-engine (3.0.4-1) UNRELEASED; urgency=medium
+spf-engine (3.0.4-1) unstable; urgency=medium
 
   * New upstream release
 
- -- Scott Kitterman <scott@kitterman.com>  Sat, 08 Apr 2023 00:06:57 -0400
+ -- Scott Kitterman <scott@kitterman.com>  Sun, 09 Apr 2023 09:24:11 -0400
 
 spf-engine (3.0.3-1) unstable; urgency=medium
 
