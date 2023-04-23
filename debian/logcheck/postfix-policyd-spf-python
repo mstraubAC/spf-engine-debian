@@ -1,2 +1,1 @@
-+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ policyd-spf\[[0-9]+\]: (Pass|Neutral|None|Softfail|Fail|Temperror|Permerror); identity=(helo|mailfrom); client-ip=[0-9a-f.:]+; helo=.*; envelope-from=.*; receiver=
-
+^(\w{3} [ :[:digit:]]{11}|[0-9T:.+-]{32}) [._[:alnum:]-]+ policyd-spf\[[0-9]+\]:( :)? prepend Received-SPF: (Pass|Neutral|None|Softfail|Fail|Temperror|Permerror) \((helo|mailfrom)\) identity=(helo|mailfrom); client-ip=[0-9a-f.:]+; helo=.*; envelope-from=.*; receiver=
