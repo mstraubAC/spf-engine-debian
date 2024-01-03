@@ -166,6 +166,16 @@ def _get_resultcodes(data, configData, scope):
                 actions['reject'].append('Neutral')
             except:
                 if debugLevel >= 2: syslog.syslog('Configuration File parsing error: Mail_From_reject')
+        elif mfrom_policy == 'SPF_Required':
+            try:
+                unused_results.remove('Fail')
+                actions['reject'].append('Fail')
+                unused_results.remove('Softfail')
+                actions['reject'].append('Softfail')
+                unused_results.remove('None')
+                actions['reject'].append('None')
+            except:
+                if debugLevel >= 2: syslog.syslog('Configuration File parsing error: Mail_From_reject')
         elif mfrom_policy == 'Softfail':
             try:
                 unused_results.remove('Fail')
